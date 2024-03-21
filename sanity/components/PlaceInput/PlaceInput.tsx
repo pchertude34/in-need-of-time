@@ -1,6 +1,6 @@
 // CustomStringInput.tsx
 import React, { useCallback, useState, useEffect, useRef } from 'react';
-import { Box, Flex, Button, Stack, Text, TextInput, Label, Inline, Radio } from '@sanity/ui';
+import { Box, Flex, Stack, Text, TextInput, Label, Inline, Radio } from '@sanity/ui';
 import { set, ObjectInputProps } from 'sanity';
 import { loadGoogleMapsApi } from './loadGoogleMapsApi';
 
@@ -192,55 +192,3 @@ export function buildPlaceAddress(place: google.maps.places.PlaceResult): string
 
   return address;
 }
-
-// function loadGoogleMapsApi(config: { locale: string; apiKey: string }) {
-//   return new Promise<typeof window.google.maps>((resolve, reject) => {
-//     window[authFailureCallbackName] = () => {
-//       reject(new AuthError('Authentication error when loading Google Maps API.'));
-//     };
-
-//     window[callbackName] = () => {
-//       resolve(window.google.maps);
-//     };
-
-//     const script = document.createElement('script');
-//     script.onerror = (
-//       event: Event | string,
-//       source?: string,
-//       lineno?: number,
-//       colno?: number,
-//       error?: Error
-//     ) => reject(new Error(coeerceError(event, error)));
-
-//     // script.src = `https://maps.googleapis.com/maps/api/js?key=AIzaSyAsIhhkgty6kH-bbeTQujYMXvzd-UzbJKo&libraries=places&callback=callback`;
-//     script.src = `https://maps.googleapis.com/maps/api/js?key=${config.apiKey}&libraries=places&callback=${callbackName}&language=${config.locale}`;
-//     document.getElementsByTagName('head')[0]?.appendChild(script);
-//   }).finally(() => {
-//     delete window[callbackName];
-//     delete window[authFailureCallbackName];
-//   });
-// }
-
-// function coeerceError(event: Event | string, error?: Error): string {
-//   if (error) {
-//     return error.message;
-//   }
-
-//   if (typeof event === 'string') {
-//     return event;
-//   }
-
-//   return isErrorEvent(event) ? event.message : 'Failed to load Google Maps API';
-// }
-
-// function isErrorEvent(event: unknown): event is ErrorEvent {
-//   if (typeof event !== 'object' || event === null) {
-//     return false;
-//   }
-
-//   if (!('message' in event)) {
-//     return false;
-//   }
-
-//   return typeof (event as ErrorEvent).message === 'string';
-// }
