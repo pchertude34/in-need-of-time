@@ -1,5 +1,7 @@
 // import PlaceInput from '../sanitycomponents/PlaceInput';
 import { defineField, defineType, ValidationContext } from 'sanity';
+import PlaceInput from '@/sanity/components/PlaceInput/PlaceInput';
+
 import groq from 'groq';
 
 function isUniquePlaceId(context: ValidationContext, placeId: string | unknown) {
@@ -24,9 +26,9 @@ const providerSchema = defineType({
   title: 'Provider',
   fields: [
     defineField({
-      name: 'name',
+      name: 'title',
       title: 'Provider Name',
-      type: 'slug',
+      type: 'string',
     }),
     defineField({
       name: 'place',
@@ -49,16 +51,13 @@ const providerSchema = defineType({
       ],
       validation: (Rule) =>
         Rule.custom(async (fields, context) => {
-          console.log('top level validation', fields);
-          // return 'error with place id';
-          // placeId
           if (!fields?.placeId) return true;
           const isUnique = await isUniquePlaceId(context, fields.placeId);
           if (!isUnique) return 'PlaceId is not unique!';
           return true;
         }),
       components: {
-        // input: PlaceInput,
+        input: PlaceInput,
       },
       // validation: (placeId: any) => {
       //   console.log('validation');
@@ -90,6 +89,12 @@ const providerSchema = defineType({
       type: 'text',
     }),
   ],
+  preview: {
+    select: {
+      title: 'title',
+      subtitle: 'place.address',
+    }
+  }
 });
 
 export default providerSchema;
