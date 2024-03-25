@@ -23,11 +23,6 @@ const providerSchema = defineType({
           name: "placeId",
           title: "Place ID",
           type: "string",
-          validation: (Rule) =>
-            Rule.custom((fields) => {
-              console.log("placeId validation", fields);
-              return "error with place id";
-            }),
         },
         { name: "location", title: "Location", type: "geopoint" },
       ],
