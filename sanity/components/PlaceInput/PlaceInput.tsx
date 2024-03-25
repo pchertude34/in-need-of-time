@@ -11,7 +11,7 @@ import {
   Radio,
 } from "@sanity/ui";
 import { set, ObjectInputProps } from "sanity";
-import { loadGoogleMapsApi } from "./loadGoogleMapsApi";
+import { loadGoogleMapsApi } from "@/lib/loadGoogleMapsApi";
 import { NEXT_PUBLIC_GOOGLE_API_KEY } from "@/env";
 
 const API_KEY = NEXT_PUBLIC_GOOGLE_API_KEY || "";

@@ -1,12 +1,12 @@
 declare global {
   interface Window {
     gm_authFailure: any;
-    __sanity_googlePlacesApiCallback: any;
+    __googlePlacesApiCallback: any;
     callback: any;
   }
 }
 
-const callbackName = "__sanity_googlePlacesApiCallback";
+const callbackName = "__googlePlacesApiCallback";
 const authFailureCallbackName = "gm_authFailure";
 
 export class AuthError extends Error {}
