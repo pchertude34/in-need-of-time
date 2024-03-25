@@ -11,7 +11,7 @@ export const NEXT_PUBLIC_SANITY_PROJECT_ID = assertValue(
   "Missing environment variable: NEXT_PUBLIC_SANITY_PROJECT_ID",
 );
 
-export const GOOGLE_API_KEY = assertValue(
+export const NEXT_PUBLIC_GOOGLE_API_KEY = assertValue(
   process.env.NEXT_PUBLIC_GOOGLE_API_KEY,
   "Missing environment variable: NEXT_PUBLIC_GOOGLE_API_KEY",
 );

@@ -12,8 +12,9 @@ import {
 } from "@sanity/ui";
 import { set, ObjectInputProps } from "sanity";
 import { loadGoogleMapsApi } from "./loadGoogleMapsApi";
+import { NEXT_PUBLIC_GOOGLE_API_KEY } from "@/env";
 
-const API_KEY = process.env.GOOGLE_API_KEY || "";
+const API_KEY = NEXT_PUBLIC_GOOGLE_API_KEY || "";
 const ESTABLISHMENT = "establishment";
 const ADDRESS = "address";
 
