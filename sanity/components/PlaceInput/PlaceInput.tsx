@@ -27,17 +27,17 @@ export default function CustomStringInput(props: ObjectInputProps) {
   const [loadingMaps, setLoadingMaps] = useState(true);
   const [error, setError] = useState<string | undefined>("");
   const [placeId, setPlaceId] = useState<string | undefined>(
-    value?.placeId || undefined,
+    value?.placeId || "",
   );
 
   const [searchType, setSearchType] = useState<
     typeof ESTABLISHMENT | typeof ADDRESS
   >(ADDRESS);
   const [address, setAddress] = useState<string | undefined>(
-    value?.address || undefined,
+    value?.address || "",
   );
-  const [lat, setLat] = useState<number | undefined>(value?.location?.lat);
-  const [lng, setLng] = useState<number | undefined>(value?.location?.lng);
+  const [lat, setLat] = useState<number | undefined>(value?.location?.lat || "");
+  const [lng, setLng] = useState<number | undefined>(value?.location?.lng || "");
   const placeInputRef = useRef<HTMLInputElement>(null);
   const autocompleteRef = useRef<google.maps.places.Autocomplete>();
   const autocompleteListener = useRef<google.maps.MapsEventListener>();
