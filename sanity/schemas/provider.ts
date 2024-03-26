@@ -1,5 +1,29 @@
-import { defineType } from "sanity";
+import { defineField, defineType } from "sanity";
 import PlaceInput from "@/sanity/components/PlaceInput/PlaceInput";
+import { groq } from "next-sanity";
+import { client } from "@/sanity/lib/client";
+
+function isUniquePlace(placeId: string, context: any) {
+  const { document } = context;
+  const id = document._id.replace(/^drafts\./, "");
+
+  const params = {
+    draft: `drafts.${id}`,
+    published: id,
+    placeId,
+  };
+
+  // This will check if there is a different document with the same placeId
+  // If the document is the same, or there is no other document with the same placeId it will return false.
+  // Otherwise it will return true
+  const query = groq`!defined(*[
+    _type == "provider" &&
+    !(_id in [$draft, $published]) &&
+    place.placeId == $placeId
+  ][0]._id)`;
+
+  return client.fetch(query, params);
+}
 
 const providerSchema = defineType({
   name: "provider",
@@ -11,7 +35,7 @@ const providerSchema = defineType({
       title: "Provider Name",
       type: "string",
     },
-    {
+    defineField({
       name: "place",
       title: "Place",
       type: "object",
@@ -28,7 +52,20 @@ const providerSchema = defineType({
       components: {
         input: PlaceInput,
       },
-    },
+      validation: (Rule) =>
+        Rule.custom(async (value: any, context) => {
+          // This validation runs whenever a change is detected which can cause alot of API calls.
+          // Don't run the query if we don't have a placeId to save on API calls.
+          if (!value || !value.placeId) return true;
+
+          const isUnique = await isUniquePlace(value.placeId, context);
+
+          if (!isUnique)
+            return `A Provider with the Place ID ${value.placeId} already exists. Please choose a different Place, or edit the existing Provider.`;
+
+          return true;
+        }),
+    }),
     {
       name: "serviceTypes",
       title: "Service Types",
