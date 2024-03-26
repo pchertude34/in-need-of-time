@@ -1,5 +1,4 @@
-// import PlaceInput from '../sanitycomponents/PlaceInput';
-import { defineField, defineType, ValidationContext } from "sanity";
+import { defineType } from "sanity";
 import PlaceInput from "@/sanity/components/PlaceInput/PlaceInput";
 
 const providerSchema = defineType({
@@ -7,12 +6,12 @@ const providerSchema = defineType({
   type: "document",
   title: "Provider",
   fields: [
-    defineField({
+    {
       name: "title",
       title: "Provider Name",
       type: "string",
-    }),
-    defineField({
+    },
+    {
       name: "place",
       title: "Place",
       type: "object",
@@ -29,8 +28,8 @@ const providerSchema = defineType({
       components: {
         input: PlaceInput,
       },
-    }),
-    defineField({
+    },
+    {
       name: "serviceTypes",
       title: "Service Types",
       type: "array",
@@ -41,12 +40,12 @@ const providerSchema = defineType({
         },
       ],
       validation: (ServiceType) => ServiceType.unique(),
-    }),
-    defineField({
+    },
+    {
       name: "description",
       title: "Description",
       type: "text",
-    }),
+    },
   ],
   preview: {
     select: {
