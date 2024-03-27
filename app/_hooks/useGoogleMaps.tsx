@@ -4,7 +4,7 @@ import { NEXT_PUBLIC_GOOGLE_API_KEY } from "@/env";
 
 export class AuthError extends Error {}
 
-export function useLoadGoogleMaps() {
+export function useGoogleMaps() {
   const [isLoadingMaps, setIsLoadingMaps] = useState(true);
   const [mapsError, setMapsError] = useState<string | null>(null);
   const [googleMaps, setGoogleMaps] = useState<

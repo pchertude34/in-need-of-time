@@ -12,20 +12,17 @@ import {
 } from "@sanity/ui";
 import { set, ObjectInputProps } from "sanity";
 import { loadGoogleMapsApi } from "@/lib/loadGoogleMapsApi";
+import { useGoogleMaps } from "@/app/_hooks/useGoogleMaps";
 import { NEXT_PUBLIC_GOOGLE_API_KEY } from "@/env";
 
 const API_KEY = NEXT_PUBLIC_GOOGLE_API_KEY || "";
 const ESTABLISHMENT = "establishment";
 const ADDRESS = "address";
 
-export class AuthError extends Error {}
-
 export default function CustomStringInput(props: ObjectInputProps) {
   const { onChange, value, elementProps } = props;
 
   const [place, setPlace] = useState("");
-  const [loadingMaps, setLoadingMaps] = useState(true);
-  const [error, setError] = useState<string | undefined>("");
   const [placeId, setPlaceId] = useState<string | undefined>(
     value?.placeId || "",
   );
@@ -36,11 +33,16 @@ export default function CustomStringInput(props: ObjectInputProps) {
   const [address, setAddress] = useState<string | undefined>(
     value?.address || "",
   );
-  const [lat, setLat] = useState<number | undefined>(value?.location?.lat || "");
-  const [lng, setLng] = useState<number | undefined>(value?.location?.lng || "");
+  const [lat, setLat] = useState<number | undefined>(
+    value?.location?.lat || "",
+  );
+  const [lng, setLng] = useState<number | undefined>(
+    value?.location?.lng || "",
+  );
   const placeInputRef = useRef<HTMLInputElement>(null);
   const autocompleteRef = useRef<google.maps.places.Autocomplete>();
   const autocompleteListener = useRef<google.maps.MapsEventListener>();
+  const { isLoadingMaps, mapsError } = useGoogleMaps();
 
   // Handler for saving values on place change
   const handlePlaceChange = useCallback(
@@ -67,22 +69,8 @@ export default function CustomStringInput(props: ObjectInputProps) {
     [onChange],
   );
 
-  // Load the google maps api
   useEffect(() => {
-    loadGoogleMapsApi({ apiKey: API_KEY, locale: "en-US" }).then(
-      () => {
-        setLoadingMaps(false);
-        setError(undefined);
-      },
-      (err: AuthError | Error) => {
-        setError(err instanceof AuthError ? "authError" : err.message);
-        setLoadingMaps(false);
-      },
-    );
-  }, []);
-
-  useEffect(() => {
-    if (!loadingMaps && placeInputRef.current) {
+    if (!isLoadingMaps && placeInputRef.current) {
       if (autocompleteListener.current) {
         google.maps.event.removeListener(autocompleteListener.current);
         // remove the google places dropdowns by their class name since we have no other way to access them
@@ -114,10 +102,10 @@ export default function CustomStringInput(props: ObjectInputProps) {
         },
       );
     }
-  }, [loadingMaps, searchType, handlePlaceChange]);
+  }, [isLoadingMaps, searchType, handlePlaceChange]);
 
-  if (error) {
-    return <Text style={{ color: "red" }}>{error}</Text>;
+  if (mapsError) {
+    return <Text style={{ color: "red" }}>{mapsError}</Text>;
   }
 
   return (
