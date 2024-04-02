@@ -154,20 +154,26 @@ export default function CustomStringInput(props: ObjectInputProps) {
           </Box>
         </Flex>
       </Inline>
-      <Label>Address</Label>
-      <TextInput disabled value={address} />
-      <Label>Place ID</Label>
-      <TextInput disabled value={placeId} />
-      <Inline space={2}>
+      <Stack space={5}>
         <Stack space={3}>
-          <Label>Latitude</Label>
-          <TextInput disabled value={lat} />
+          <Label>Address</Label>
+          <Text>{address}</Text>
         </Stack>
         <Stack space={3}>
-          <Label>Longitude</Label>
-          <TextInput disabled value={lng} />
+          <Label>Place ID</Label>
+          <Text>{placeId}</Text>
         </Stack>
-      </Inline>
+        <Inline space={6}>
+          <Stack space={3}>
+            <Label>Latitude</Label>
+            <Text>{lat}</Text>
+          </Stack>
+          <Stack space={3}>
+            <Label>Longitude</Label>
+            <Text>{lng}</Text>
+          </Stack>
+        </Inline>
+      </Stack>
     </Stack>
   );
 }
