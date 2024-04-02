@@ -109,51 +109,45 @@ export default function CustomStringInput(props: ObjectInputProps) {
   }
 
   return (
-    <Stack space={3}>
-      <Label>Place Input</Label>
-      <TextInput
-        ref={placeInputRef}
-        value={place}
-        onChange={(e) => {
-          setPlace(e.currentTarget.value);
-        }}
-      />
-      <Inline space={3}>
-        <Flex align="center">
-          <Radio
-            id="address-radio"
-            style={{ marginRight: "8px" }}
-            onChange={(e) =>
-              setSearchType(e.currentTarget.value as typeof ADDRESS)
-            }
-            value={ADDRESS}
-            checked={searchType === ADDRESS}
-          />
-          <Box>
-            <Text>
-              <Label htmlFor="address-radio">Search by Address</Label>
-            </Text>
-          </Box>
-        </Flex>
-        <Flex align="center">
-          <Radio
-            id="establishment-radio"
-            style={{ marginRight: "8px" }}
-            onChange={(e) =>
-              setSearchType(e.currentTarget.value as typeof ESTABLISHMENT)
-            }
-            value={ESTABLISHMENT}
-            checked={searchType === ESTABLISHMENT}
-          />
-          <Box>
-            <Text>
-              <Label htmlFor="establishment-radio">
-                Search by Establishment
-              </Label>
-            </Text>
-          </Box>
-        </Flex>
-      </Inline>
+    <Stack space={6}>
+      <Stack space={3}>
+        <Label>Place Input</Label>
+        <TextInput
+          ref={placeInputRef}
+          value={place}
+          onChange={(e) => {
+            setPlace(e.currentTarget.value);
+          }}
+        />
+        <Inline space={3}>
+          <Flex align="center">
+            <Radio
+              id="address-radio"
+              style={{ marginRight: "8px" }}
+              onChange={(e) =>
+                setSearchType(e.currentTarget.value as typeof ADDRESS)
+              }
+              value={ADDRESS}
+              checked={searchType === ADDRESS}
+            />
+
+            <Label htmlFor="address-radio">Search by Address</Label>
+          </Flex>
+          <Flex align="center">
+            <Radio
+              id="establishment-radio"
+              style={{ marginRight: "8px" }}
+              onChange={(e) =>
+                setSearchType(e.currentTarget.value as typeof ESTABLISHMENT)
+              }
+              value={ESTABLISHMENT}
+              checked={searchType === ESTABLISHMENT}
+            />
+
+            <Label htmlFor="establishment-radio">Search by Establishment</Label>
+          </Flex>
+        </Inline>
+      </Stack>
       <Stack space={5}>
         <Stack space={3}>
           <Label>Address</Label>
