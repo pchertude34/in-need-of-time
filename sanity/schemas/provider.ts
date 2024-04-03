@@ -35,7 +35,7 @@ const providerSchema = defineType({
       title: "Provider Name",
       type: "string",
     },
-    defineField({
+    {
       name: "place",
       title: "Place",
       type: "object",
@@ -65,7 +65,7 @@ const providerSchema = defineType({
 
           return true;
         }),
-    }),
+    },
     {
       name: "serviceTypes",
       title: "Service Types",
