@@ -83,6 +83,39 @@ const providerSchema = defineType({
       title: "Description",
       type: "text",
     },
+    {
+      name: "internalContact",
+      title: "Internal Contact",
+      type: "object",
+      description:
+        "Internal Contact information for IToN Team Members. This data will not be shown to the public.",
+      fields: [
+        {
+          name: "contactName",
+          title: "Contact Name",
+          type: "string",
+          description: "The name of the internal contact person.",
+        },
+        {
+          name: "contactEmail",
+          title: "Contact Email",
+          type: "string",
+          description: "The email of the internal contact person.",
+        },
+        {
+          name: "contactPhone",
+          title: "Contact Phone",
+          type: "string",
+          description: "The phone number of the internal contact person.",
+        },
+        {
+          name: "mainPhone",
+          title: "Main Phone",
+          type: "string",
+          description: "The main phone number of the provider.",
+        },
+      ],
+    },
   ],
   preview: {
     select: {
