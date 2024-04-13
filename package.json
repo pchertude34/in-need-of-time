@@ -11,6 +11,7 @@
     "format": "prettier --write ."
   },
   "dependencies": {
+    "@radix-ui/react-slot": "^1.0.2",
     "@sanity/image-url": "^1.0.2",
     "@sanity/vision": "^3.32.0",
     "class-variance-authority": "^0.7.0",
@@ -22,7 +23,7 @@
     "react-dom": "^18",
     "sanity": "^3.32.0",
     "styled-components": "^6.1.8",
-    "tailwind-merge": "^2.2.1",
+    "tailwind-merge": "^2.2.2",
     "tailwindcss-animate": "^1.0.7"
   },
   "devDependencies": {
