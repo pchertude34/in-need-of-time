@@ -11,11 +11,8 @@ import {
   Radio,
 } from "@sanity/ui";
 import { set, ObjectInputProps } from "sanity";
-import { loadGoogleMapsApi } from "@/lib/loadGoogleMapsApi";
-import { useGoogleMaps } from "@/app/_hooks/useGoogleMaps";
-import { NEXT_PUBLIC_GOOGLE_API_KEY } from "@/env";
+import { useGoogleMaps } from "@/hooks/useGoogleMaps";
 
-const API_KEY = NEXT_PUBLIC_GOOGLE_API_KEY || "";
 const ESTABLISHMENT = "establishment";
 const ADDRESS = "address";
 

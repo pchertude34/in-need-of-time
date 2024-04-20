@@ -28,7 +28,7 @@ export function useGoogleMaps() {
         setIsLoadingMaps(false);
       },
     );
-  });
+  }, []);
 
   return { isLoadingMaps, mapsError, googleMaps };
 }
