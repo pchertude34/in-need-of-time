@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState, useRef } from "react";
-import { MapPinIcon } from "@heroicons/react/24/solid";
+import { MapPinIcon, ArrowPathIcon } from "@heroicons/react/24/solid";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useGooglePlaceSearch } from "@/hooks/useGooglePlaceSearch";
@@ -51,23 +51,36 @@ export function LocationInput(props: LocationInputProps) {
   function calculateLocation() {
     setIsCalculatingLocation(true);
     navigator.geolocation.getCurrentPosition((position) => {
-      const { coords } = position;
-
-      setLatitude(coords.latitude);
-      setLongitude(coords.longitude);
+      const {
+        coords: { latitude, longitude },
+      } = position;
+      onLocationChange({ latitude, longitude });
       setIsCalculatingLocation(false);
     });
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       <div>
-        <Label htmlFor="address">Street Address</Label>
+        <Label htmlFor="address" className="mb-1">
+          Street Address
+        </Label>
         <Input ref={placeInputRef} placeholder="1234 S Main St, Portland OR" />
       </div>
       <div>
         <p className="mb-2">Or use your current location:</p>
-        <Button>Use Current Location</Button>
+        <Button onClick={calculateLocation} disabled={isCalculatingLocation}>
+          {isCalculatingLocation ? (
+            <React.Fragment>
+              <ArrowPathIcon className="mr-2 h-4 w-4 animate-spin" />{" "}
+              Calculating Location...
+            </React.Fragment>
+          ) : (
+            <React.Fragment>
+              <MapPinIcon className="mr-2 h-4 w-4" /> Use Current Location
+            </React.Fragment>
+          )}
+        </Button>
       </div>
     </div>
   );

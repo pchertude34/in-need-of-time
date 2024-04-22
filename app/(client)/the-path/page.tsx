@@ -6,6 +6,7 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { LocationInput } from "./components/LocationInput";
+import { FormCard } from "./components/FormCard";
 
 const COMPLETE_STATUS = "complete";
 const INCOMPLETE_STATUS = "incomplete";
@@ -26,23 +27,23 @@ export default function ThePathPage() {
 
   return (
     <div className="container mx-auto mt-10">
-      <Card className="space-y-6 p-6">
-        <div>
-          <h2 className="text-2xl font-medium">Choose Your Location</h2>
-          <p>
-            Type an address for yourself, or someone you would like to assist
-          </p>
-        </div>
-        <LocationInput
-          label="Street Address"
-          placeholder="1234 S Main St, Portland OR"
-          onLocationChange={({ longitude, latitude }) => {
-            setLatitude(latitude);
-            setLongitude(longitude);
-            // setIsComplete(true);
-          }}
-        />
-      </Card>
+      <FormCard
+        title="Choose Your Location"
+        description="Type an address for yourself, or someone you would like to assist"
+        isShowing={true}
+      >
+        {({ handleFormCompleted }) => (
+          <LocationInput
+            label="Street Address"
+            placeholder="1234 S Main St, Portland OR"
+            onLocationChange={({ longitude, latitude }) => {
+              setLatitude(latitude);
+              setLongitude(longitude);
+              handleFormCompleted(true);
+            }}
+          />
+        )}
+      </FormCard>
     </div>
   );
 }
