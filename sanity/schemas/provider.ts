@@ -79,6 +79,25 @@ const providerSchema = defineType({
       validation: (ServiceType) => ServiceType.unique(),
     },
     {
+      name: "publicContact",
+      title: "Public Contact",
+      type: "object",
+      description:
+        "Additional contact information that may not be available in the Place API. This information will be shown to the public, and prioritiezed over the Place API data.",
+      fields: [
+        {
+          name: "phone",
+          title: "Phone",
+          type: "string",
+        },
+        {
+          name: "website",
+          title: "Website",
+          type: "url",
+        },
+      ],
+    },
+    {
       name: "description",
       title: "Description",
       type: "text",
@@ -107,12 +126,6 @@ const providerSchema = defineType({
           title: "Contact Phone",
           type: "string",
           description: "The phone number of the internal contact person.",
-        },
-        {
-          name: "mainPhone",
-          title: "Main Phone",
-          type: "string",
-          description: "The main phone number of the provider.",
         },
       ],
     },
