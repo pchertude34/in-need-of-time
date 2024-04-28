@@ -8,8 +8,6 @@ import { useGooglePlaceSearch } from "@/hooks/useGooglePlaceSearch";
 import { Label } from "@radix-ui/react-label";
 
 type LocationInputProps = {
-  label: string;
-  placeholder?: string;
   onLocationChange: ({
     longitude,
     latitude,
@@ -20,9 +18,7 @@ type LocationInputProps = {
 };
 
 export function LocationInput(props: LocationInputProps) {
-  const { label, placeholder, onLocationChange } = props;
-  const [latitude, setLatitude] = useState<number | null>();
-  const [longitude, setLongitude] = useState<number | null>();
+  const { onLocationChange } = props;
   const [isCalculatingLocation, setIsCalculatingLocation] = useState(false);
 
   const placeInputRef = useRef<HTMLInputElement>(null);
@@ -65,7 +61,10 @@ export function LocationInput(props: LocationInputProps) {
         <Label htmlFor="address" className="mb-1">
           Street Address
         </Label>
-        <Input ref={placeInputRef} placeholder="1234 S Main St, Portland OR" />
+        <Input
+          ref={placeInputRef}
+          placeholder={"1234 S Main St, Portland OR"}
+        />
       </div>
       <div>
         <p className="mb-2">Or use your current location:</p>

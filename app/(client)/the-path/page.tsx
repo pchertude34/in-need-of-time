@@ -28,14 +28,12 @@ export default function ThePathPage() {
   return (
     <div className="container mx-auto mt-10">
       <FormCard
-        title="Choose Your Location"
+        title="Where are you located?"
         description="Type an address for yourself, or someone you would like to assist"
         isShowing={true}
       >
         {({ handleFormCompleted }) => (
           <LocationInput
-            label="Street Address"
-            placeholder="1234 S Main St, Portland OR"
             onLocationChange={({ longitude, latitude }) => {
               setLatitude(latitude);
               setLongitude(longitude);
@@ -43,6 +41,13 @@ export default function ThePathPage() {
             }}
           />
         )}
+      </FormCard>
+      <FormCard
+        title="What type of service are you looking for?"
+        description="Select a type of the nearby services that you need to access"
+        isShowing={!!latitude && !!longitude}
+      >
+        {({ handleFormCompleted }) => <div></div>}
       </FormCard>
     </div>
   );
