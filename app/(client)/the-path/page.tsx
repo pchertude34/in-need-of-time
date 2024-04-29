@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -23,6 +24,15 @@ export default function ThePathPage() {
     step1: CURRENT_STATUS,
     step2: INCOMPLETE_STATUS,
     step3: INCOMPLETE_STATUS,
+  });
+
+  const { data } = useQuery({
+    queryKey: [latitude, longitude, distance],
+    enabled: !!latitude && !!longitude,
+    queryFn: () =>
+      fetch(`/api/serviceTypes/find?lat=${latitude}&lng=${longitude}`, {
+        cache: "no-cache",
+      }).then((res) => res.json()),
   });
 
   return (
