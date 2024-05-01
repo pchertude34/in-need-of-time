@@ -29,8 +29,8 @@ export default function ThePathPage() {
 
   const { data: serviceTypes } = useQuery({
     queryKey: [latitude, longitude, distance],
-    enabled: !!latitude && !!longitude,
-    queryFn: () => getServiceTypes({ latitude, longitude, distance: 10000 }),
+    enabled: !!latitude && !!longitude && !!distance,
+    queryFn: () => getServiceTypes({ latitude, longitude, distance }),
   });
 
   console.log("serviceTypes", serviceTypes);
