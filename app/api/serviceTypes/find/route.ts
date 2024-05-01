@@ -1,4 +1,13 @@
 import { client } from "@/sanity/lib/client";
+import { groq } from "next-sanity";
+
+type GROQResponse = {
+  services: {
+    name: string;
+    description: string;
+    _id: string;
+  }[];
+};
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -6,16 +15,24 @@ export async function GET(request: Request) {
   const lng = searchParams.get("lng");
   const distance = searchParams.get("distance");
 
-  const query = `*[ _type == "provider" && defined(serviceTypes) &&
-    geo::distance(geo::latLng(place.location.lat, place.location.lng), geo::latLng(${lat}, ${lng})) < 100000]{
-    'services': serviceTypes[]->{name, _id}  
+  const query = groq`*[ _type == "provider" && defined(serviceTypes) &&
+    geo::distance(geo::latLng(place.location.lat, place.location.lng), geo::latLng(${lat}, ${lng})) < ${distance}]{
+    'services': serviceTypes[]->{name, description, _id}  
 }`;
 
-  console.log("query", query);
+  const providerServiceTypes: GROQResponse[] = await client.fetch(query);
 
-  const providerServiceTypes = await client.fetch(query);
+  const serviceTypes = providerServiceTypes.reduce((acc: any, curr: any) => {
+    curr.services.forEach((service: any) => {
+      if (!acc[service._id]) {
+        acc[service._id] = { ...service, count: 1 };
+      } else {
+        acc[service._id].count += 1;
+      }
+    });
 
-  console.log(providerServiceTypes);
+    return acc;
+  }, {});
 
-  return Response.json({ message: "Hello world" });
+  return Response.json(Object.values(serviceTypes));
 }
