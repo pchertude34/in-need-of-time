@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { LocationInput } from "./components/LocationInput";
 import { FormCard } from "./components/FormCard";
+import { getServiceTypes } from "@/lib/queries/getServiceTypes";
 
 const COMPLETE_STATUS = "complete";
 const INCOMPLETE_STATUS = "incomplete";
@@ -16,7 +17,7 @@ const CURRENT_STATUS = "current";
 export default function ThePathPage() {
   const [latitude, setLatitude] = useState<number | undefined>();
   const [longitude, setLongitude] = useState<number | undefined>();
-  const [distance, setDistance] = useState<number | null>();
+  const [distance, setDistance] = useState<number | undefined>();
   const [selectedServiceType, setSelectedServiceType] = useState<
     string | null
   >();
@@ -26,14 +27,13 @@ export default function ThePathPage() {
     step3: INCOMPLETE_STATUS,
   });
 
-  const { data } = useQuery({
+  const { data: serviceTypes } = useQuery({
     queryKey: [latitude, longitude, distance],
     enabled: !!latitude && !!longitude,
-    queryFn: () =>
-      fetch(`/api/serviceTypes/find?lat=${latitude}&lng=${longitude}`, {
-        cache: "no-cache",
-      }).then((res) => res.json()),
+    queryFn: () => getServiceTypes({ latitude, longitude, distance: 10000 }),
   });
+
+  console.log("serviceTypes", serviceTypes);
 
   return (
     <div className="container mx-auto mt-10">
