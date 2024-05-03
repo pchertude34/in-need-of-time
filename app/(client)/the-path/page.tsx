@@ -38,7 +38,7 @@ export default function ThePathPage() {
   });
 
   return (
-    <div className="container mx-auto mt-10">
+    <div className="container mx-auto mt-10 space-y-10">
       <FormCard
         title="Where are you located?"
         description="Type an address for yourself, or someone you would like to assist"
@@ -67,7 +67,7 @@ export default function ThePathPage() {
               }
             >
               <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="Distance" />
+                <SelectValue placeholder="Select a distance" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="5">5 Miles</SelectItem>
