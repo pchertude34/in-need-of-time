@@ -2,13 +2,17 @@
 
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { LocationInput } from "./components/LocationInput";
 import { FormCard } from "./components/FormCard";
 import { getServiceTypes } from "@/lib/queries/getServiceTypes";
+import {
+  Select,
+  SelectTrigger,
+  SelectContent,
+  SelectValue,
+  SelectItem,
+} from "@/components/ui/select";
+import { convertMilesToMeters } from "@/lib/utils";
 
 const COMPLETE_STATUS = "complete";
 const INCOMPLETE_STATUS = "incomplete";
@@ -33,8 +37,6 @@ export default function ThePathPage() {
     queryFn: () => getServiceTypes({ latitude, longitude, distance }),
   });
 
-  console.log("serviceTypes", serviceTypes);
-
   return (
     <div className="container mx-auto mt-10">
       <FormCard
@@ -57,7 +59,24 @@ export default function ThePathPage() {
         description="Select a type of the nearby services that you need to access"
         isShowing={!!latitude && !!longitude}
       >
-        {({ handleFormCompleted }) => <div></div>}
+        {({ handleFormCompleted }) => (
+          <div>
+            <Select
+              onValueChange={(value) =>
+                setDistance(convertMilesToMeters(Number(value)))
+              }
+            >
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="Distance" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="5">5 Miles</SelectItem>
+                <SelectItem value="10">10 Miles</SelectItem>
+                <SelectItem value="20">20 Miles</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        )}
       </FormCard>
     </div>
   );
