@@ -58,24 +58,25 @@ export function ServiceTypeContainer(props: ServiceTypeContainerProps) {
   }
 
   return (
-    <div>
-      <Label htmlFor="distance-select" className="mb-1">
-        Search Distance
-      </Label>
-      <Select onValueChange={handleDistanceChanged}>
-        <SelectTrigger id="distance-select" className="max-w-[180px]">
-          <SelectValue placeholder="Select a Distance" />
-        </SelectTrigger>
-        <SelectContent>
-          {DISTANCE_OPTIONS.map((option) => (
-            <SelectItem key={option.value} value={String(option.value)}>
-              {option.label}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
-
-      <div className="max-h-600 grid gap-2 overflow-auto p-4 sm:grid-cols-1 md:grid-cols-2">
+    <div className="space-y-6">
+      <div>
+        <Label htmlFor="distance-select" className="mb-1">
+          Search Distance
+        </Label>
+        <Select onValueChange={handleDistanceChanged}>
+          <SelectTrigger id="distance-select" className="max-w-[180px]">
+            <SelectValue placeholder="Select a Distance" />
+          </SelectTrigger>
+          <SelectContent>
+            {DISTANCE_OPTIONS.map((option) => (
+              <SelectItem key={option.value} value={String(option.value)}>
+                {option.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+      <div className="max-h-600 grid gap-2 overflow-auto py-2 sm:grid-cols-1 md:grid-cols-2">
         {serviceTypes?.map((serviceType) => (
           <ServiceTypeButton
             key={serviceType._id}
