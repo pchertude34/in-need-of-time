@@ -23,6 +23,8 @@ export function ServiceTypeContainer(props: ServiceTypeContainerProps) {
   const [distance, setDistance] = useState<number | undefined>();
   const [selectedServiceType, setSelectedServiceType] = useState<string | null>();
 
+  // requery and cache the service types whenever the latitude, longitude, or distance changes
+  // This query won't run until all three of these values are set.
   const { data: serviceTypes } = useQuery({
     queryKey: [latitude, longitude, distance],
     enabled: !!latitude && !!longitude && !!distance,
