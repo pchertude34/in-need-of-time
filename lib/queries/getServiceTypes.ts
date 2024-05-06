@@ -7,6 +7,7 @@ type GetServiceTypesArgs = {
 type GetServiceTypesResponse = {
   name: string;
   description: string;
+  count: number;
   _id: string;
 };
 

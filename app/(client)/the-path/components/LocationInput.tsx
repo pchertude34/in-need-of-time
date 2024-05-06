@@ -5,7 +5,7 @@ import { MapPinIcon, ArrowPathIcon } from "@heroicons/react/24/solid";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useGooglePlaceSearch } from "@/hooks/useGooglePlaceSearch";
-import { Label } from "@radix-ui/react-label";
+import { Label } from "@/components/ui/label";
 
 type LocationInputProps = {
   onLocationChange: ({

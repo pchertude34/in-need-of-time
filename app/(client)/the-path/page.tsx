@@ -13,6 +13,7 @@ import {
   SelectItem,
 } from "@/components/ui/select";
 import { convertMilesToMeters } from "@/lib/utils";
+import { ServiceTypeContainer } from "./components/ServiceTypeContainer";
 
 const COMPLETE_STATUS = "complete";
 const INCOMPLETE_STATUS = "incomplete";
@@ -60,22 +61,12 @@ export default function ThePathPage() {
         isShowing={!!latitude && !!longitude}
       >
         {({ handleFormCompleted }) => (
-          <div>
-            <Select
-              onValueChange={(value) =>
-                setDistance(convertMilesToMeters(Number(value)))
-              }
-            >
-              <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="Select a distance" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="5">5 Miles</SelectItem>
-                <SelectItem value="10">10 Miles</SelectItem>
-                <SelectItem value="20">20 Miles</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+          <ServiceTypeContainer
+            longitude={longitude}
+            latitude={latitude}
+            onServiceTypeChanged={() => {}}
+            onDistanceChanged={(d) => setDistance(d)}
+          />
         )}
       </FormCard>
     </div>

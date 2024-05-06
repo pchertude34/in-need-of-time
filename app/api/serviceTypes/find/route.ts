@@ -3,9 +3,10 @@ import { groq } from "next-sanity";
 
 type GROQResponse = {
   services: {
+    _id: string;
     name: string;
     description: string;
-    _id: string;
+    count: number;
   }[];
 };
 
