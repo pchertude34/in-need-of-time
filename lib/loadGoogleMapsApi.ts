@@ -20,9 +20,7 @@ export class AuthError extends Error {}
 function _loadGoogleMapsApi(config: { locale: string; apiKey: string }) {
   return new Promise<typeof window.google.maps>((resolve, reject) => {
     window[authFailureCallbackName] = () => {
-      reject(
-        new AuthError("Authentication error when loading Google Maps API."),
-      );
+      reject(new AuthError("Authentication error when loading Google Maps API."));
     };
 
     window[callbackName] = () => {
@@ -30,13 +28,8 @@ function _loadGoogleMapsApi(config: { locale: string; apiKey: string }) {
     };
 
     const script = document.createElement("script");
-    script.onerror = (
-      event: Event | string,
-      source?: string,
-      lineno?: number,
-      colno?: number,
-      error?: Error,
-    ) => reject(new Error(coeerceError(event, error)));
+    script.onerror = (event: Event | string, source?: string, lineno?: number, colno?: number, error?: Error) =>
+      reject(new Error(coeerceError(event, error)));
 
     script.src = `https://maps.googleapis.com/maps/api/js?key=${config.apiKey}&libraries=places&callback=${callbackName}&language=${config.locale}`;
     script.async = true;

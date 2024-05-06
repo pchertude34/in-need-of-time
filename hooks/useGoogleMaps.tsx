@@ -7,9 +7,7 @@ export class AuthError extends Error {}
 export function useGoogleMaps() {
   const [isLoadingMaps, setIsLoadingMaps] = useState(true);
   const [mapsError, setMapsError] = useState<string | null>(null);
-  const [googleMaps, setGoogleMaps] = useState<
-    typeof window.google.maps | null
-  >(null);
+  const [googleMaps, setGoogleMaps] = useState<typeof window.google.maps | null>(null);
 
   useEffect(() => {
     loadGoogleMapsApi({
@@ -22,9 +20,7 @@ export function useGoogleMaps() {
         setGoogleMaps(maps);
       },
       (err: AuthError | Error) => {
-        setMapsError(
-          err instanceof AuthError ? "Authentication error" : err.message,
-        );
+        setMapsError(err instanceof AuthError ? "Authentication error" : err.message);
         setIsLoadingMaps(false);
       },
     );

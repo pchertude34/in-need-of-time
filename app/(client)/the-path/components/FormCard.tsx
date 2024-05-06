@@ -50,10 +50,7 @@ export function FormCard(props: PathFormItemType) {
                 leaveFrom="opacity-100"
                 leaveTo="opacity-0"
               >
-                <CheckCircleIcon
-                  className="block h-10 w-10 text-green-600"
-                  aria-label="step complete"
-                />
+                <CheckCircleIcon className="block h-10 w-10 text-green-600" aria-label="step complete" />
               </Transition>
             </div>
           </div>

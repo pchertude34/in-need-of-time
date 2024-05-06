@@ -5,13 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { LocationInput } from "./components/LocationInput";
 import { FormCard } from "./components/FormCard";
 import { getServiceTypes } from "@/lib/queries/getServiceTypes";
-import {
-  Select,
-  SelectTrigger,
-  SelectContent,
-  SelectValue,
-  SelectItem,
-} from "@/components/ui/select";
+import { Select, SelectTrigger, SelectContent, SelectValue, SelectItem } from "@/components/ui/select";
 import { convertMilesToMeters } from "@/lib/utils";
 import { ServiceTypeContainer } from "./components/ServiceTypeContainer";
 
@@ -23,9 +17,7 @@ export default function ThePathPage() {
   const [latitude, setLatitude] = useState<number | undefined>();
   const [longitude, setLongitude] = useState<number | undefined>();
   const [distance, setDistance] = useState<number | undefined>();
-  const [selectedServiceType, setSelectedServiceType] = useState<
-    string | null
-  >();
+  const [selectedServiceType, setSelectedServiceType] = useState<string | null>();
   const [stepStatus, setStepStatus] = useState({
     step1: CURRENT_STATUS,
     step2: INCOMPLETE_STATUS,

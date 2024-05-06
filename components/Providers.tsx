@@ -38,7 +38,5 @@ export function Providers(props: ProvidersProps) {
   const { children } = props;
   const queryClient = getQueryClient();
 
-  return (
-    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
-  );
+  return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;
 }

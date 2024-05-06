@@ -1,15 +1,6 @@
 // CustomStringInput.tsx
 import React, { useCallback, useState, useEffect, useRef } from "react";
-import {
-  Box,
-  Flex,
-  Stack,
-  Text,
-  TextInput,
-  Label,
-  Inline,
-  Radio,
-} from "@sanity/ui";
+import { Box, Flex, Stack, Text, TextInput, Label, Inline, Radio } from "@sanity/ui";
 import { set, ObjectInputProps } from "sanity";
 import { useGoogleMaps } from "@/hooks/useGoogleMaps";
 
@@ -20,22 +11,12 @@ export default function CustomStringInput(props: ObjectInputProps) {
   const { onChange, value, elementProps } = props;
 
   const [place, setPlace] = useState("");
-  const [placeId, setPlaceId] = useState<string | undefined>(
-    value?.placeId || "",
-  );
+  const [placeId, setPlaceId] = useState<string | undefined>(value?.placeId || "");
 
-  const [searchType, setSearchType] = useState<
-    typeof ESTABLISHMENT | typeof ADDRESS
-  >(ADDRESS);
-  const [address, setAddress] = useState<string | undefined>(
-    value?.address || "",
-  );
-  const [lat, setLat] = useState<number | undefined>(
-    value?.location?.lat || "",
-  );
-  const [lng, setLng] = useState<number | undefined>(
-    value?.location?.lng || "",
-  );
+  const [searchType, setSearchType] = useState<typeof ESTABLISHMENT | typeof ADDRESS>(ADDRESS);
+  const [address, setAddress] = useState<string | undefined>(value?.address || "");
+  const [lat, setLat] = useState<number | undefined>(value?.location?.lat || "");
+  const [lng, setLng] = useState<number | undefined>(value?.location?.lng || "");
   const placeInputRef = useRef<HTMLInputElement>(null);
   const autocompleteRef = useRef<google.maps.places.Autocomplete>();
   const autocompleteListener = useRef<google.maps.MapsEventListener>();
@@ -79,25 +60,19 @@ export default function CustomStringInput(props: ObjectInputProps) {
         google.maps.event.clearInstanceListeners(autocompleteRef.current);
       }
 
-      autocompleteRef.current = new google.maps.places.Autocomplete(
-        placeInputRef.current,
-        {
-          componentRestrictions: { country: ["us"] },
-          fields: ["address_components", "geometry", "name", "place_id"],
-          types: [searchType],
-        },
-      );
+      autocompleteRef.current = new google.maps.places.Autocomplete(placeInputRef.current, {
+        componentRestrictions: { country: ["us"] },
+        fields: ["address_components", "geometry", "name", "place_id"],
+        types: [searchType],
+      });
 
-      autocompleteListener.current = autocompleteRef.current.addListener(
-        "place_changed",
-        () => {
-          if (autocompleteRef.current) {
-            const place = autocompleteRef.current?.getPlace();
+      autocompleteListener.current = autocompleteRef.current.addListener("place_changed", () => {
+        if (autocompleteRef.current) {
+          const place = autocompleteRef.current?.getPlace();
 
-            handlePlaceChange(place);
-          }
-        },
-      );
+          handlePlaceChange(place);
+        }
+      });
     }
   }, [isLoadingMaps, searchType, handlePlaceChange]);
 
@@ -121,9 +96,7 @@ export default function CustomStringInput(props: ObjectInputProps) {
             <Radio
               id="address-radio"
               style={{ marginRight: "8px" }}
-              onChange={(e) =>
-                setSearchType(e.currentTarget.value as typeof ADDRESS)
-              }
+              onChange={(e) => setSearchType(e.currentTarget.value as typeof ADDRESS)}
               value={ADDRESS}
               checked={searchType === ADDRESS}
             />
@@ -134,9 +107,7 @@ export default function CustomStringInput(props: ObjectInputProps) {
             <Radio
               id="establishment-radio"
               style={{ marginRight: "8px" }}
-              onChange={(e) =>
-                setSearchType(e.currentTarget.value as typeof ESTABLISHMENT)
-              }
+              onChange={(e) => setSearchType(e.currentTarget.value as typeof ESTABLISHMENT)}
               value={ESTABLISHMENT}
               checked={searchType === ESTABLISHMENT}
             />
@@ -172,9 +143,7 @@ export default function CustomStringInput(props: ObjectInputProps) {
 /**
  * Helper function to build out the address of a place from its address_components
  */
-export function buildPlaceAddress(
-  place: google.maps.places.PlaceResult,
-): string | undefined {
+export function buildPlaceAddress(place: google.maps.places.PlaceResult): string | undefined {
   let address1 = "";
   let city = "";
   let state = "";

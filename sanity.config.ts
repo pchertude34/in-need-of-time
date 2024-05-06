@@ -7,11 +7,7 @@ import { defineConfig } from "sanity";
 import { structureTool } from "sanity/structure";
 
 // Go to https://www.sanity.io/docs/api-versioning to learn how API versioning works
-import {
-  NEXT_PUBLIC_SANITY_API_VERSION,
-  NEXT_PUBLIC_SANITY_DATASET,
-  NEXT_PUBLIC_SANITY_PROJECT_ID,
-} from "./env";
+import { NEXT_PUBLIC_SANITY_API_VERSION, NEXT_PUBLIC_SANITY_DATASET, NEXT_PUBLIC_SANITY_PROJECT_ID } from "./env";
 import { schema } from "./sanity/schema";
 
 export default defineConfig({

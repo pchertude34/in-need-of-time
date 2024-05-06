@@ -106,8 +106,7 @@ const providerSchema = defineType({
       name: "internalContact",
       title: "Internal Contact",
       type: "object",
-      description:
-        "Internal Contact information for IToN Team Members. This data will not be shown to the public.",
+      description: "Internal Contact information for IToN Team Members. This data will not be shown to the public.",
       fields: [
         {
           name: "contactName",

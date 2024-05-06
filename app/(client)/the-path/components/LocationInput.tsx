@@ -8,13 +8,7 @@ import { useGooglePlaceSearch } from "@/hooks/useGooglePlaceSearch";
 import { Label } from "@/components/ui/label";
 
 type LocationInputProps = {
-  onLocationChange: ({
-    longitude,
-    latitude,
-  }: {
-    longitude: number;
-    latitude: number;
-  }) => void;
+  onLocationChange: ({ longitude, latitude }: { longitude: number; latitude: number }) => void;
 };
 
 export function LocationInput(props: LocationInputProps) {
@@ -61,18 +55,14 @@ export function LocationInput(props: LocationInputProps) {
         <Label htmlFor="address" className="mb-1">
           Street Address
         </Label>
-        <Input
-          ref={placeInputRef}
-          placeholder={"1234 S Main St, Portland OR"}
-        />
+        <Input ref={placeInputRef} placeholder={"1234 S Main St, Portland OR"} />
       </div>
       <div>
         <p className="mb-2">Or use your current location:</p>
         <Button onClick={calculateLocation} disabled={isCalculatingLocation}>
           {isCalculatingLocation ? (
             <React.Fragment>
-              <ArrowPathIcon className="mr-2 h-4 w-4 animate-spin" />{" "}
-              Calculating Location...
+              <ArrowPathIcon className="mr-2 h-4 w-4 animate-spin" /> Calculating Location...
             </React.Fragment>
           ) : (
             <React.Fragment>
