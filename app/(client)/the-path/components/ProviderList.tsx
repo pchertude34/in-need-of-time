@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { cn } from "@/lib/utils";
 import { MapIcon, ListBulletIcon } from "@heroicons/react/24/outline";
 import { Button } from "@/components/ui/button";
+import { findProviders } from "@/lib/queries/findProviders";
 
 type ProviderListProps = {
   latitude?: number;
@@ -17,6 +18,12 @@ export function ProviderList(props: ProviderListProps) {
   const [map, setMap] = useState<google.maps.Map | undefined>();
   const [showMap, setShowMap] = useState(true);
   const mapRef = useRef<HTMLDivElement>(null);
+
+  const { data: providers } = useQuery({
+    queryKey: [latitude, longitude, distance, serviceTypeId],
+    enabled: !!latitude && !!longitude && !!distance && !!serviceTypeId,
+    queryFn: () => findProviders({ latitude, longitude, distance, serviceTypeId }),
+  });
 
   // Initialize the google map. Change it when the user location changes so we can recenter it.
   useEffect(() => {
