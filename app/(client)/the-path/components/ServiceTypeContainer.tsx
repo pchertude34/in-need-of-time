@@ -52,9 +52,9 @@ export function ServiceTypeContainer(props: ServiceTypeContainerProps) {
     onDistanceChanged(Number(distance));
   }
 
-  function handleServiceTypeChanged(serviceType: string) {
-    setSelectedServiceType(serviceType);
-    onServiceTypeChanged(serviceType);
+  function handleServiceTypeChanged(serviceTypeId: string) {
+    setSelectedServiceType(serviceTypeId);
+    onServiceTypeChanged(serviceTypeId);
   }
 
   return (
@@ -76,7 +76,7 @@ export function ServiceTypeContainer(props: ServiceTypeContainerProps) {
           </SelectContent>
         </Select>
       </div>
-      <div className="max-h-600 grid gap-2 overflow-auto py-2 sm:grid-cols-1 md:grid-cols-2">
+      <div className="max-h-600 grid gap-2 overflow-auto p-2 sm:grid-cols-1 md:grid-cols-2">
         {serviceTypes?.map((serviceType) => (
           <ServiceTypeButton
             key={serviceType._id}

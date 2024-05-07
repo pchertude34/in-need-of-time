@@ -8,6 +8,7 @@ import { getServiceTypes } from "@/lib/queries/getServiceTypes";
 import { Select, SelectTrigger, SelectContent, SelectValue, SelectItem } from "@/components/ui/select";
 import { convertMilesToMeters } from "@/lib/utils";
 import { ServiceTypeContainer } from "./components/ServiceTypeContainer";
+import { ProviderList } from "./components/ProviderList";
 
 const COMPLETE_STATUS = "complete";
 const INCOMPLETE_STATUS = "incomplete";
@@ -17,7 +18,7 @@ export default function ThePathPage() {
   const [latitude, setLatitude] = useState<number | undefined>();
   const [longitude, setLongitude] = useState<number | undefined>();
   const [distance, setDistance] = useState<number | undefined>();
-  const [selectedServiceType, setSelectedServiceType] = useState<string | null>();
+  const [selectedServiceTypeId, setSelectedServiceTypeId] = useState<string | null>();
   const [stepStatus, setStepStatus] = useState({
     step1: CURRENT_STATUS,
     step2: INCOMPLETE_STATUS,
@@ -56,8 +57,25 @@ export default function ThePathPage() {
           <ServiceTypeContainer
             longitude={longitude}
             latitude={latitude}
-            onServiceTypeChanged={() => {}}
             onDistanceChanged={(d) => setDistance(d)}
+            onServiceTypeChanged={(serviceTypeId) => {
+              setSelectedServiceTypeId(serviceTypeId);
+              handleFormCompleted(true);
+            }}
+          />
+        )}
+      </FormCard>
+      <FormCard
+        title="Select a service to locate"
+        description="Select one of the services we know about to get directions or learn more about it."
+        isShowing={!!latitude && !!longitude && !!distance && !!selectedServiceTypeId}
+      >
+        {({ handleFormCompleted }) => (
+          <ProviderList
+            latitude={latitude}
+            longitude={longitude}
+            distance={distance}
+            serviceTypeId={selectedServiceTypeId}
           />
         )}
       </FormCard>
