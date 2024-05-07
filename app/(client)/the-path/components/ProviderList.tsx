@@ -9,20 +9,20 @@ type ProviderListProps = {
   latitude?: number;
   longitude?: number;
   distance?: number;
-  serviceTypeId?: string;
+  serviceTypeSlug?: string;
 };
 
 export function ProviderList(props: ProviderListProps) {
-  const { distance, latitude, longitude, serviceTypeId } = props;
+  const { distance, latitude, longitude, serviceTypeSlug } = props;
 
   const [map, setMap] = useState<google.maps.Map | undefined>();
   const [showMap, setShowMap] = useState(true);
   const mapRef = useRef<HTMLDivElement>(null);
 
   const { data: providers } = useQuery({
-    queryKey: [latitude, longitude, distance, serviceTypeId],
-    enabled: !!latitude && !!longitude && !!distance && !!serviceTypeId,
-    queryFn: () => findProviders({ latitude, longitude, distance, serviceTypeId }),
+    queryKey: [latitude, longitude, distance, serviceTypeSlug],
+    enabled: !!latitude && !!longitude && !!distance && !!serviceTypeSlug,
+    queryFn: () => findProviders({ latitude, longitude, distance, serviceTypeSlug }),
   });
 
   // Initialize the google map. Change it when the user location changes so we can recenter it.

@@ -5,6 +5,9 @@ type GROQResponse = {
   services: {
     _id: string;
     name: string;
+    slug: {
+      current: string;
+    };
     description: string;
     count: number;
   }[];
@@ -18,17 +21,17 @@ export async function GET(request: Request) {
 
   const query = groq`*[ _type == "provider" && defined(serviceTypes) &&
     geo::distance(geo::latLng(place.location.lat, place.location.lng), geo::latLng(${lat}, ${lng})) < ${distance}]{
-    'services': serviceTypes[]->{name, description, _id}  
+    'services': serviceTypes[]->{name, description, slug}  
 }`;
 
   const providerServiceTypes: GROQResponse[] = await client.fetch(query);
 
   const serviceTypes = providerServiceTypes.reduce((acc: any, curr: any) => {
     curr.services.forEach((service: any) => {
-      if (!acc[service._id]) {
-        acc[service._id] = { ...service, count: 1 };
+      if (!acc[service.slug.current]) {
+        acc[service.slug.current] = { ...service, slug: service.slug.current, count: 1 };
       } else {
-        acc[service._id].count += 1;
+        acc[service.slug.current].count += 1;
       }
     });
 

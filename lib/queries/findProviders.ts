@@ -2,7 +2,7 @@ type FindProvidersArgs = {
   latitude?: number;
   longitude?: number;
   distance?: number;
-  serviceTypeId?: string;
+  serviceTypeSlug?: string;
 };
 
 type FindProvidersResponse = {
@@ -20,10 +20,10 @@ type FindProvidersResponse = {
 };
 
 export function findProviders(args: FindProvidersArgs): Promise<FindProvidersResponse[]> {
-  const { latitude, longitude, distance, serviceTypeId } = args;
+  const { latitude, longitude, distance, serviceTypeSlug } = args;
 
   return fetch(
-    `/api/providers/find?lat=${latitude}&lng=${longitude}&distance=${distance}&serviceTypeId=${serviceTypeId}`,
+    `/api/providers/find?lat=${latitude}&lng=${longitude}&distance=${distance}&serviceTypeSlug=${serviceTypeSlug}`,
     {
       cache: "no-cache",
     },

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui/select";
-import { getServiceTypes } from "@/lib/queries/getServiceTypes";
+import { getServiceTypes } from "@/lib/queries/findServiceTypes";
 import { cn, convertMilesToMeters } from "@/lib/utils";
 import { Label } from "@/components/ui/label";
 
@@ -35,7 +35,7 @@ export function ServiceTypeContainer(props: ServiceTypeContainerProps) {
   // selectedServiceType can get out of sync if the user switches the distance after selecting a service type.
   useEffect(
     () => {
-      if (selectedServiceType && !serviceTypes?.find((serviceType) => serviceType._id === selectedServiceType)) {
+      if (selectedServiceType && !serviceTypes?.find((serviceType) => serviceType.slug === selectedServiceType)) {
         setSelectedServiceType(null);
         onServiceTypeChanged(null);
       }
@@ -79,11 +79,11 @@ export function ServiceTypeContainer(props: ServiceTypeContainerProps) {
       <div className="max-h-600 grid gap-2 overflow-auto p-2 sm:grid-cols-1 md:grid-cols-2">
         {serviceTypes?.map((serviceType) => (
           <ServiceTypeButton
-            key={serviceType._id}
+            key={serviceType.slug}
             title={serviceType.name}
-            isSelected={serviceType._id === selectedServiceType}
+            isSelected={serviceType.slug === selectedServiceType}
             count={serviceType.count}
-            onClick={() => handleServiceTypeChanged(serviceType._id)}
+            onClick={() => handleServiceTypeChanged(serviceType.slug)}
           />
         ))}
       </div>

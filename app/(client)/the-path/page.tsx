@@ -1,12 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
 import { LocationInput } from "./components/LocationInput";
 import { FormCard } from "./components/FormCard";
-import { getServiceTypes } from "@/lib/queries/getServiceTypes";
-import { Select, SelectTrigger, SelectContent, SelectValue, SelectItem } from "@/components/ui/select";
-import { convertMilesToMeters } from "@/lib/utils";
 import { ServiceTypeContainer } from "./components/ServiceTypeContainer";
 import { ProviderList } from "./components/ProviderList";
 
@@ -18,17 +14,11 @@ export default function ThePathPage() {
   const [latitude, setLatitude] = useState<number | undefined>();
   const [longitude, setLongitude] = useState<number | undefined>();
   const [distance, setDistance] = useState<number | undefined>();
-  const [selectedServiceTypeId, setSelectedServiceTypeId] = useState<string | null>();
+  const [selectedServiceTypeSlug, setSelectedServiceTypeSlug] = useState<string | null>();
   const [stepStatus, setStepStatus] = useState({
     step1: CURRENT_STATUS,
     step2: INCOMPLETE_STATUS,
     step3: INCOMPLETE_STATUS,
-  });
-
-  const { data: serviceTypes } = useQuery({
-    queryKey: [latitude, longitude, distance],
-    enabled: !!latitude && !!longitude && !!distance,
-    queryFn: () => getServiceTypes({ latitude, longitude, distance }),
   });
 
   return (
@@ -58,8 +48,8 @@ export default function ThePathPage() {
             longitude={longitude}
             latitude={latitude}
             onDistanceChanged={(d) => setDistance(d)}
-            onServiceTypeChanged={(serviceTypeId) => {
-              setSelectedServiceTypeId(serviceTypeId);
+            onServiceTypeChanged={(serviceTypeSlug) => {
+              setSelectedServiceTypeSlug(serviceTypeSlug);
               handleFormCompleted(true);
             }}
           />
@@ -68,14 +58,14 @@ export default function ThePathPage() {
       <FormCard
         title="Select a service to locate"
         description="Select one of the services we know about to get directions or learn more about it."
-        isShowing={!!latitude && !!longitude && !!distance && !!selectedServiceTypeId}
+        isShowing={!!latitude && !!longitude && !!distance && !!selectedServiceTypeSlug}
       >
         {({ handleFormCompleted }) => (
           <ProviderList
             latitude={latitude}
             longitude={longitude}
             distance={distance}
-            serviceTypeId={selectedServiceTypeId}
+            serviceTypeSlug={selectedServiceTypeSlug}
           />
         )}
       </FormCard>

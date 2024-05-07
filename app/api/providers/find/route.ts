@@ -22,13 +22,11 @@ export async function GET(request: Request) {
   const lat = searchParams.get("lat");
   const lng = searchParams.get("lng");
   const distance = searchParams.get("distance");
-  const serviceTypeId = searchParams.get("serviceTypeId");
+  const serviceTypeSlug = searchParams.get("serviceTypeSlug");
 
   const query = groq`*[_type == "provider" && 
     geo::distance(geo::latLng(place.location.lat, place.location.lng), geo::latLng(${lat}, ${lng})) < ${distance} && 
-    "${serviceTypeId}" in (serviceTypes[]->slug.current)]`;
-
-  console.log("query", query);
+    "${serviceTypeSlug}" in (serviceTypes[]->slug.current)]`;
 
   const providers: GROQResponse[] = await client.fetch(query);
 
