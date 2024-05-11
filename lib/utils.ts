@@ -44,7 +44,7 @@ export function buildPlaceAddress(place: google.maps.places.PlaceResult) {
   let state = "";
   let postcode = "";
 
-  if (!place.address_components) return;
+  if (!place.address_components) return "";
 
   for (const component of place.address_components) {
     const componentType = component.types[0];

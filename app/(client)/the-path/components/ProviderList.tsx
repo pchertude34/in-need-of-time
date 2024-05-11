@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { cn } from "@/lib/utils";
 import { MapIcon, ListBulletIcon } from "@heroicons/react/24/outline";
 import { Button } from "@/components/ui/button";
+import { ProviderListItem } from "./ProviderListItem";
+import { cn } from "@/lib/utils";
 import { findProviders } from "@/lib/queries/findProviders";
 
 type ProviderListProps = {
@@ -38,6 +39,8 @@ export function ProviderList(props: ProviderListProps) {
     }
   }, [mapRef, latitude, longitude]);
 
+  console.log(providers);
+
   // Add the user's selected location to the google map
   useEffect(() => {
     let currentLocationMarker: google.maps.Marker;
@@ -70,18 +73,15 @@ export function ProviderList(props: ProviderListProps) {
           </>
         )}
       </Button>
+
       <div className="flex h-full w-full">
-        <div>Hello world</div>
+        {providers?.map((provider) => (
+          <ProviderListItem key={provider._id} placeId={provider.place?.placeId} map={map} />
+        ))}
         <div className={cn("w-full md:block", `${showMap ? "block" : "hidden"}`)}>
           <div ref={mapRef} style={{ height: "500px" }}></div>
         </div>
       </div>
     </>
   );
-}
-
-type ProviderListItemProps = {};
-
-function ProviderListItem(props: ProviderListItemProps) {
-  return <div>ProviderListItem</div>;
 }
