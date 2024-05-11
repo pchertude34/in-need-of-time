@@ -28,7 +28,10 @@ export async function GET(request: Request) {
 
   const serviceTypes = providerServiceTypes.reduce((acc: any, curr: any) => {
     curr.services.forEach((service: any) => {
-      if (!acc[service.slug.current]) {
+      // Short circuit if the service type doesn't have a slug
+      if (!service.slug?.current) return acc;
+
+      if (!acc[service.slug?.current]) {
         acc[service.slug.current] = { ...service, slug: service.slug.current, count: 1 };
       } else {
         acc[service.slug.current].count += 1;
