@@ -13,7 +13,6 @@ type GetPlaceResponse = {
   url?: string;
   geometry?: google.maps.places.PlaceGeometry;
   opening_hours?: google.maps.places.OpeningHours;
-  utc_offset_minutes?: number;
   business_status?: string;
   address_components?: google.maps.GeocoderAddressComponent[];
 };
@@ -42,8 +41,8 @@ export async function getPlace({ placeId, map }: GetPlaceArgs): Promise<GetPlace
       "url",
       "geometry",
       "opening_hours",
-      "utc_offset_minutes",
       "business_status",
+      "utc_offset_minutes",
     ],
   };
 

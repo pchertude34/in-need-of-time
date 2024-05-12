@@ -76,7 +76,7 @@ export function ServiceTypeContainer(props: ServiceTypeContainerProps) {
           </SelectContent>
         </Select>
       </div>
-      <div className="max-h-600 grid gap-2 overflow-auto p-2 sm:grid-cols-1 md:grid-cols-2">
+      <div className="grid max-h-[600px] gap-2 overflow-auto p-2 sm:grid-cols-1 md:grid-cols-2">
         {serviceTypes?.map((serviceType) => (
           <ServiceTypeButton
             key={serviceType.slug}
