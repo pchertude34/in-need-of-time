@@ -2,6 +2,8 @@ import React, { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { cn } from "@/lib/utils";
 import { getPlace } from "@/lib/queries/getPlace";
+import { Badge } from "@/components/ui/badge";
+import { BusinessStatusBadge } from "./BusinessStatusLabel";
 
 type ProviderListItemProps = {
   placeId?: string;
@@ -14,13 +16,29 @@ type ProviderListItemProps = {
 export function ProviderListItem(props: ProviderListItemProps) {
   const { placeId, distance, isSelected, map, onClick } = props;
 
-  const { data: place } = useQuery({
+  const { data: place, error } = useQuery({
     queryKey: [placeId],
     queryFn: () => getPlace({ placeId, map }),
     enabled: !!placeId,
   });
 
-  console.log(place);
+  // create a marker on the map for the place.
+  useEffect(() => {
+    let marker: google.maps.Marker;
+
+    if (place && map) {
+      marker = new google.maps.Marker({
+        position: place.geometry?.location,
+        title: place.name,
+      });
+      marker.setMap(map);
+      // marker.addListener('click', () => onClick(currentPlace));
+    }
+
+    return () => {
+      if (marker) marker.setMap(null);
+    };
+  }, [place, map, onClick]);
 
   return (
     <button
@@ -32,9 +50,12 @@ export function ProviderListItem(props: ProviderListItemProps) {
       )}
       onClick={onClick}
     >
-      <div>
+      <div className="text-left">
         <h3 className="text-lg font-semibold">{place?.name}</h3>
         <p className="text-sm text-gray-500">{place?.address}</p>
+        <div className="flex">
+          <BusinessStatusBadge isOpen={place?.opening_hours?.isOpen()} />
+        </div>
       </div>
     </button>
   );

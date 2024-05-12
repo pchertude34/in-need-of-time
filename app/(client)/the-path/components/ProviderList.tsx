@@ -39,8 +39,6 @@ export function ProviderList(props: ProviderListProps) {
     }
   }, [mapRef, latitude, longitude]);
 
-  console.log(providers);
-
   // Add the user's selected location to the google map
   useEffect(() => {
     let currentLocationMarker: google.maps.Marker;
@@ -74,11 +72,13 @@ export function ProviderList(props: ProviderListProps) {
         )}
       </Button>
 
-      <div className="flex h-full w-full">
-        {providers?.map((provider) => (
-          <ProviderListItem key={provider._id} placeId={provider.place?.placeId} map={map} />
-        ))}
-        <div className={cn("w-full md:block", `${showMap ? "block" : "hidden"}`)}>
+      <div className="mt-4 grid h-full w-full grid-cols-5 gap-4">
+        <div className="col-span-2 flex flex-col space-y-2">
+          {providers?.map((provider) => (
+            <ProviderListItem key={provider._id} placeId={provider.place?.placeId} map={map} />
+          ))}
+        </div>
+        <div className={cn("col-span-3 md:block", `${showMap ? "block" : "hidden"}`)}>
           <div ref={mapRef} style={{ height: "500px" }}></div>
         </div>
       </div>
