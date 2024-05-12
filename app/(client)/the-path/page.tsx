@@ -43,31 +43,42 @@ export default function ThePathPage() {
         description="Select a type of the nearby services that you need to access"
         isShowing={!!latitude && !!longitude}
       >
-        {({ handleFormCompleted }) => (
-          <ServiceTypeContainer
-            longitude={longitude}
-            latitude={latitude}
-            onDistanceChanged={(d) => setDistance(d)}
-            onServiceTypeChanged={(serviceTypeSlug) => {
-              setSelectedServiceTypeSlug(serviceTypeSlug);
-              handleFormCompleted(true);
-            }}
-          />
-        )}
+        {({ handleFormCompleted }) =>
+          // Conditionally render the ServiceTypeContainer to get around typescript being mad about lat and lng
+          // Technically, the ServiceTypeContainer won't be rendered until lat and lng are truthy in the <PathFormItem />
+          // but typescript isn't smart enough to know that so we need to do this conditional render.
+          !!latitude &&
+          !!longitude && (
+            <ServiceTypeContainer
+              longitude={longitude}
+              latitude={latitude}
+              onDistanceChanged={(d) => setDistance(d)}
+              onServiceTypeChanged={(serviceTypeSlug) => {
+                setSelectedServiceTypeSlug(serviceTypeSlug);
+                handleFormCompleted(true);
+              }}
+            />
+          )
+        }
       </FormCard>
       <FormCard
         title="Select a service to locate"
         description="Select one of the services we know about to get directions or learn more about it."
         isShowing={!!latitude && !!longitude && !!distance && !!selectedServiceTypeSlug}
       >
-        {({ handleFormCompleted }) => (
-          <ProviderList
-            latitude={latitude}
-            longitude={longitude}
-            distance={distance}
-            serviceTypeSlug={selectedServiceTypeSlug}
-          />
-        )}
+        {({ handleFormCompleted }) =>
+          !!latitude &&
+          !!longitude &&
+          !!distance &&
+          !!selectedServiceTypeSlug && (
+            <ProviderList
+              latitude={latitude}
+              longitude={longitude}
+              distance={distance}
+              serviceTypeSlug={selectedServiceTypeSlug}
+            />
+          )
+        }
       </FormCard>
     </div>
   );

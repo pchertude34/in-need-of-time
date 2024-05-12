@@ -7,10 +7,10 @@ import { cn } from "@/lib/utils";
 import { findProviders } from "@/lib/queries/findProviders";
 
 type ProviderListProps = {
-  latitude?: number;
-  longitude?: number;
-  distance?: number;
-  serviceTypeSlug?: string;
+  latitude: number;
+  longitude: number;
+  distance: number;
+  serviceTypeSlug: string;
 };
 
 export function ProviderList(props: ProviderListProps) {

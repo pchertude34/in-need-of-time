@@ -12,8 +12,8 @@ const DISTANCE_OPTIONS = [
 ];
 
 type ServiceTypeContainerProps = {
-  latitude?: number;
-  longitude?: number;
+  latitude: number;
+  longitude: number;
   onServiceTypeChanged: (serviceType: string | null) => void;
   onDistanceChanged: (distance: number) => void;
 };

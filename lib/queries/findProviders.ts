@@ -1,8 +1,8 @@
 type FindProvidersArgs = {
-  latitude?: number;
-  longitude?: number;
-  distance?: number;
-  serviceTypeSlug?: string;
+  latitude: number;
+  longitude: number;
+  distance: number;
+  serviceTypeSlug: string;
 };
 
 type FindProvidersResponse = {
