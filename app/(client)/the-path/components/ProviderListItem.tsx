@@ -41,6 +41,11 @@ export function ProviderListItem(props: ProviderListItemProps) {
     };
   }, [place, map, onClick]);
 
+  // Display a skeleton loader while we wait for the place data
+  if (isLoading) {
+    return <Skeleton className="h-[120px] w-full" />;
+  }
+
   return (
     <button
       className={cn(
@@ -51,17 +56,13 @@ export function ProviderListItem(props: ProviderListItemProps) {
       )}
       onClick={onClick}
     >
-      {isLoading ? (
-        <Skeleton className="h-[120px] w-full" />
-      ) : (
-        <div className="text-left">
-          <h3 className="text-lg font-semibold">{place?.name}</h3>
-          <p className="text-sm text-gray-500">{place?.address}</p>
-          <div className="mt-2 flex">
-            <BusinessStatusBadge isOpen={place?.opening_hours?.isOpen()} />
-          </div>
+      <div className="text-left">
+        <h3 className="text-lg font-semibold">{place?.name}</h3>
+        <p className="text-sm text-gray-500">{place?.address}</p>
+        <div className="mt-2 flex">
+          <BusinessStatusBadge isOpen={place?.opening_hours?.isOpen()} />
         </div>
-      )}
+      </div>
     </button>
   );
 }
