@@ -42,6 +42,7 @@ export async function getPlace({ placeId, map }: GetPlaceArgs): Promise<GetPlace
       "geometry",
       "opening_hours",
       "business_status",
+      "utc_offset_minutes",
     ],
   };
 

@@ -60,17 +60,19 @@ export function ProviderList(props: ProviderListProps) {
 
   return (
     <>
-      <Button onClick={() => setShowMap(!showMap)}>
-        {showMap ? (
-          <>
-            <ListBulletIcon className="mr-1 h-4 w-4" /> View List
-          </>
-        ) : (
-          <>
-            <MapIcon className="mr-1 h-4 w-4" /> View Map
-          </>
-        )}
-      </Button>
+      <div className="md:hidden">
+        <Button onClick={() => setShowMap(!showMap)}>
+          {showMap ? (
+            <>
+              <ListBulletIcon className="mr-1 h-4 w-4" /> View List
+            </>
+          ) : (
+            <>
+              <MapIcon className="mr-1 h-4 w-4" /> View Map
+            </>
+          )}
+        </Button>
+      </div>
 
       <div className="mt-4 grid h-full w-full grid-cols-5 gap-4">
         <div className="col-span-2 flex flex-col space-y-2">
