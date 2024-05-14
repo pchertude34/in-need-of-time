@@ -4,16 +4,12 @@ import { Box, Flex, Stack, Text, TextInput, Label, Inline, Radio } from "@sanity
 import { set, ObjectInputProps } from "sanity";
 import { useGoogleMaps } from "@/hooks/useGoogleMaps";
 
-const ESTABLISHMENT = "establishment";
-const ADDRESS = "address";
-
 export default function CustomStringInput(props: ObjectInputProps) {
   const { onChange, value, elementProps } = props;
 
   const [place, setPlace] = useState("");
   const [placeId, setPlaceId] = useState<string | undefined>(value?.placeId || "");
 
-  const [searchType, setSearchType] = useState<typeof ESTABLISHMENT | typeof ADDRESS>(ADDRESS);
   const [address, setAddress] = useState<string | undefined>(value?.address || "");
   const [lat, setLat] = useState<number | undefined>(value?.location?.lat || "");
   const [lng, setLng] = useState<number | undefined>(value?.location?.lng || "");
@@ -63,7 +59,7 @@ export default function CustomStringInput(props: ObjectInputProps) {
       autocompleteRef.current = new google.maps.places.Autocomplete(placeInputRef.current, {
         componentRestrictions: { country: ["us"] },
         fields: ["address_components", "geometry", "name", "place_id"],
-        types: [searchType],
+        types: ["establishment"],
       });
 
       autocompleteListener.current = autocompleteRef.current.addListener("place_changed", () => {
@@ -74,7 +70,7 @@ export default function CustomStringInput(props: ObjectInputProps) {
         }
       });
     }
-  }, [isLoadingMaps, searchType, handlePlaceChange]);
+  }, [isLoadingMaps, handlePlaceChange]);
 
   if (mapsError) {
     return <Text style={{ color: "red" }}>{mapsError}</Text>;
@@ -91,30 +87,6 @@ export default function CustomStringInput(props: ObjectInputProps) {
             setPlace(e.currentTarget.value);
           }}
         />
-        <Inline space={3}>
-          <Flex align="center">
-            <Radio
-              id="address-radio"
-              style={{ marginRight: "8px" }}
-              onChange={(e) => setSearchType(e.currentTarget.value as typeof ADDRESS)}
-              value={ADDRESS}
-              checked={searchType === ADDRESS}
-            />
-
-            <Label htmlFor="address-radio">Search by Address</Label>
-          </Flex>
-          <Flex align="center">
-            <Radio
-              id="establishment-radio"
-              style={{ marginRight: "8px" }}
-              onChange={(e) => setSearchType(e.currentTarget.value as typeof ESTABLISHMENT)}
-              value={ESTABLISHMENT}
-              checked={searchType === ESTABLISHMENT}
-            />
-
-            <Label htmlFor="establishment-radio">Search by Establishment</Label>
-          </Flex>
-        </Inline>
       </Stack>
       <Stack space={5}>
         <Stack space={3}>
