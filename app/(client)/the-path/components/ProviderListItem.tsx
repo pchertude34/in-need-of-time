@@ -6,6 +6,7 @@ import { BusinessStatusBadge } from "./BusinessStatusLabel";
 import { Skeleton } from "@/components/ui/skeleton";
 
 type ProviderListItemProps = {
+  name: string;
   placeId?: string;
   distance?: number;
   isSelected?: boolean;
@@ -14,7 +15,7 @@ type ProviderListItemProps = {
 };
 
 export function ProviderListItem(props: ProviderListItemProps) {
-  const { placeId, distance, isSelected, map, onClick } = props;
+  const { name, placeId, distance, isSelected, map, onClick } = props;
 
   const { data: place, isLoading } = useQuery({
     queryKey: [placeId],
@@ -57,7 +58,7 @@ export function ProviderListItem(props: ProviderListItemProps) {
       onClick={onClick}
     >
       <div className="text-left">
-        <h3 className="text-lg font-semibold">{place?.name}</h3>
+        <h3 className="text-lg font-semibold">{name}</h3>
         <p className="text-sm text-gray-500">{place?.address}</p>
         <div className="mt-2 flex">
           <BusinessStatusBadge isOpen={place?.opening_hours?.isOpen()} />

@@ -77,7 +77,7 @@ export function ProviderList(props: ProviderListProps) {
       <div className="mt-4 grid h-full w-full grid-cols-5 gap-4">
         <div className="col-span-2 flex flex-col space-y-2">
           {providers?.map((provider) => (
-            <ProviderListItem key={provider._id} placeId={provider.place?.placeId} map={map} />
+            <ProviderListItem key={provider._id} name={provider.title} placeId={provider.place?.placeId} map={map} />
           ))}
         </div>
         <div className={cn("col-span-3 md:block", `${showMap ? "block" : "hidden"}`)}>
