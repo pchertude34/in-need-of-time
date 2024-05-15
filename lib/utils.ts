@@ -35,15 +35,32 @@ export function generateGoogleLink(placeId: string, placeName: string) {
   return googleLink;
 }
 
+type BuildPlaceAddressOptionsType = {
+  includeStreetNumber?: boolean;
+  includeRoute?: boolean;
+  includeCity?: boolean;
+  includeState?: boolean;
+  includePostcode?: boolean;
+};
+
 /**
  * Helper function to build out the address of a place from its address_components
  */
-export function buildPlaceAddress(place: google.maps.places.PlaceResult) {
+export function buildPlaceAddress(place: google.maps.places.PlaceResult, options: BuildPlaceAddressOptionsType = {}) {
+  const {
+    includeStreetNumber = true,
+    includeRoute = true,
+    includeCity = true,
+    includeState = true,
+    includePostcode = true,
+  } = options;
+
   let address1 = "";
   let city = "";
   let state = "";
   let postcode = "";
 
+  // Exit the function early if the place doesn't have an address
   if (!place.address_components) return "";
 
   for (const component of place.address_components) {
@@ -51,22 +68,22 @@ export function buildPlaceAddress(place: google.maps.places.PlaceResult) {
 
     switch (componentType) {
       case "street_number":
-        address1 = `${component.long_name} ${address1}`;
+        if (includeStreetNumber) address1 = `${component.long_name} ${address1}`;
         break;
       case "route":
-        address1 += component.short_name;
+        if (includeRoute) address1 += component.short_name;
         break;
       case "postal_code":
-        postcode = `${component.long_name}${postcode}`;
+        if (includePostcode) postcode = `${component.long_name}${postcode}`;
         break;
       case "postal_code_suffix":
-        postcode = `${postcode}-${component.long_name}`;
+        if (includePostcode) postcode = `${postcode}-${component.long_name}`;
         break;
       case "locality":
-        city = component.long_name;
+        if (includeCity) city = component.long_name;
         break;
       case "administrative_area_level_1":
-        state = component.short_name;
+        if (includeState) state = component.short_name;
     }
   }
 

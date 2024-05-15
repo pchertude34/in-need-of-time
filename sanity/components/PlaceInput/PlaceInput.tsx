@@ -1,8 +1,8 @@
-// CustomStringInput.tsx
 import React, { useCallback, useState, useEffect, useRef } from "react";
-import { Box, Flex, Stack, Text, TextInput, Label, Inline, Radio } from "@sanity/ui";
 import { set, ObjectInputProps } from "sanity";
+import { Stack, Text, TextInput, Label, Inline } from "@sanity/ui";
 import { useGoogleMaps } from "@/hooks/useGoogleMaps";
+import { buildPlaceAddress } from "@/lib/utils";
 
 export default function CustomStringInput(props: ObjectInputProps) {
   const { onChange, value, elementProps } = props;
@@ -66,6 +66,9 @@ export default function CustomStringInput(props: ObjectInputProps) {
         if (autocompleteRef.current) {
           const place = autocompleteRef.current?.getPlace();
 
+          setPlace(
+            `${place.name}, ${buildPlaceAddress(place, { includeStreetNumber: false, includePostcode: false })}`,
+          );
           handlePlaceChange(place);
         }
       });
@@ -110,44 +113,4 @@ export default function CustomStringInput(props: ObjectInputProps) {
       </Stack>
     </Stack>
   );
-}
-
-/**
- * Helper function to build out the address of a place from its address_components
- */
-export function buildPlaceAddress(place: google.maps.places.PlaceResult): string | undefined {
-  let address1 = "";
-  let city = "";
-  let state = "";
-  let postcode = "";
-
-  if (!place.address_components) return;
-
-  for (const component of place.address_components) {
-    const componentType = component.types[0];
-
-    switch (componentType) {
-      case "street_number":
-        address1 = `${component.long_name} ${address1}`;
-        break;
-      case "route":
-        address1 += component.short_name;
-        break;
-      case "postal_code":
-        postcode = `${component.long_name}${postcode}`;
-        break;
-      case "postal_code_suffix":
-        postcode = `${postcode}-${component.long_name}`;
-        break;
-      case "locality":
-        city = component.long_name;
-        break;
-      case "administrative_area_level_1":
-        state = component.short_name;
-    }
-  }
-
-  const address = `${address1}, ${city}, ${state} ${postcode}`;
-
-  return address;
 }
