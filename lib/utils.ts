@@ -17,6 +17,11 @@ export function convertMilesToMeters(miles: number) {
   return Number(meters.toFixed(2));
 }
 
+export function getCurrentDay() {
+  let day = new Date().getDay();
+  return (day + 6) % 7;
+}
+
 /**
  * Helper function to build out a link for a google place.
  * @param {string} placeId The id of a google place to generate a google link for.
