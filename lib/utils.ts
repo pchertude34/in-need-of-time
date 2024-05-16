@@ -26,10 +26,10 @@ export function getCurrentDay() {
  * Helper function to build out a link for a google place.
  * @param {string} placeId The id of a google place to generate a google link for.
  * @param {string} placeName The name of the google place to generate a google link for.
- * @returns {string || undefined} A url that links the the place on google.
+ * @returns {string} A url that links the the place on google.
  */
 export function generateGoogleLink(placeId: string, placeName: string) {
-  let googleLink;
+  let googleLink = "";
 
   if (placeId) {
     googleLink = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
@@ -38,6 +38,22 @@ export function generateGoogleLink(placeId: string, placeName: string) {
   }
 
   return googleLink;
+}
+
+/**
+ *
+ * @param {string} placeId The id of a google place to generate a nav link for.
+ * @param {string} placeName The name of the google place to generate a nav link for.
+ * @returns {string} A url that links to a destination on google maps
+ */
+export function generateGoogleNavigationLink(placeId: string, placeName: string) {
+  let navLink;
+
+  navLink = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(
+    placeName,
+  )}&destination_place_id=${encodeURIComponent(placeId)}`;
+
+  return navLink;
 }
 
 type BuildPlaceAddressOptionsType = {
