@@ -20,7 +20,7 @@ export function ProviderList(props: ProviderListProps) {
   const [showMap, setShowMap] = useState(true);
   const mapRef = useRef<HTMLDivElement>(null);
 
-  const { data: providers } = useQuery({
+  const { data: providers, isLoading } = useQuery({
     queryKey: [latitude, longitude, distance, serviceTypeSlug],
     enabled: !!latitude && !!longitude && !!distance && !!serviceTypeSlug,
     queryFn: () => findProviders({ latitude, longitude, distance, serviceTypeSlug }),
@@ -74,20 +74,20 @@ export function ProviderList(props: ProviderListProps) {
         </Button>
       </div>
 
-      <div className="mt-4 grid h-full w-full grid-cols-5 gap-4">
-        <div className="col-span-2 flex flex-col space-y-2">
+      <div className="mt-4 grid h-[600px] w-full grid-cols-5 gap-4">
+        <div className="col-span-2 flex flex-col space-y-2 overflow-auto p-2">
           {providers?.map((provider) => (
             <ProviderListItem
               key={provider._id}
               name={provider.title}
               description={provider.description}
-              placeId={provider.place?.placeId}
+              placeId={provider.place.placeId}
               map={map}
             />
           ))}
         </div>
         <div className={cn("col-span-3 md:block", `${showMap ? "block" : "hidden"}`)}>
-          <div ref={mapRef} style={{ height: "500px" }}></div>
+          <div ref={mapRef} style={{ height: "100%" }}></div>
         </div>
       </div>
     </>

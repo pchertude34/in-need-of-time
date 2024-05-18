@@ -111,17 +111,6 @@ export function ProviderListItem(props: ProviderListItemProps) {
                 )}
               </div>
             )}
-
-            {/* <div className="flex-1">
-            <p className="text-sm text-gray-500">{place?.address}</p>
-            <p className="text-sm text-gray-500">{place?.formatted_phone_number}</p>
-            <p className="text-sm text-gray-500">{distance ? `${distance} miles away` : ""}</p>
-          </div>
-          <div className="flex-1">
-            <div className="flex justify-end">
-              <BusinessStatusBadge isOpen={place?.opening_hours?.isOpen()} />
-            </div>
-          </div> */}
           </div>
           <DialogFooter>
             <Button variant="default" asChild>

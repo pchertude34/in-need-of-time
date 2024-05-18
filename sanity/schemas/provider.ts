@@ -39,6 +39,7 @@ const providerSchema = defineType({
       name: "place",
       title: "Place",
       type: "object",
+
       fields: [
         { name: "name", title: "Name", type: "string" },
         { name: "address", title: "Address", type: "string" },
@@ -56,7 +57,7 @@ const providerSchema = defineType({
         Rule.custom(async (value: any, context) => {
           // This validation runs whenever a change is detected which can cause alot of API calls.
           // Don't run the query if we don't have a placeId to save on API calls.
-          if (!value || !value.placeId) return true;
+          if (!value || !value.placeId) return "Place is required.";
 
           const isUnique = await isUniquePlace(value.placeId, context);
 

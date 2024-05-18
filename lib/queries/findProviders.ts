@@ -8,7 +8,7 @@ type FindProvidersArgs = {
 type FindProvidersResponse = {
   _id: string;
   title: string;
-  place?: {
+  place: {
     address: string;
     placeId: string;
     location: {
