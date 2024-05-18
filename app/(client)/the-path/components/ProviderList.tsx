@@ -64,18 +64,24 @@ export function ProviderList(props: ProviderListProps) {
         <Button onClick={() => setShowMap(!showMap)}>
           {showMap ? (
             <>
-              <ListBulletIcon className="mr-1 h-4 w-4" /> View List
+              <ListBulletIcon className="mr-1 h-4 w-4" /> <span>View List</span>
             </>
           ) : (
             <>
-              <MapIcon className="mr-1 h-4 w-4" /> View Map
+              <MapIcon className="mr-1 h-4 w-4" /> <span>View Map</span>
             </>
           )}
         </Button>
       </div>
 
       <div className="mt-4 grid h-[600px] w-full grid-cols-5 gap-4">
-        <div className="col-span-2 flex flex-col space-y-2 overflow-auto p-2">
+        <div
+          className={cn(
+            "col-span-5 flex-col space-y-2 overflow-auto p-2 md:col-span-2 md:flex",
+            // Hide the list on mobile when the map is showing
+            `${showMap ? "hidden" : "flex"}`,
+          )}
+        >
           {providers?.map((provider) => (
             <ProviderListItem
               key={provider._id}
@@ -86,7 +92,13 @@ export function ProviderList(props: ProviderListProps) {
             />
           ))}
         </div>
-        <div className={cn("col-span-3 md:block", `${showMap ? "block" : "hidden"}`)}>
+        <div
+          className={cn(
+            "col-span-5 md:col-span-3 md:block",
+            // Hide the map on mobile when the list is showing
+            `${showMap ? "block" : "hidden"}`,
+          )}
+        >
           <div ref={mapRef} style={{ height: "100%" }}></div>
         </div>
       </div>

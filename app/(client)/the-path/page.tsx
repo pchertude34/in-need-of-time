@@ -22,7 +22,7 @@ export default function ThePathPage() {
   });
 
   return (
-    <div className="container mx-auto mt-10 space-y-10">
+    <div className="container mx-auto mt-10 space-y-10 px-2 md:px-8">
       <FormCard
         title="Where are you located?"
         description="Type an address for yourself, or someone you would like to assist"
