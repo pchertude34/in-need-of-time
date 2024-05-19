@@ -144,11 +144,7 @@ export default function CustomStringInput(props: ObjectInputProps) {
           <Label>Place ID</Label>
           <Flex justify="space-between" align="center">
             <Text>{placeId}</Text>
-            {placeType && (
-              <Badge padding={2} tone={placeType === ADDRESS ? "primary" : "positive"}>
-                {placeType}
-              </Badge>
-            )}
+            {placeType && <Badge tone={placeType === ADDRESS ? "primary" : "positive"}>{placeType}</Badge>}
           </Flex>
         </Stack>
         <Inline space={6}>
