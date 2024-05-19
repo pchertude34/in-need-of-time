@@ -1,22 +1,35 @@
 import React, { useCallback, useState, useEffect, useRef } from "react";
 import { set, ObjectInputProps } from "sanity";
-import { Box, Flex, Stack, Text, TextInput, Label, Inline, Radio } from "@sanity/ui";
+import { Badge, Flex, Stack, Text, TextInput, Label, Inline, Radio } from "@sanity/ui";
 import { useGoogleMaps } from "@/hooks/useGoogleMaps";
 import { buildPlaceAddress } from "@/lib/utils";
 
 const ESTABLISHMENT = "establishment";
 const ADDRESS = "address";
 
+function getPlaceType(types?: string[]) {
+  if (!types) {
+    return "";
+  }
+
+  if (types.includes(ESTABLISHMENT)) {
+    return ESTABLISHMENT;
+  } else {
+    return ADDRESS;
+  }
+}
+
 export default function CustomStringInput(props: ObjectInputProps) {
   const { onChange, value, elementProps } = props;
 
-  const [place, setPlace] = useState("");
+  const [placeInputValue, setPlaceInputValue] = useState("");
   const [placeId, setPlaceId] = useState<string | undefined>(value?.placeId || "");
-
-  const [searchType, setSearchType] = useState<typeof ESTABLISHMENT | typeof ADDRESS>(ESTABLISHMENT);
   const [address, setAddress] = useState<string | undefined>(value?.address || "");
   const [lat, setLat] = useState<number | undefined>(value?.location?.lat || "");
   const [lng, setLng] = useState<number | undefined>(value?.location?.lng || "");
+  const [placeType, setPlaceType] = useState<string>(value?.type || "");
+
+  const [searchType, setSearchType] = useState<typeof ESTABLISHMENT | typeof ADDRESS>(ESTABLISHMENT);
   const placeInputRef = useRef<HTMLInputElement>(null);
   const autocompleteRef = useRef<google.maps.places.Autocomplete>();
   const autocompleteListener = useRef<google.maps.MapsEventListener>();
@@ -26,10 +39,12 @@ export default function CustomStringInput(props: ObjectInputProps) {
   const handlePlaceChange = useCallback(
     (place: google.maps.places.PlaceResult) => {
       const placeAddress = buildPlaceAddress(place);
+      const type = getPlaceType(place.types);
       setPlaceId(place.place_id);
       setLat(place.geometry?.location.lat());
       setLng(place.geometry?.location.lng());
       setAddress(placeAddress);
+      setPlaceType(type);
 
       onChange([
         set(place.place_id, ["placeId"]),
@@ -42,6 +57,7 @@ export default function CustomStringInput(props: ObjectInputProps) {
           },
           ["location"],
         ),
+        set(type, ["type"]),
       ]);
     },
     [onChange],
@@ -62,7 +78,7 @@ export default function CustomStringInput(props: ObjectInputProps) {
 
       autocompleteRef.current = new google.maps.places.Autocomplete(placeInputRef.current, {
         componentRestrictions: { country: ["us"] },
-        fields: ["address_components", "geometry", "name", "place_id"],
+        fields: ["address_components", "geometry", "name", "place_id", "types"],
         types: [searchType],
       });
 
@@ -70,7 +86,7 @@ export default function CustomStringInput(props: ObjectInputProps) {
         if (autocompleteRef.current) {
           const place = autocompleteRef.current?.getPlace();
 
-          setPlace(
+          setPlaceInputValue(
             `${place.name}, ${buildPlaceAddress(place, { includeStreetNumber: false, includePostcode: false })}`,
           );
           handlePlaceChange(place);
@@ -89,9 +105,9 @@ export default function CustomStringInput(props: ObjectInputProps) {
         <Label>Place Input</Label>
         <TextInput
           ref={placeInputRef}
-          value={place}
+          value={placeInputValue}
           onChange={(e) => {
-            setPlace(e.currentTarget.value);
+            setPlaceInputValue(e.currentTarget.value);
           }}
         />
         <Inline space={3}>
@@ -126,7 +142,14 @@ export default function CustomStringInput(props: ObjectInputProps) {
         </Stack>
         <Stack space={3}>
           <Label>Place ID</Label>
-          <Text>{placeId}</Text>
+          <Flex justify="space-between" align="center">
+            <Text>{placeId}</Text>
+            {placeType && (
+              <Badge padding={2} tone={placeType === ADDRESS ? "primary" : "positive"}>
+                {placeType}
+              </Badge>
+            )}
+          </Flex>
         </Stack>
         <Inline space={6}>
           <Stack space={3}>

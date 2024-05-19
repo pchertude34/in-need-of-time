@@ -49,6 +49,7 @@ const providerSchema = defineType({
           type: "string",
         },
         { name: "location", title: "Location", type: "geopoint" },
+        { name: "type", title: "Type", type: "string" },
       ],
       components: {
         input: PlaceInput,
