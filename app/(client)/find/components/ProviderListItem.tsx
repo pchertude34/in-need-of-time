@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { PortableText } from "@portabletext/react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTrigger, DialogClose } from "@/components/ui/dialog";
 import { BusinessStatusBadge } from "./BusinessStatusLabel";
@@ -9,7 +10,7 @@ import { Button } from "@/components/ui/button";
 
 type ProviderListItemProps = {
   name: string;
-  description?: string;
+  description?: any;
   placeId: string;
   distance?: number;
   isSelected?: boolean;
@@ -82,7 +83,8 @@ export function ProviderListItem(props: ProviderListItemProps) {
               <p className="text-lg font-medium text-gray-900">{place.address}</p>
               <BusinessStatusBadge isOpen={place?.opening_hours?.isOpen()} className="ml-auto" />
             </div>
-            {description && <p className="text-gray-900">{description}</p>}
+            {description && <PortableText value={description} />}
+            {/* {description && <p className="text-gray-900">{description}</p>} */}
             {place.opening_hours?.weekday_text && (
               <div className="mt-4">
                 <p className="text-lg font-semibold">Hours</p>
