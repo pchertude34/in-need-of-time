@@ -83,8 +83,11 @@ export function ProviderListItem(props: ProviderListItemProps) {
               <p className="text-lg font-medium text-gray-900">{place.address}</p>
               <BusinessStatusBadge isOpen={place?.opening_hours?.isOpen()} className="ml-auto" />
             </div>
-            {description && <PortableText value={description} />}
-            {/* {description && <p className="text-gray-900">{description}</p>} */}
+            {description && (
+              <div className="prose prose-h1:text-xl prose-h2:text-lg prose-h3:text-md prose-p:my-4 prose-ul:my-4 prose-li:my-0 ">
+                <PortableText value={description} />
+              </div>
+            )}
             {place.opening_hours?.weekday_text && (
               <div className="mt-4">
                 <p className="text-lg font-semibold">Hours</p>
