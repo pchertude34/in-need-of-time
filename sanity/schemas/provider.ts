@@ -102,7 +102,8 @@ const providerSchema = defineType({
     {
       name: "description",
       title: "Description",
-      type: "text",
+      type: "array",
+      of: [{ type: "block" }],
     },
     {
       name: "internalContact",
