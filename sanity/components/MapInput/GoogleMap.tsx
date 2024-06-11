@@ -4,6 +4,7 @@ import React, { useState, useEffect, useCallback, useRef } from "react";
 type GoogleMapProps = {
   // mapElement: HTMLDivElement | null;
   googleMapApi: typeof window.google.maps;
+  location: { lat: number; lng: number };
   defaultZoom?: number;
   scrollWheel?: boolean;
   onMapClick?: (event: google.maps.MapMouseEvent) => void;
@@ -13,58 +14,59 @@ type GoogleMapProps = {
 };
 
 export function GoogleMap(props: GoogleMapProps) {
-  const { googleMapApi, defaultZoom = 8, scrollWheel = true, onMapClick, style, children } = props;
-
-  // const { googleMaps: googleMapApi, isLoadingMaps, mapsError } = useGoogleMaps();
+  const { googleMapApi, defaultZoom = 8, scrollWheel = true, location, onMapClick, style, children } = props;
 
   const [map, setMap] = useState<google.maps.Map | undefined>();
-  // const [mapClickHandler, setMapClickHandler] = useState<google.maps.MapsEventListener | undefined>();
   const mapRef = useRef<HTMLDivElement | null>(null);
+  // Ref for the click hander so we can remove it when the map unmounts
+  // or the click handler changes
+  const mapClickHandlerRef = useRef<google.maps.MapsEventListener | undefined>(undefined);
 
-  // useEffect(() => {
-  //   if (mapRef.current && googleMapApi) {
-  //     const map = new googleMapApi.Map(mapRef.current, {
-  //       center: { lat: -34.397, lng: 150.644 },
-  //       zoom: defaultZoom,
-  //       scrollwheel: scrollWheel,
-  //     });
+  // Set the click handler on the map
+  useEffect(() => {
+    if (!map) return;
 
-  //     setMap(map);
+    // Remove existing click handlers to avoid multiple click handlers on the map
+    if (mapClickHandlerRef.current) {
+      mapClickHandlerRef.current.remove();
+    }
 
-  //     if (mapClickHandler) {
-  //       mapClickHandler.remove();
-  //     }
+    // Add the new click handler to the map
+    if (onMapClick) {
+      const clickHandler = googleMapApi.event.addListener(map, "click", onMapClick);
+      mapClickHandlerRef.current = clickHandler;
+    }
+  }, [onMapClick, map]);
 
-  //     if (onMapClick) {
-  //       const clickHandler = googleMapApi.event.addListener(map, "click", onMapClick);
-  //       setMapClickHandler(clickHandler);
-  //     }
-  //   }
-  // }, [googleMapApi, defaultZoom, scrollWheel]);
+  // Clean up the map click handler when the map unmounts
+  useEffect(() => {
+    return () => {
+      if (mapClickHandlerRef.current) {
+        mapClickHandlerRef.current.remove();
+      }
+    };
+  }, []);
 
-  // useEffect(() => {
-  //   return () => {
-  //     if (mapClickHandler) {
-  //       mapClickHandler.remove();
-  //     }
-  //   };
-  // }, []);
+  function getCenter() {
+    return new googleMapApi.LatLng(location.lat, location.lng);
+  }
 
+  // Build the map and place it on the element parameter
   function constructMap(element: HTMLDivElement) {
-    console.log("element :>> ", element);
     const map = new googleMapApi.Map(element, {
       zoom: defaultZoom,
-      center: { lat: -34.397, lng: 150.644 },
+      center: getCenter(),
       scrollwheel: scrollWheel,
       streetViewControl: false,
       mapTypeControl: false,
     });
 
-    console.log("m :>> ", map);
-
     return map;
   }
 
+  // Custom ref setting function to call on the map container.
+  // This will construct the map when the element is rendered and prevets
+  // any additional map placements on the same element.
   const setMapElement = useCallback((element: HTMLDivElement | null) => {
     if (element && element !== mapRef.current) {
       const newMap = constructMap(element);

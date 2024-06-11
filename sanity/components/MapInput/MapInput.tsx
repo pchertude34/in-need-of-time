@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useCallback, useRef } from "react";
 import { ObjectInputProps } from "sanity";
 import { GoogleMapsProxy, useLoadGoogleMaps } from "@/hooks/useLoadGoogleMaps";
 import { GoogleMap } from "./GoogleMap";
@@ -6,15 +6,10 @@ import { MapMarker } from "./MapMarker";
 
 export default function MapInput(props: ObjectInputProps) {
   const { onChange, value, elementProps } = props;
-  const { isLoadingMaps, mapsError, googleMapsApi } = useLoadGoogleMaps();
 
-  const mapRef = useRef<HTMLDivElement>(null);
-
-  // const { map } = GoogleMap({ googleMapApi: googleMaps, mapElement: mapRef.current, onMapClick });
-
-  function onMapClick(event: google.maps.MapMouseEvent) {
+  const onMapClick = useCallback((event: google.maps.MapMouseEvent) => {
     console.log("Map clicked", event);
-  }
+  }, []);
 
   return (
     <div>
@@ -24,9 +19,10 @@ export default function MapInput(props: ObjectInputProps) {
           <GoogleMap
             googleMapApi={googleMapsApi}
             defaultZoom={8}
+            location={{ lat: 45.5152, lng: -122.6784 }}
             scrollWheel={true}
             onMapClick={onMapClick}
-            style={{ height: "400px", width: "100%" }}
+            style={{ height: "600px", width: "100%" }}
             className="map"
           >
             {(map) => (
