@@ -1,14 +1,15 @@
-import React, { useState, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
+import { convertMilesToMeters } from "@/lib/utils";
 
 type MapCircleProps = {
   googleMapApi: typeof window.google.maps;
   googleMap: google.maps.Map;
   position: any; //google.maps.LatLng
-  distanceRadius?: number;
+  distanceRadius: number;
 };
 
 export function MapCircle(props: MapCircleProps) {
-  const { googleMapApi, googleMap, position, distanceRadius = 10 } = props;
+  const { googleMapApi, googleMap, position, distanceRadius } = props;
 
   const circleRef = useRef<google.maps.Circle | undefined>(undefined);
 
@@ -22,7 +23,7 @@ export function MapCircle(props: MapCircleProps) {
         fillOpacity: 0.3,
         map: googleMap,
         center: position,
-        radius: distanceRadius * 1000,
+        radius: convertMilesToMeters(distanceRadius),
       });
 
       circleRef.current = circle;
@@ -34,6 +35,12 @@ export function MapCircle(props: MapCircleProps) {
       circleRef.current.setCenter(position);
     }
   }, [position]);
+
+  useEffect(() => {
+    if (circleRef.current) {
+      circleRef.current.setRadius(convertMilesToMeters(distanceRadius));
+    }
+  }, [distanceRadius]);
 
   return null;
 }

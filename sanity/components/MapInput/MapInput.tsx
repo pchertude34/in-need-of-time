@@ -12,6 +12,17 @@ const DEFUALT_LOCATION = { lat: 45.5152, lng: -122.6784 };
 export default function MapInput(props: ObjectInputProps) {
   const { onChange, value, elementProps } = props;
   const [location, setLocation] = useState(value?.location);
+  const [distanceRadius, setDistanceRadius] = useState(value?.radius || 10);
+
+  function handleDistanceRadiusChange(event: React.ChangeEvent<HTMLInputElement>) {
+    const v = Number(event.target.value);
+
+    if (v <= 0) return;
+    else {
+      setDistanceRadius(v);
+      onChange([set(v, ["radius"])]);
+    }
+  }
 
   // Handler marker to place or move a maker when the map is clicked
   const handleMapClick = useCallback((event: google.maps.MapMouseEvent) => {
@@ -58,13 +69,20 @@ export default function MapInput(props: ObjectInputProps) {
                     onMove={handleMarkerDragEnd}
                   />
                 )}
-                {location && <MapCircle googleMapApi={googleMapsApi} googleMap={map} position={location} />}
+                {location && (
+                  <MapCircle
+                    googleMapApi={googleMapsApi}
+                    googleMap={map}
+                    position={location}
+                    distanceRadius={distanceRadius}
+                  />
+                )}
               </>
             )}
           </GoogleMap>
         )}
       </GoogleMapsProxy>
-      <TextInput />
+      <TextInput type="number" value={distanceRadius} onChange={handleDistanceRadiusChange} />
     </div>
   );
 }
