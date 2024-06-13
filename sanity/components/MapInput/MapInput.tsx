@@ -1,6 +1,6 @@
-import React, { useState, useCallback, useRef } from "react";
+import React, { useState, useCallback } from "react";
 import { ObjectInputProps, set } from "sanity";
-import { TextInput } from "@sanity/ui";
+import { TextInput, Stack, Label } from "@sanity/ui";
 import { GoogleMapsProxy } from "@/hooks/useLoadGoogleMaps";
 import { GoogleMap } from "./GoogleMap";
 import { MapMarker } from "./MapMarker";
@@ -14,9 +14,11 @@ export default function MapInput(props: ObjectInputProps) {
   const [location, setLocation] = useState(value?.location);
   const [distanceRadius, setDistanceRadius] = useState(value?.radius || 10);
 
+  // Handler to update the size of the circle
   function handleDistanceRadiusChange(event: React.ChangeEvent<HTMLInputElement>) {
     const v = Number(event.target.value);
 
+    // We don't want distance radii to be 0 or less. That is just a normal provider at that point.
     if (v <= 0) return;
     else {
       setDistanceRadius(v);
@@ -39,18 +41,13 @@ export default function MapInput(props: ObjectInputProps) {
       const lat = event.latLng.lat();
       const lng = event.latLng.lng();
 
-      console.log("drag end");
-
       setLocation({ lat, lng });
       onChange([set({ lat, lng, _type: "geopoint" }, ["location"])]);
     }
   }, []);
 
-  console.log("location :>> ", location);
-
   return (
-    <div>
-      <h2>Google Maps Input</h2>
+    <Stack space={4}>
       <GoogleMapsProxy>
         {(googleMapsApi) => (
           <GoogleMap
@@ -69,7 +66,7 @@ export default function MapInput(props: ObjectInputProps) {
                     onMove={handleMarkerDragEnd}
                   />
                 )}
-                {location && (
+                {location && distanceRadius && (
                   <MapCircle
                     googleMapApi={googleMapsApi}
                     googleMap={map}
@@ -82,7 +79,10 @@ export default function MapInput(props: ObjectInputProps) {
           </GoogleMap>
         )}
       </GoogleMapsProxy>
-      <TextInput type="number" value={distanceRadius} onChange={handleDistanceRadiusChange} />
-    </div>
+      <Stack space={3}>
+        <Label>Distance Radius (miles)</Label>
+        <TextInput type="number" value={distanceRadius} onChange={handleDistanceRadiusChange} />
+      </Stack>
+    </Stack>
   );
 }
