@@ -1,8 +1,10 @@
 import React, { useState, useCallback, useRef } from "react";
 import { ObjectInputProps, set } from "sanity";
-import { GoogleMapsProxy, useLoadGoogleMaps } from "@/hooks/useLoadGoogleMaps";
+import { TextInput } from "@sanity/ui";
+import { GoogleMapsProxy } from "@/hooks/useLoadGoogleMaps";
 import { GoogleMap } from "./GoogleMap";
 import { MapMarker } from "./MapMarker";
+import { MapCircle } from "./MapCircle";
 
 // Default to Portland, OR
 const DEFUALT_LOCATION = { lat: 45.5152, lng: -122.6784 };
@@ -26,10 +28,14 @@ export default function MapInput(props: ObjectInputProps) {
       const lat = event.latLng.lat();
       const lng = event.latLng.lng();
 
+      console.log("drag end");
+
       setLocation({ lat, lng });
       onChange([set({ lat, lng, _type: "geopoint" }, ["location"])]);
     }
   }, []);
+
+  console.log("location :>> ", location);
 
   return (
     <div>
@@ -52,11 +58,13 @@ export default function MapInput(props: ObjectInputProps) {
                     onMove={handleMarkerDragEnd}
                   />
                 )}
+                {location && <MapCircle googleMapApi={googleMapsApi} googleMap={map} position={location} />}
               </>
             )}
           </GoogleMap>
         )}
       </GoogleMapsProxy>
+      <TextInput />
     </div>
   );
 }

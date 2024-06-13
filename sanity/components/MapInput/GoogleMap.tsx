@@ -56,7 +56,7 @@ export function GoogleMap(props: GoogleMapProps) {
       zoom: defaultZoom,
       center: getCenter(),
       streetViewControl: false,
-      mapTypeControl: false,
+      mapTypeControl: true,
     });
 
     return map;
