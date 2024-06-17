@@ -1,7 +1,7 @@
 import React, { useCallback, useState, useEffect, useRef } from "react";
 import { set, ObjectInputProps } from "sanity";
 import { Badge, Flex, Stack, Text, TextInput, Label, Inline, Radio } from "@sanity/ui";
-import { useGoogleMaps } from "@/hooks/useGoogleMaps";
+import { useLoadGoogleMaps } from "@/hooks/useLoadGoogleMaps";
 import { buildPlaceAddress } from "@/lib/utils";
 
 const ESTABLISHMENT = "establishment";
@@ -33,7 +33,7 @@ export default function CustomStringInput(props: ObjectInputProps) {
   const placeInputRef = useRef<HTMLInputElement>(null);
   const autocompleteRef = useRef<google.maps.places.Autocomplete>();
   const autocompleteListener = useRef<google.maps.MapsEventListener>();
-  const { isLoadingMaps, mapsError } = useGoogleMaps();
+  const { isLoadingMaps, mapsError } = useLoadGoogleMaps();
 
   // Handler for saving values on place change
   const handlePlaceChange = useCallback(

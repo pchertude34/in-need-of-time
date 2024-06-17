@@ -1,4 +1,5 @@
 import { defineField, defineType } from "sanity";
+import baseProviderFields from "./provider/baseProvider";
 import PlaceInput from "@/sanity/components/PlaceInput/PlaceInput";
 import { groq } from "next-sanity";
 import { client } from "@/sanity/lib/client";
@@ -30,12 +31,12 @@ const providerSchema = defineType({
   type: "document",
   title: "Provider",
   fields: [
-    {
+    defineField({
       name: "title",
       title: "Provider Name",
       type: "string",
-    },
-    {
+    }),
+    defineField({
       name: "place",
       title: "Place",
       type: "object",
@@ -67,70 +68,8 @@ const providerSchema = defineType({
 
           return true;
         }),
-    },
-    {
-      name: "serviceTypes",
-      title: "Service Types",
-      type: "array",
-      of: [
-        {
-          type: "reference",
-          to: [{ type: "serviceType" }],
-        },
-      ],
-      validation: (ServiceType) => ServiceType.unique(),
-    },
-    {
-      name: "publicContact",
-      title: "Public Contact",
-      type: "object",
-      description:
-        "Additional contact information that may not be available in the Place API. This information will be shown to the public, and prioritiezed over the Place API data.",
-      fields: [
-        {
-          name: "phone",
-          title: "Phone",
-          type: "string",
-        },
-        {
-          name: "website",
-          title: "Website",
-          type: "url",
-        },
-      ],
-    },
-    {
-      name: "description",
-      title: "Description",
-      type: "array",
-      of: [{ type: "block" }],
-    },
-    {
-      name: "internalContact",
-      title: "Internal Contact",
-      type: "object",
-      description: "Internal Contact information for IToN Team Members. This data will not be shown to the public.",
-      fields: [
-        {
-          name: "contactName",
-          title: "Contact Name",
-          type: "string",
-          description: "The name of the internal contact person.",
-        },
-        {
-          name: "contactEmail",
-          title: "Contact Email",
-          type: "string",
-          description: "The email of the internal contact person.",
-        },
-        {
-          name: "contactPhone",
-          title: "Contact Phone",
-          type: "string",
-          description: "The phone number of the internal contact person.",
-        },
-      ],
-    },
+    }),
+    ...baseProviderFields,
   ],
   preview: {
     select: {
