@@ -18,11 +18,12 @@ export default function MapInput(props: ObjectInputProps) {
   function handleDistanceRadiusChange(event: React.ChangeEvent<HTMLInputElement>) {
     const v = Number(event.target.value);
 
-    // We don't want distance radii to be 0 or less. That is just a normal provider at that point.
-    if (v <= 0) return;
+    // We don't want distance radii to be negative.
+    // We will handle the > 0 check in the schema validation.
+    if (v < 0) return;
     else {
       setDistanceRadius(v);
-      onChange([set(v, ["radius"])]);
+      onChange([set(v, ["distanceRadius"])]);
     }
   }
 
@@ -66,7 +67,7 @@ export default function MapInput(props: ObjectInputProps) {
                     onMove={handleMarkerDragEnd}
                   />
                 )}
-                {location && distanceRadius && (
+                {location && (
                   <MapCircle
                     googleMapApi={googleMapsApi}
                     googleMap={map}

@@ -1,4 +1,5 @@
-import { defineType } from "sanity";
+import { defineType, defineField } from "sanity";
+import baseProviderFields from "./provider/baseProvider";
 import MapInput from "../components/MapInput/MapInput";
 
 export default defineType({
@@ -6,12 +7,12 @@ export default defineType({
   type: "document",
   title: "Regional Provider",
   fields: [
-    {
+    defineField({
       name: "title",
       title: "Provider Name",
       type: "string",
-    },
-    {
+    }),
+    defineField({
       name: "region",
       title: "Region",
       type: "object",
@@ -26,35 +27,16 @@ export default defineType({
       components: {
         input: MapInput,
       },
-    },
-    {
-      name: "serviceTypes",
-      title: "Service Types",
-      type: "array",
-      of: [
-        {
-          type: "reference",
-          to: [{ type: "serviceType" }],
-        },
-      ],
-      validation: (ServiceType) => ServiceType.unique(),
-    },
-    {
-      name: "phone",
-      title: "Phone",
-      type: "string",
-    },
-    {
-      name: "website",
-      title: "Website",
-      type: "url",
-    },
-    {
-      name: "description",
-      title: "Description",
-      type: "array",
-      of: [{ type: "block" }],
-    },
+      validation: (Rule) =>
+        Rule.custom((value: any) => {
+          console.log("value :>> ", value);
+          if (value.distanceRadius <= 0) {
+            return "Distance Radius must be greater than 0";
+          }
+          return true;
+        }),
+    }),
+    ...baseProviderFields,
   ],
   preview: {
     select: {
