@@ -14,7 +14,7 @@ const serviceTypeSchema = {
       type: "slug",
       options: {
         source: "name",
-        slugify: (input: string) => input.toLowerCase().replace(/\s_/g, "-"),
+        slugify: (input: string) => input.toLowerCase().replace(/[`~!@#$%^&*()_|\-=?;:'",.<>\s\{\}\[\]\\\/]/gi, "-"),
       },
     },
     {
