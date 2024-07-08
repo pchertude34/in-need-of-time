@@ -4,6 +4,7 @@ import React, { useState, useEffect, useCallback, useRef } from "react";
 type GoogleMapProps = {
   googleMapApi: typeof window.google.maps;
   location: { lat: number; lng: number };
+  defaultLocation?: { lat: number; lng: number };
   defaultZoom?: number;
   onMapClick?: (event: google.maps.MapMouseEvent) => void;
   style?: React.CSSProperties;
@@ -12,7 +13,7 @@ type GoogleMapProps = {
 };
 
 export function GoogleMap(props: GoogleMapProps) {
-  const { googleMapApi, defaultZoom = 8, location, onMapClick, style, className, children } = props;
+  const { googleMapApi, defaultZoom = 8, defaultLocation, location, onMapClick, style, className, children } = props;
 
   const [map, setMap] = useState<google.maps.Map | undefined>();
   // const mapRef = useRef<google.maps.Map | undefined>();
@@ -47,7 +48,8 @@ export function GoogleMap(props: GoogleMapProps) {
   }, []);
 
   function getCenter() {
-    return new googleMapApi.LatLng(location.lat, location.lng);
+    if (location) return new googleMapApi.LatLng(location.lat, location.lng);
+    else if (defaultLocation) return new googleMapApi.LatLng(defaultLocation.lat, defaultLocation.lng);
   }
 
   // Build the map and place it on the element parameter

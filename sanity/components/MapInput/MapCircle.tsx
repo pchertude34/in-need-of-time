@@ -23,6 +23,7 @@ export function MapCircle(props: MapCircleProps) {
         fillOpacity: 0.3,
         map: googleMap,
         center: position,
+        clickable: false,
         radius: convertMilesToMeters(distanceRadius),
       });
 

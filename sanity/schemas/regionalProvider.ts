@@ -23,13 +23,20 @@ export default defineType({
           type: "geopoint",
         },
         { name: "distanceRadius", title: "Distance Radius", type: "number" },
+        { name: "isNational", title: "National", type: "boolean" },
       ],
       components: {
         input: MapInput,
       },
       validation: (Rule) =>
         Rule.custom((value: any) => {
-          console.log("value :>> ", value);
+          // We don't need a location or distance radius for national providers
+          if (value.isNational) {
+            return true;
+          }
+          if (!value.location) {
+            return "Location is required";
+          }
           if (value.distanceRadius <= 0) {
             return "Distance Radius must be greater than 0";
           }
