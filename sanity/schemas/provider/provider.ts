@@ -1,5 +1,5 @@
 import { defineField, defineType } from "sanity";
-import baseProviderFields from "./provider/baseProvider";
+import baseProviderFields from "./baseProvider";
 import PlaceInput from "@/sanity/components/PlaceInput/PlaceInput";
 import { groq } from "next-sanity";
 import { client } from "@/sanity/lib/client";
