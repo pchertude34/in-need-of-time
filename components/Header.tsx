@@ -54,7 +54,7 @@ export default function Header() {
             </div>
             <div className="hidden sm:ml-6 sm:flex sm:items-center">
               <Link href="/find" passHref>
-                <Button>Find Your Path</Button>
+                <Button variant={"light"}>Find Your Path</Button>
               </Link>
             </div>
             <div className="-mr-2 flex items-center sm:hidden">
