@@ -19,9 +19,9 @@ const buttonVariants = cva(
         default: "px-6 py-3 text-base h-10 font-semibold",
         sm: "px-4 py-2 text-sm leading-4 h-7 font-medium",
         lg: "px-8 py-4 text-lg leading-4 h-12 font-semibold",
-        icon: "p-3",
-        "icon-sm": "p-2",
-        "icon-lg": "p-4",
+        icon: "p-3 h-10 w-10",
+        "icon-sm": "p-2 h-8 w-8",
+        "icon-lg": "p-4 h-12 w-12",
       },
     },
     defaultVariants: {
