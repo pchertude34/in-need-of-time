@@ -36,8 +36,8 @@ export default function Header() {
       className="border-b border-gray-200 bg-white"
     >
       <>
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:p-4">
-          <div className="flex h-16 justify-between">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:p-5">
+          <div className="flex justify-between">
             <div className="flex">
               <div className="flex flex-shrink-0 items-center">
                 <img
