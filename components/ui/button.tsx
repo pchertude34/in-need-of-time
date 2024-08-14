@@ -16,7 +16,7 @@ const buttonVariants = cva(
           "text-slate-900 bg-slate-100 hover:bg-slate-200 active:bg-slate:300 active:border-slate-50 disabled:bg-slate-50 disabled:text-slate-500 focus:ring-slate-200",
       },
       size: {
-        default: "px-6 py-3 text-base h-10 font-semibold",
+        default: "px-6 py-3 text-base h-10 font-medium",
         sm: "px-4 py-2 text-sm leading-4 h-7 font-medium",
         lg: "px-8 py-4 text-lg leading-4 h-12 font-semibold",
         icon: "p-3 h-10 w-10",
