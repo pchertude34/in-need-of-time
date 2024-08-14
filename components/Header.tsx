@@ -3,10 +3,25 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Bars3Icon, XMarkIcon, ArrowRightIcon } from "@heroicons/react/24/outline";
-import { Button } from "@/components/ui/button";
+import {
+  Bars3Icon,
+  XMarkIcon,
+  ArrowRightIcon,
+  HomeIcon,
+  MagnifyingGlassIcon,
+  BookOpenIcon,
+} from "@heroicons/react/24/outline";
 import { Collapsible, CollapsibleTrigger, CollapsibleContent } from "@/components/ui/collapsible";
+import {
+  NavigationMenu,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  navigationMenuTriggerStyle,
+} from "@/components/ui/navigation-menu";
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { SearchIcon } from "lucide-react";
 
 export const navigation = [{ name: "Home", href: "/" }];
 
@@ -21,7 +36,7 @@ export default function Header() {
       className="border-b border-gray-200 bg-white"
     >
       <>
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:p-4">
           <div className="flex h-16 justify-between">
             <div className="flex">
               <div className="flex flex-shrink-0 items-center">
@@ -37,7 +52,54 @@ export default function Header() {
                 />
               </div>
               <div className="hidden sm:-my-px sm:ml-6 sm:flex sm:space-x-8">
-                {navigation.map((item) => (
+                <NavigationMenu>
+                  <NavigationMenuList>
+                    <NavigationMenuItem>
+                      <Link href="/" legacyBehavior passHref>
+                        <NavigationMenuLink
+                          data-active={pathname === "/" ? true : null}
+                          className={navigationMenuTriggerStyle()}
+                        >
+                          <HomeIcon className="mr-2 h-4 w-4" />
+                          Home
+                        </NavigationMenuLink>
+                      </Link>
+                    </NavigationMenuItem>
+                    <NavigationMenuItem>
+                      <Link href="/search" legacyBehavior passHref>
+                        <NavigationMenuLink
+                          data-active={pathname === "/search" ? true : null}
+                          className={navigationMenuTriggerStyle()}
+                        >
+                          <SearchIcon className="mr-2 h-4 w-4" />
+                          Search
+                        </NavigationMenuLink>
+                      </Link>
+                    </NavigationMenuItem>
+                    {/* <NavigationMenuItem>
+                      <Link href="/providers" legacyBehavior passHref>
+                        <NavigationMenuLink
+                          data-active={pathname === "/providers" ? true : null}
+                          className={navigationMenuTriggerStyle()}
+                        >
+                          Providers
+                        </NavigationMenuLink>
+                      </Link>
+                    </NavigationMenuItem> */}
+                    <NavigationMenuItem>
+                      <Link href="/about" legacyBehavior passHref>
+                        <NavigationMenuLink
+                          data-active={pathname === "/about" ? true : null}
+                          className={navigationMenuTriggerStyle()}
+                        >
+                          <BookOpenIcon className="mr-2 h-4 w-4" />
+                          About
+                        </NavigationMenuLink>
+                      </Link>
+                    </NavigationMenuItem>
+                  </NavigationMenuList>
+                </NavigationMenu>
+                {/* {navigation.map((item) => (
                   <Link
                     key={item.href}
                     className={cn("inline-flex items-center border-b-2 px-1 pt-1 text-sm font-medium", {
@@ -49,7 +111,7 @@ export default function Header() {
                   >
                     {item.name}
                   </Link>
-                ))}
+                ))} */}
               </div>
             </div>
             <div className="hidden sm:ml-6 sm:flex sm:items-center">
