@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
+import { Bars3Icon, XMarkIcon, ArrowRightIcon } from "@heroicons/react/24/outline";
 import { Button } from "@/components/ui/button";
 import { Collapsible, CollapsibleTrigger, CollapsibleContent } from "@/components/ui/collapsible";
 import { cn } from "@/lib/utils";
@@ -53,9 +53,11 @@ export default function Header() {
               </div>
             </div>
             <div className="hidden sm:ml-6 sm:flex sm:items-center">
-              <Link href="/find" passHref>
-                <Button variant={"light"}>Find Your Path</Button>
-              </Link>
+              <Button variant="primary" asChild>
+                <Link href="/find">
+                  Find a Provider <ArrowRightIcon className="ml-2 h-3 w-3" />
+                </Link>
+              </Button>
             </div>
             <div className="-mr-2 flex items-center sm:hidden">
               {/* Mobile menu button */}
