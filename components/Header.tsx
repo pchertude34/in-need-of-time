@@ -36,23 +36,16 @@ export default function Header() {
       className="border-b border-gray-200 bg-white"
     >
       <>
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:p-5">
+        <div className="mx-auto max-w-7xl px-4 py-5 sm:px-6 lg:p-5">
           <div className="flex">
             <div className="flex flex-1 items-center">
               <div className="flex flex-shrink-0 items-center">
                 <Link href="/" passHref>
-                  <Image src="/logo.svg" alt="Logo" height={45} width={66} className="h-12" />
+                  <Image src="/logo.svg" alt="Logo" height={45} width={66} className="hidden h-12 w-auto lg:block" />
                 </Link>
-                {/* <img
-                  className="block h-8 w-auto lg:hidden"
-                  src="https://tailwindui.com/img/logos/mark.svg?color=green&shade=600"
-                  alt="Your Company"
-                />
-                <img
-                  className="hidden h-8 w-auto lg:block"
-                  src="https://tailwindui.com/img/logos/mark.svg?color=green&shade=600"
-                  alt="Your Company"
-                /> */}
+                <Link href="/" passHref>
+                  <Image src="/logo.svg" alt="Logo" height={40} width={59} className="block h-8 w-auto lg:hidden" />
+                </Link>
               </div>
             </div>
             <div className="hidden flex-1 items-center justify-center sm:flex">
