@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import Image from "next/image";
 import {
   Bars3Icon,
   XMarkIcon,
@@ -21,7 +22,6 @@ import {
 } from "@/components/ui/navigation-menu";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { SearchIcon } from "lucide-react";
 
 export const navigation = [{ name: "Home", href: "/" }];
 
@@ -40,7 +40,10 @@ export default function Header() {
           <div className="flex">
             <div className="flex flex-1 items-center">
               <div className="flex flex-shrink-0 items-center">
-                <img
+                <Link href="/" passHref>
+                  <Image src="/logo.svg" alt="Logo" height={45} width={66} className="h-12" />
+                </Link>
+                {/* <img
                   className="block h-8 w-auto lg:hidden"
                   src="https://tailwindui.com/img/logos/mark.svg?color=green&shade=600"
                   alt="Your Company"
@@ -49,7 +52,7 @@ export default function Header() {
                   className="hidden h-8 w-auto lg:block"
                   src="https://tailwindui.com/img/logos/mark.svg?color=green&shade=600"
                   alt="Your Company"
-                />
+                /> */}
               </div>
             </div>
             <div className="hidden flex-1 items-center justify-center sm:flex">
@@ -72,7 +75,7 @@ export default function Header() {
                         data-active={pathname === "/search" ? true : null}
                         className={navigationMenuTriggerStyle()}
                       >
-                        <SearchIcon className="mr-2 h-4 w-4" />
+                        <MagnifyingGlassIcon className="mr-2 h-4 w-4" />
                         Search
                       </NavigationMenuLink>
                     </Link>
