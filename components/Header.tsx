@@ -36,7 +36,10 @@ export default function Header() {
       className="border-b border-gray-200 bg-white"
     >
       <>
-        <div className="mx-auto max-w-7xl px-4 py-5 sm:px-6 lg:p-5">
+        {isMobileMenuOpen && (
+          <div className="fixed z-10 h-screen w-screen bg-[#01181C] opacity-80 mix-blend-overlay sm:hidden"></div>
+        )}
+        <div className="relative z-20 mx-auto max-w-7xl bg-white px-4 py-5 sm:px-6 lg:p-5">
           <div className="flex">
             <div className="flex flex-1 items-center">
               <div className="flex flex-shrink-0 items-center">
@@ -120,7 +123,8 @@ export default function Header() {
           </div>
         </div>
 
-        <CollapsibleContent className="sm:hidden">
+        {/* Mobile Menu */}
+        <CollapsibleContent className="absolute z-10 w-screen rounded-b-xl bg-white sm:hidden">
           <div className="px-4 pb-5 pt-2">
             <NavigationMenu orientation="vertical" className="max-w-full flex-col items-stretch">
               <NavigationMenuList className="flex-col items-stretch">
@@ -153,24 +157,6 @@ export default function Header() {
                 Find a Provider <ArrowRightIcon className="ml-2 h-3 w-3" />
               </Link>
             </Button>
-
-            {/* <div className="bg-">
-              {navigation.map((item) => (
-                <CollapsibleTrigger key={`mobile-menu${item.name}`} asChild>
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    className={cn("block border-l-4 py-2 pl-3 pr-4 text-base font-medium", {
-                      "border-emerald-500 bg-emerald-50 text-emerald-700": pathname === item.href,
-                      "border-transparent text-gray-600 hover:border-gray-300 hover:bg-gray-50 hover:text-gray-800":
-                        pathname !== item.href,
-                    })}
-                  >
-                    {item.name}
-                  </Link>
-                </CollapsibleTrigger>
-              ))}
-            </div> */}
           </div>
         </CollapsibleContent>
       </>
