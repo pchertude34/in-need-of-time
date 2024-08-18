@@ -108,6 +108,10 @@ const config = {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
       },
+      backgroundImage: {
+        "hero-image": "url('/images/hero-image.jpg')",
+        "radial-gradient-center": "radial-gradient(circle_at_center,_var(--tw-gradient-stops))",
+      },
     },
   },
   plugins: [require("tailwindcss-animate"), require("@tailwindcss/typography")],

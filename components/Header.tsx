@@ -21,7 +21,6 @@ import {
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
 
 export const navigation = [{ name: "Home", href: "/" }];
 
