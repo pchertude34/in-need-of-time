@@ -1,4 +1,5 @@
 import { ServiceSearchBar } from "@/components/ServiceSearchBar";
+import { Input } from "@/components/ui/input";
 
 export default function Home() {
   return (

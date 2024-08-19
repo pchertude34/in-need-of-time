@@ -1,22 +1,39 @@
 import * as React from "react";
 
 import { cn } from "@/lib/utils";
+import { cva, VariantProps } from "class-variance-authority";
 
-export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {}
+const inputVariants = cva(
+  "flex w-full rounded-xl border border-transparent transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-100 disabled:cursor-not-allowed disabled:opacity-50 dark:border-slate-800 dark:bg-slate-950 dark:ring-offset-slate-950",
+  {
+    variants: {
+      variant: {
+        primary:
+          "bg-white border-slate-300 placeholder-slate-500 text-slate-900 focus:border-primary-500 focus:ring-primary-200",
+      },
+      size: {
+        sm: "px-2.5 py-2 text-sm leading-4 h-8",
+        default: "px-3.5 py-2.5 text-base h-10",
+        lg: "px-4 py-3 text-lg leading-4 h-12",
+      },
+    },
+    defaultVariants: {
+      variant: "primary",
+      size: "default",
+    },
+  },
+);
 
-const Input = React.forwardRef<HTMLInputElement, InputProps>(({ className, type, ...props }, ref) => {
-  return (
-    <input
-      type={type}
-      className={cn(
-        "flex h-10 w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm ring-offset-white file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-slate-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-950 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:border-slate-800 dark:bg-slate-950 dark:ring-offset-slate-950 dark:placeholder:text-slate-400 dark:focus-visible:ring-slate-300",
-        className,
-      )}
-      ref={ref}
-      {...props}
-    />
-  );
+export interface InputProps
+  // Omit the standard size attribute from the input element in favor of our cva size variant attribute
+  extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "size">,
+    VariantProps<typeof inputVariants> {
+  asChild?: boolean;
+}
+
+const Input = React.forwardRef<HTMLInputElement, InputProps>(({ className, variant, size, type, ...props }, ref) => {
+  return <input type={type} className={cn(inputVariants({ variant, size, className }))} ref={ref} {...props} />;
 });
 Input.displayName = "Input";
 
-export { Input };
+export { Input, inputVariants };
