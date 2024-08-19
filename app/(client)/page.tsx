@@ -1,3 +1,5 @@
+import { ServiceSearchBar } from "@/components/ServiceSearchBar";
+
 export default function Home() {
   return (
     <main className="container">
@@ -18,6 +20,8 @@ export default function Home() {
           </div>
         </div>
       </div>
+
+      <ServiceSearchBar />
     </main>
   );
 }
