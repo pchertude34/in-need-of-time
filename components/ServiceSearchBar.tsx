@@ -7,6 +7,29 @@ import { Separator } from "./ui/separator";
 import { Combobox } from "./ui/combobox";
 import { InputGroup, InputLeftElement, InputRightElement } from "./ui/input-group";
 
+const frameworks = [
+  {
+    value: "next.js",
+    label: "Next.js",
+  },
+  {
+    value: "sveltekit",
+    label: "SvelteKit",
+  },
+  {
+    value: "nuxt.js",
+    label: "Nuxt.js",
+  },
+  {
+    value: "remix",
+    label: "Remix",
+  },
+  {
+    value: "astro",
+    label: "Astro",
+  },
+];
+
 export function ServiceSearchBar() {
   return (
     <div className="rounded-full border border-slate-200 px-3 py-4">
@@ -49,7 +72,10 @@ export function ServiceSearchBar() {
           <InputLeftElement>
             <MagnifyingGlassIcon className="h-4 w-4 text-slate-500" />
           </InputLeftElement>
-          <Combobox className="px-10" />
+          <Combobox className="px-10" items={frameworks} placeholder="Select a provider type" />
+          <InputRightElement>
+            <MagnifyingGlassIcon className="h-4 w-4" />
+          </InputRightElement>
         </InputGroup>
         {/* <div className="absolute inset-y-0 right-0 flex items-center pr-3">
             <Button variant="text-primary" size="text">

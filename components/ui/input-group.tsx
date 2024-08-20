@@ -32,6 +32,8 @@ type InputRightElementProps = {
 };
 export function InputRightElement(props: InputRightElementProps) {
   return (
-    <div className={cn("absolute inset-y-0 right-0 flex items-center pr-3", props.className)}>{props.children}</div>
+    <div className={cn("pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3", props.className)}>
+      {props.children}
+    </div>
   );
 }
