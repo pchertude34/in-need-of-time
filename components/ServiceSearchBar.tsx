@@ -6,6 +6,7 @@ import { Input } from "./ui/input";
 import { Separator } from "./ui/separator";
 import { Combobox } from "./ui/combobox";
 import { InputGroup, InputLeftElement, InputRightElement } from "./ui/input-group";
+import { Typeahead } from "./Typeahead";
 
 const frameworks = [
   {
@@ -72,11 +73,12 @@ export function ServiceSearchBar() {
           <InputLeftElement>
             <MagnifyingGlassIcon className="h-4 w-4 text-slate-500" />
           </InputLeftElement>
-          <Combobox className="px-10" items={frameworks} placeholder="Select a provider type" />
+          <Combobox className="px-10" items={frameworks} placeholder="Enter your location or ZIP" />
           <InputRightElement>
             <MagnifyingGlassIcon className="h-4 w-4" />
           </InputRightElement>
         </InputGroup>
+        <Typeahead />
         {/* <div className="absolute inset-y-0 right-0 flex items-center pr-3">
             <Button variant="text-primary" size="text">
               <LocateFixed className="h-4 w-4" />

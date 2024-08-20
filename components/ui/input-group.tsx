@@ -13,27 +13,48 @@ export function InputGroup(props: InputGroupProps) {
 }
 
 type InputLeftElementProps = {
+  isButton?: boolean;
   children: React.ReactNode;
   className?: string;
 };
 export function InputLeftElement(props: InputLeftElementProps) {
-  const { children, className } = props;
+  const { isButton = false, children, className } = props;
 
   return (
-    <div className={cn("pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3", className)}>
+    <div
+      className={cn(
+        "absolute inset-y-0 left-0 flex items-center pl-3",
+        {
+          "pointer-events-auto": isButton,
+          "pointer-events-none": !isButton,
+        },
+        className,
+      )}
+    >
       {children}
     </div>
   );
 }
 
 type InputRightElementProps = {
+  isButton?: boolean;
   children: React.ReactNode;
   className?: string;
 };
 export function InputRightElement(props: InputRightElementProps) {
+  const { isButton = true, children, className } = props;
   return (
-    <div className={cn("pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3", props.className)}>
-      {props.children}
+    <div
+      className={cn(
+        " absolute inset-y-0 right-0 flex items-center pr-3",
+        {
+          "pointer-events-auto": isButton,
+          "pointer-events-none": !isButton,
+        },
+        className,
+      )}
+    >
+      {children}
     </div>
   );
 }

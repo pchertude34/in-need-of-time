@@ -23,7 +23,19 @@ export function Combobox(props: ComboboxProps) {
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <Button variant="text-dark" role="combobox" aria-expanded={open} className={cn("justify-between", className)}>
+        <Button
+          variant="text-dark"
+          role="combobox"
+          aria-expanded={open}
+          className={cn(
+            "justify-between font-normal",
+            {
+              "text-slate-500": !value,
+              "text-slate-900": value,
+            },
+            className,
+          )}
+        >
           {value ? items.find((item) => item.value === value)?.label : placeholder}
         </Button>
       </PopoverTrigger>
