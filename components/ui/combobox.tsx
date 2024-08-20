@@ -32,13 +32,14 @@ const frameworks = [
 ];
 
 type ComboboxProps = {
-  items: { value: string; label: string }[];
+  items?: { value: string; label: string }[];
   placeholder?: string;
   emptyMessage?: string;
+  className?: string;
 };
 
 export function Combobox(props: ComboboxProps) {
-  const { items, placeholder, emptyMessage = "No items found" } = props;
+  const { items, placeholder, emptyMessage = "No items found", className } = props;
   const [open, setOpen] = React.useState(false);
   const [value, setValue] = React.useState("");
 
@@ -52,7 +53,7 @@ export function Combobox(props: ComboboxProps) {
       </PopoverTrigger>
       <PopoverContent className="w-[200px] p-0">
         <Command>
-          <CommandInput placeholder="Search framework..." className="h-9" />
+          <CommandInput placeholder="Search framework..." className={cn("h-9", className)} />
           <CommandList>
             <CommandEmpty>No framework found.</CommandEmpty>
             <CommandGroup>
