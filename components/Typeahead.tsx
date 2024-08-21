@@ -1,10 +1,10 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState } from "react";
 import { useCombobox } from "downshift";
-import { ChevronDownIcon } from "@heroicons/react/24/outline";
+import { ChevronDownIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import { Input } from "./ui/input";
-import { InputGroup, InputRightElement } from "./ui/input-group";
+import { InputGroup, InputLeftElement, InputRightElement } from "./ui/input-group";
 import { Button } from "./ui/button";
 import { cn } from "@/lib/utils";
 
@@ -25,24 +25,33 @@ const books = [
   { id: "book-10", author: "Fyodor Dostoevsky", title: "Crime and Punishment" },
 ];
 
-type TypeaheadProps = {};
+type TypeaheadProps = {
+  placeholder?: string;
+};
 
 export function Typeahead(props: TypeaheadProps) {
+  const { placeholder } = props;
   const [items, setItems] = useState(books);
 
-  const { isOpen, selectedItem, getToggleButtonProps, getMenuProps, getInputProps, highlightedIndex, getItemProps } =
-    useCombobox({
-      items,
-      onInputValueChange: ({ inputValue }) => {
-        setItems(books.filter((item) => item.title.toLowerCase().startsWith(inputValue.toLowerCase())));
-      },
-    });
+  const { isOpen, getToggleButtonProps, getMenuProps, getInputProps, highlightedIndex, getItemProps } = useCombobox({
+    items,
+    onInputValueChange: ({ inputValue }) => {
+      setItems(books.filter((item) => item.title.toLowerCase().startsWith(inputValue.toLowerCase())));
+    },
+    itemToString(item) {
+      return item ? item.title : "";
+    },
+  });
 
   return (
     <div>
       <InputGroup>
+        <InputLeftElement>
+          <MagnifyingGlassIcon className="h-4 w-4" />
+        </InputLeftElement>
         <Input
           className="rounded-full border-transparent px-10 focus:border focus:border-slate-400 focus:bg-slate-50"
+          placeholder={placeholder}
           {...getInputProps()}
         />
         <InputRightElement>

@@ -51,41 +51,15 @@ export function ServiceSearchBar() {
             </Button>
           </InputRightElement>
         </InputGroup>
-        {/* <div className="relative">
-          <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-            <span className="text-slate-500">
-              <MapPinIcon className="h-4 w-4" />
-            </span>
-          </div>
-          <Input className="block border-none pl-10 pr-10" type="text" placeholder="Enter your location or ZIP" />
-          <div className="absolute inset-y-0 right-0 flex items-center pr-3">
-            <Button variant="text-primary" size="text">
-              <LocateFixed className="h-4 w-4" />
-            </Button>
-          </div>
-        </div> */}
-        {/*  */}
         <div className="mx-3">
           <Separator orientation="vertical" />
         </div>
         {/* Provider type selector */}
-        <InputGroup>
-          <InputLeftElement>
-            <MagnifyingGlassIcon className="h-4 w-4 text-slate-500" />
-          </InputLeftElement>
-          <Combobox className="px-10" items={frameworks} placeholder="Enter your location or ZIP" />
-          <InputRightElement>
-            <MagnifyingGlassIcon className="h-4 w-4" />
-          </InputRightElement>
-        </InputGroup>
-        <Typeahead />
-        {/* <div className="absolute inset-y-0 right-0 flex items-center pr-3">
-            <Button variant="text-primary" size="text">
-              <LocateFixed className="h-4 w-4" />
-            </Button>
-          </div> */}
+        <Typeahead placeholder="Search provider type" />
+        <div className="mx-3">
+          <Separator orientation="vertical" />
+        </div>
       </div>
     </div>
-    // </div>
   );
 }
