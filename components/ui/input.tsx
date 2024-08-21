@@ -9,7 +9,7 @@ const inputVariants = cva(
     variants: {
       variant: {
         primary:
-          "bg-white border-slate-300 placeholder-slate-500 text-slate-900 focus:border-primary-500 focus:ring-primary-200",
+          "bg-white border-slate-300 placeholder-slate-500 data-[placeholder]:text-slate-500 text-slate-900 focus:border-primary-500 focus:ring-primary-200",
       },
       size: {
         sm: "px-2.5 py-2 text-sm leading-4 h-8",

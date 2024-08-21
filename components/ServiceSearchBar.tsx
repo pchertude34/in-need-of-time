@@ -1,5 +1,5 @@
 import React from "react";
-import { MapPinIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outline";
+import { MapPinIcon, MagnifyingGlassIcon, ViewfinderCircleIcon } from "@heroicons/react/24/outline";
 import { LocateFixed } from "lucide-react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
@@ -7,6 +7,7 @@ import { Separator } from "./ui/separator";
 import { Combobox } from "./ui/combobox";
 import { InputGroup, InputLeftElement, InputRightElement } from "./ui/input-group";
 import { Typeahead } from "./Typeahead";
+import { Select, SelectTrigger, SelectContent, SelectGroup, SelectLabel, SelectItem, SelectValue } from "./ui/select";
 
 const frameworks = [
   {
@@ -59,6 +60,24 @@ export function ServiceSearchBar() {
         <div className="mx-3">
           <Separator orientation="vertical" />
         </div>
+        <InputGroup>
+          <InputLeftElement>
+            <ViewfinderCircleIcon className="h-4 w-4" />
+          </InputLeftElement>
+          <Select>
+            <SelectTrigger className="w-[400px] rounded-full border-transparent pl-10 focus:border focus:border-slate-400 focus:bg-slate-50">
+              <SelectValue placeholder="Select radius" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                <SelectItem value="10">10 miles</SelectItem>
+                <SelectItem value="20">20 miles</SelectItem>
+                <SelectItem value="50">50 miles</SelectItem>
+                <SelectItem value="100">100 miles</SelectItem>
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+        </InputGroup>
       </div>
     </div>
   );
