@@ -27,10 +27,11 @@ const books = [
 
 type TypeaheadProps = {
   placeholder?: string;
+  className?: string;
 };
 
 export function Typeahead(props: TypeaheadProps) {
-  const { placeholder } = props;
+  const { placeholder, className } = props;
   const [items, setItems] = useState(books);
 
   const { isOpen, getToggleButtonProps, getMenuProps, getInputProps, highlightedIndex, getItemProps } = useCombobox({
@@ -44,7 +45,7 @@ export function Typeahead(props: TypeaheadProps) {
   });
 
   return (
-    <div>
+    <div className={className}>
       <InputGroup>
         <InputLeftElement>
           <MagnifyingGlassIcon className="h-4 w-4" />

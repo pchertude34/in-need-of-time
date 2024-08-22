@@ -37,12 +37,12 @@ export function ServiceSearchBar() {
     <div className="rounded-full border border-slate-200 px-3 py-4">
       <div className="flex items-stretch">
         {/* Location input */}
-        <InputGroup>
+        <InputGroup className="grow">
           <InputLeftElement>
             <MapPinIcon className="h-4 w-4 text-slate-500" />
           </InputLeftElement>
           <Input
-            className="rounded-full border-transparent px-10 focus:border focus:border-slate-400 focus:bg-slate-50"
+            className=" rounded-full border-transparent px-10 focus:border focus:border-slate-400 focus:bg-slate-50"
             type="text"
             placeholder="Enter your location or ZIP"
           />
@@ -56,16 +56,16 @@ export function ServiceSearchBar() {
           <Separator orientation="vertical" />
         </div>
         {/* Provider type selector */}
-        <Typeahead placeholder="Search provider type" />
+        <Typeahead placeholder="Search provider type" className="grow" />
         <div className="mx-3">
           <Separator orientation="vertical" />
         </div>
-        <InputGroup>
+        <InputGroup className="">
           <InputLeftElement>
             <ViewfinderCircleIcon className="h-4 w-4" />
           </InputLeftElement>
           <Select>
-            <SelectTrigger className="w-[400px] rounded-full border-transparent pl-10 focus:border focus:border-slate-400 focus:bg-slate-50">
+            <SelectTrigger className="rounded-full border-transparent pl-10 focus:border focus:border-slate-400 focus:bg-slate-50">
               <SelectValue placeholder="Select radius" />
             </SelectTrigger>
             <SelectContent>
@@ -78,6 +78,9 @@ export function ServiceSearchBar() {
             </SelectContent>
           </Select>
         </InputGroup>
+        <Button variant="primary" size="icon" className="ml-6">
+          <MagnifyingGlassIcon className="h-5 w-5" />
+        </Button>
       </div>
     </div>
   );
