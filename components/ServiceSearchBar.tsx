@@ -4,37 +4,18 @@ import { LocateFixed } from "lucide-react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Separator } from "./ui/separator";
-import { Combobox } from "./ui/combobox";
 import { InputGroup, InputLeftElement, InputRightElement } from "./ui/input-group";
 import { Typeahead } from "./Typeahead";
 import { Select, SelectTrigger, SelectContent, SelectGroup, SelectLabel, SelectItem, SelectValue } from "./ui/select";
+import { cn } from "@/lib/utils";
 
-const frameworks = [
-  {
-    value: "next.js",
-    label: "Next.js",
-  },
-  {
-    value: "sveltekit",
-    label: "SvelteKit",
-  },
-  {
-    value: "nuxt.js",
-    label: "Nuxt.js",
-  },
-  {
-    value: "remix",
-    label: "Remix",
-  },
-  {
-    value: "astro",
-    label: "Astro",
-  },
-];
-
-export function ServiceSearchBar() {
+type ServiceSearchBarProps = {
+  className?: string;
+};
+export function ServiceSearchBar(props: ServiceSearchBarProps) {
+  const { className } = props;
   return (
-    <div className="rounded-full border border-slate-200 px-3 py-4">
+    <div className={cn("rounded-full border border-slate-200 px-3 py-4", className)}>
       <div className="flex items-stretch">
         {/* Location input */}
         <InputGroup className="grow">
@@ -78,7 +59,7 @@ export function ServiceSearchBar() {
             </SelectContent>
           </Select>
         </InputGroup>
-        <Button variant="primary" size="icon" className="ml-6">
+        <Button variant="primary" size="icon" className="ml-2">
           <MagnifyingGlassIcon className="h-5 w-5" />
         </Button>
       </div>
