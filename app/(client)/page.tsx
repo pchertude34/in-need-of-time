@@ -1,5 +1,5 @@
+import { ServiceCategoryCard } from "@/components/ServiceCategoryCard";
 import { ServiceSearchBar } from "@/components/ServiceSearchBar";
-import { Input } from "@/components/ui/input";
 
 export default function Home() {
   return (
@@ -22,7 +22,7 @@ export default function Home() {
             </div>
           </div>
         </div>
-        <div className=" relative -top-16 mx-auto hidden w-[100%] rounded-full bg-white p-4 shadow-xl md:block  lg:w-[85%] lg:p-8 xl:w-[75%]">
+        <div className=" mx-auto hidden w-[100%] -translate-y-[50%] rounded-full bg-white p-4 shadow-xl md:block  lg:w-[85%] lg:p-8 xl:w-[75%]">
           <ServiceSearchBar className="" />
         </div>
       </div>
@@ -30,6 +30,14 @@ export default function Home() {
         <div className="mb-12 text-center">
           <h3 className="mb-3 text-2xl font-bold text-slate-900">Search by Category</h3>
           <p className="text-lg text-slate-600 ">Select a provider type to start your narrowed search.</p>
+        </div>
+        <div>
+          <ServiceCategoryCard
+            title="Housing"
+            icon="house"
+            description="Support services for finding and maintaining safe, affordable housing."
+            href="/"
+          />
         </div>
       </div>
     </main>
