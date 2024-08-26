@@ -31,8 +31,51 @@ export default function Home() {
           <h3 className="mb-3 text-2xl font-bold text-slate-900">Search by Category</h3>
           <p className="text-lg text-slate-600 ">Select a provider type to start your narrowed search.</p>
         </div>
-        <div>
+        <div className="flex flex-wrap justify-center gap-6">
           <ServiceCategoryCard
+            className="w-full md:max-w-[260px]"
+            title="Housing"
+            icon="house"
+            description="Support services for finding and maintaining safe, affordable housing."
+            href="/"
+          />
+          <ServiceCategoryCard
+            className="w-full md:max-w-[260px]"
+            title="Housing"
+            icon="house"
+            description="Support services for finding and maintaining safe, affordable housing."
+            href="/"
+          />
+          <ServiceCategoryCard
+            className="w-full md:max-w-[260px]"
+            title="Housing"
+            icon="house"
+            description="Support services for finding and maintaining safe, affordable housing."
+            href="/"
+          />
+          <ServiceCategoryCard
+            className="w-full md:max-w-[260px]"
+            title="Housing"
+            icon="house"
+            description="Support services for finding and maintaining safe, affordable housing."
+            href="/"
+          />
+          <ServiceCategoryCard
+            className="w-full md:max-w-[260px]"
+            title="Housing"
+            icon="house"
+            description="Support services for finding and maintaining safe, affordable housing."
+            href="/"
+          />
+          <ServiceCategoryCard
+            className="w-full md:max-w-[260px]"
+            title="Housing"
+            icon="house"
+            description="Support services for finding and maintaining safe, affordable housing."
+            href="/"
+          />
+          <ServiceCategoryCard
+            className="w-full md:max-w-[260px]"
             title="Housing"
             icon="house"
             description="Support services for finding and maintaining safe, affordable housing."
