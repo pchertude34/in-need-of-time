@@ -52,7 +52,7 @@ export function ServiceSearchBar(props: ServiceSearchBarProps) {
           <div className="mx-3">
             <Separator orientation="vertical" />
           </div>
-          <InputGroup className="">
+          <InputGroup>
             <InputLeftElement>
               <ViewfinderCircleIcon className="h-4 w-4" />
             </InputLeftElement>
@@ -74,9 +74,9 @@ export function ServiceSearchBar(props: ServiceSearchBarProps) {
             <MagnifyingGlassIcon className="h-5 w-5" />
           </Button>
         </div>
-        <Drawer>
+        <Drawer shouldScaleBackground={false} direction="top">
           <DrawerTrigger asChild>
-            <InputGroup className="sm:hidden">
+            <InputGroup className="cursor-pointer sm:hidden">
               <InputLeftElement>
                 <MagnifyingGlassIcon className="h-5 w-5 text-slate-500" />
               </InputLeftElement>
@@ -90,8 +90,9 @@ export function ServiceSearchBar(props: ServiceSearchBarProps) {
               </InputRightElement>
             </InputGroup>
           </DrawerTrigger>
-          <DrawerContent>
-            <DrawerHeader>
+          <DrawerContent className="" variant="top">
+            Hello world
+            {/* <DrawerHeader>
               <DrawerTitle>Advanced Search</DrawerTitle>
             </DrawerHeader>
             <DrawerDescription>
@@ -99,7 +100,7 @@ export function ServiceSearchBar(props: ServiceSearchBarProps) {
             </DrawerDescription>
             <DrawerFooter>
               <Button variant="primary">Search</Button>
-            </DrawerFooter>
+            </DrawerFooter> */}
           </DrawerContent>
         </Drawer>
       </div>
