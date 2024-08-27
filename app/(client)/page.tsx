@@ -33,49 +33,49 @@ export default function Home() {
         </div>
         <div className="flex flex-wrap justify-center gap-6">
           <ServiceCategoryCard
-            className="w-full md:max-w-[260px]"
+            className="w-full sm:max-w-[260px]"
             title="Housing"
             icon="house"
             description="Support services for finding and maintaining safe, affordable housing."
             href="/"
           />
           <ServiceCategoryCard
-            className="w-full md:max-w-[260px]"
+            className="w-full sm:max-w-[260px]"
             title="Housing"
             icon="house"
             description="Support services for finding and maintaining safe, affordable housing."
             href="/"
           />
           <ServiceCategoryCard
-            className="w-full md:max-w-[260px]"
+            className="w-full sm:max-w-[260px]"
             title="Housing"
             icon="house"
             description="Support services for finding and maintaining safe, affordable housing."
             href="/"
           />
           <ServiceCategoryCard
-            className="w-full md:max-w-[260px]"
+            className="w-full sm:max-w-[260px]"
             title="Housing"
             icon="house"
             description="Support services for finding and maintaining safe, affordable housing."
             href="/"
           />
           <ServiceCategoryCard
-            className="w-full md:max-w-[260px]"
+            className="w-full sm:max-w-[260px]"
             title="Housing"
             icon="house"
             description="Support services for finding and maintaining safe, affordable housing."
             href="/"
           />
           <ServiceCategoryCard
-            className="w-full md:max-w-[260px]"
+            className="w-full sm:max-w-[260px]"
             title="Housing"
             icon="house"
             description="Support services for finding and maintaining safe, affordable housing."
             href="/"
           />
           <ServiceCategoryCard
-            className="w-full md:max-w-[260px]"
+            className="w-full sm:max-w-[260px]"
             title="Housing"
             icon="house"
             description="Support services for finding and maintaining safe, affordable housing."

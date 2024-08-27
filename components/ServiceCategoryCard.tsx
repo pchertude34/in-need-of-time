@@ -23,12 +23,12 @@ export function ServiceCategoryCard(props: ServiceCategoryCardProps) {
         onMouseOver={() => setIsHovering(true)}
         onMouseOut={() => setIsHovering(false)}
         className={cn(
-          "focus-ring-primary block rounded-lg border-2 border-slate-200 bg-slate-50 p-6 transition-colors hover:border-primary-500 hover:bg-primary-50 focus:border-primary-500 focus:bg-primary-50",
+          "focus-ring-primary flex rounded-lg border-2 border-slate-200 bg-slate-50 p-3 transition-colors hover:border-primary-500 hover:bg-primary-50 focus:border-primary-500 focus:bg-primary-50 sm:block sm:p-6",
           className,
         )}
       >
         <div>{icon}</div>
-        <div className="mt-8">
+        <div className="ml-3 sm:mt-8">
           <div className="mb-1.5 flex items-center">
             <h6 className="text-lg font-semibold text-slate-900">{title}</h6>
             <div
