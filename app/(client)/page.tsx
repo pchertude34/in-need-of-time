@@ -22,7 +22,7 @@ export default function Home() {
             </div>
           </div>
         </div>
-        <div className=" mx-auto hidden w-[100%] -translate-y-[50%] rounded-full bg-white p-4 shadow-xl md:block  lg:w-[85%] lg:p-8 xl:w-[75%]">
+        <div className=" mx-auto w-[100%] -translate-y-[50%] rounded-full bg-white p-2 shadow-xl sm:p-4 md:block  lg:w-[85%] lg:p-8 xl:w-[75%]">
           <ServiceSearchBar className="" />
         </div>
       </div>
