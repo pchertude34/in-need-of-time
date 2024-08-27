@@ -23,7 +23,27 @@ export default function Home() {
           </div>
         </div>
         <div className=" mx-auto w-[100%] -translate-y-[50%] rounded-full bg-white p-2 shadow-xl sm:p-4 md:block  lg:w-[85%] lg:p-8 xl:w-[75%]">
-          <ServiceSearchBar className="" />
+          <ServiceSearchBar />
+          {/* <Drawer shouldScaleBackground={false} direction="top">
+          <DrawerTrigger asChild>
+            <InputGroup className="cursor-pointer sm:hidden">
+              <InputLeftElement>
+                <MagnifyingGlassIcon className="h-5 w-5 text-slate-500" />
+              </InputLeftElement>
+              <button className="focus-ring-primary flex w-full items-center rounded-full px-10 py-3 text-slate-500">
+                Find a Provider
+              </button>
+              <InputRightElement>
+                <span className="ml-auto rounded-full bg-primary-500 p-3">
+                  <ArrowRightIcon className="  h-5 w-5 text-white" />
+                </span>
+              </InputRightElement>
+            </InputGroup>
+          </DrawerTrigger>
+          <DrawerContent variant="top">
+            <div className="px-4 py-5">Hello</div>
+          </DrawerContent>
+        </Drawer> */}
         </div>
       </div>
       <div className="">
@@ -31,7 +51,7 @@ export default function Home() {
           <h3 className="mb-3 text-2xl font-bold text-slate-900">Search by Category</h3>
           <p className="text-lg text-slate-600 ">Select a provider type to start your narrowed search.</p>
         </div>
-        <div className="flex flex-wrap justify-center gap-6">
+        <div className="flex flex-wrap justify-center gap-3 md:gap-6">
           <ServiceCategoryCard
             className="w-full sm:max-w-[260px]"
             title="Housing"
