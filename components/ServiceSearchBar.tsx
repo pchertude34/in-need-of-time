@@ -76,7 +76,7 @@ export function ServiceSearchBar(props: ServiceSearchBarProps) {
         </div>
         <Drawer>
           <DrawerTrigger asChild>
-            <InputGroup>
+            <InputGroup className="sm:hidden">
               <InputLeftElement>
                 <MagnifyingGlassIcon className="h-5 w-5 text-slate-500" />
               </InputLeftElement>
