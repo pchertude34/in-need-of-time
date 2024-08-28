@@ -1,5 +1,7 @@
 import { ServiceCategoryCard } from "@/components/ServiceCategoryCard";
 import { ServiceSearchBar } from "@/components/ServiceSearchBar";
+import { ServiceSearchTriggerButton } from "@/components/ServiceSearchTriggerButton";
+import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
 
 export default function Home() {
   return (
@@ -22,28 +24,16 @@ export default function Home() {
             </div>
           </div>
         </div>
-        <div className=" mx-auto w-[100%] -translate-y-[50%] rounded-full bg-white p-2 shadow-xl sm:p-4 md:block  lg:w-[85%] lg:p-8 xl:w-[75%]">
-          <ServiceSearchBar />
-          {/* <Drawer shouldScaleBackground={false} direction="top">
-          <DrawerTrigger asChild>
-            <InputGroup className="cursor-pointer sm:hidden">
-              <InputLeftElement>
-                <MagnifyingGlassIcon className="h-5 w-5 text-slate-500" />
-              </InputLeftElement>
-              <button className="focus-ring-primary flex w-full items-center rounded-full px-10 py-3 text-slate-500">
-                Find a Provider
-              </button>
-              <InputRightElement>
-                <span className="ml-auto rounded-full bg-primary-500 p-3">
-                  <ArrowRightIcon className="  h-5 w-5 text-white" />
-                </span>
-              </InputRightElement>
-            </InputGroup>
-          </DrawerTrigger>
-          <DrawerContent variant="top">
-            <div className="px-4 py-5">Hello</div>
-          </DrawerContent>
-        </Drawer> */}
+        <div className="mx-auto w-[95%] -translate-y-[50%] rounded-full bg-white p-2 shadow-xl sm:p-4  lg:w-[85%] lg:p-8 xl:w-[75%]">
+          <ServiceSearchBar orientation="horizontal" className="hidden md:flex" />
+          <Drawer shouldScaleBackground={false} direction="top">
+            <DrawerTrigger asChild>
+              <ServiceSearchTriggerButton className="block md:hidden" />
+            </DrawerTrigger>
+            <DrawerContent variant="top">
+              <div className="px-4 py-5">Hello</div>
+            </DrawerContent>
+          </Drawer>
         </div>
       </div>
       <div className="">

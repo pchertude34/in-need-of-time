@@ -10,15 +10,17 @@ import { Typeahead } from "./Typeahead";
 import { Select, SelectTrigger, SelectContent, SelectGroup, SelectItem, SelectValue } from "./ui/select";
 import { cn } from "@/lib/utils";
 
+const DEFAULT_ORIENTATION = "horizontal";
+
 const searchBarVariant = cva("p-1 border border-slate-200", {
   variants: {
-    variant: {
+    orientation: {
       horizontal: "flex items-stretch px-3 py-4 rounded-full",
       vertical: "flex-col rounded-xl p-3",
     },
   },
   defaultVariants: {
-    variant: "horizontal",
+    orientation: DEFAULT_ORIENTATION,
   },
 });
 
@@ -27,9 +29,10 @@ type ServiceSearchBarProps = {
 } & VariantProps<typeof searchBarVariant>;
 
 export function ServiceSearchBar(props: ServiceSearchBarProps) {
-  const { variant, className } = props;
+  const { orientation, className } = props;
+
   return (
-    <div className={cn(searchBarVariant({ variant, className }))}>
+    <div className={cn(searchBarVariant({ orientation, className }))}>
       {/* Location input */}
       <InputGroup className="grow">
         <InputLeftElement>
@@ -46,14 +49,11 @@ export function ServiceSearchBar(props: ServiceSearchBarProps) {
           </Button>
         </InputRightElement>
       </InputGroup>
-      <div className={cn({ "mx-3": variant === "horizontal", "my-3": variant === "vertical" })}>
-        <Separator orientation={variant === "horizontal" ? "vertical" : "horizontal"} />
-      </div>
+      <SearchBarDivider orientation={orientation} />
       {/* Provider type selector */}
       <Typeahead placeholder="Search provider type" className="grow" />
-      <div className={cn({ "mx-3": variant === "horizontal", "my-3": variant === "vertical" })}>
-        <Separator orientation={variant === "horizontal" ? "vertical" : "horizontal"} />
-      </div>
+      {/* <SearchBarDivider orientation={variant} /> */}
+      <SearchBarDivider orientation={orientation} />
       <InputGroup>
         <InputLeftElement>
           <ViewfinderCircleIcon className="h-4 w-4" />
@@ -75,9 +75,9 @@ export function ServiceSearchBar(props: ServiceSearchBarProps) {
       <Button
         variant="primary"
         size="icon"
-        className={cn({ "ml-2": variant === "horizontal", "mt-5 w-full": variant === "vertical" })}
+        className={cn({ "ml-2": orientation === "horizontal", "mt-5 w-full": orientation === "vertical" })}
       >
-        {variant === "horizontal" ? (
+        {orientation === "horizontal" ? (
           <MagnifyingGlassIcon className="h-5 w-5" />
         ) : (
           <>
@@ -85,6 +85,30 @@ export function ServiceSearchBar(props: ServiceSearchBarProps) {
           </>
         )}
       </Button>
+    </div>
+  );
+}
+
+const searchBarDividerVariant = cva("", {
+  variants: {
+    orientation: {
+      horizontal: "mx-3",
+      vertical: "my-3",
+    },
+  },
+  defaultVariants: {
+    orientation: DEFAULT_ORIENTATION,
+  },
+});
+
+type SearchBarDividerProps = VariantProps<typeof searchBarDividerVariant>;
+
+function SearchBarDivider(props: SearchBarDividerProps) {
+  const { orientation = DEFAULT_ORIENTATION } = props;
+
+  return (
+    <div className={cn(searchBarDividerVariant({ orientation }))}>
+      <Separator orientation={orientation === "horizontal" ? "vertical" : "horizontal"} />
     </div>
   );
 }
