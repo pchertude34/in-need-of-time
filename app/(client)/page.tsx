@@ -52,6 +52,7 @@ export default function Home() {
           </Drawer>
         </div>
       </div>
+      {/* Search by category section */}
       <div className="">
         <div className="mb-12 text-center">
           <h3 className="mb-3 text-2xl font-bold text-slate-900">Search by Category</h3>
@@ -107,6 +108,22 @@ export default function Home() {
             description="Support services for finding and maintaining safe, affordable housing."
             href="/"
           />
+        </div>
+      </div>
+      {/* Call to action */}
+      <div className="bg-cta-image mt-32  overflow-hidden rounded-3xl bg-[45%] ">
+        <div className="flex h-[400px] w-full items-center bg-gradient-to-r from-primary-500/85 to-primary-500/0 to-90%">
+          <div className="ml-12 max-w-[346px]">
+            <p className="text-4xl font-bold text-slate-900">
+              Discover <span className="text-white">800+</span> service providers
+            </p>
+            <p className="mt-3 text-lg text-slate-900">
+              Search our wide selection of service providers to find the help you need.
+            </p>
+            <Button className="mt-6" variant="primary" size="lg">
+              Find a Provider
+            </Button>
+          </div>
         </div>
       </div>
     </main>

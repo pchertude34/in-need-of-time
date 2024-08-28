@@ -113,6 +113,7 @@ const config = {
       },
       backgroundImage: {
         "hero-image": "url('/images/hero-image.jpg')",
+        "cta-image": "url('/images/cta-image.png')",
         "radial-gradient-center": "radial-gradient(circle_at_center,_var(--tw-gradient-stops))",
       },
     },
