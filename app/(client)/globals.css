@@ -2,8 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
-@layer components {
+@layer utilities {
   .focus-ring-primary {
     @apply focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-100 focus:ring-primary-200;
+  }
+
+  .focus-ring-none {
+    @apply focus:outline-none focus:ring-0;
   }
 }

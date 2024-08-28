@@ -1,7 +1,9 @@
 import { ServiceCategoryCard } from "@/components/ServiceCategoryCard";
 import { ServiceSearchBar } from "@/components/ServiceSearchBar";
 import { ServiceSearchTriggerButton } from "@/components/ServiceSearchTriggerButton";
-import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
+import { Drawer, DrawerClose, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
+import { Button } from "@/components/ui/button";
+import { XMarkIcon } from "@heroicons/react/24/outline";
 
 export default function Home() {
   return (
@@ -24,14 +26,28 @@ export default function Home() {
             </div>
           </div>
         </div>
+        {/* Service Search Bar */}
         <div className="mx-auto w-[95%] -translate-y-[50%] rounded-full bg-white p-2 shadow-xl sm:p-4  lg:w-[85%] lg:p-8 xl:w-[75%]">
+          {/* Desktop Search Bar */}
           <ServiceSearchBar orientation="horizontal" className="hidden md:flex" />
+          {/* Mobile Search Menu */}
           <Drawer shouldScaleBackground={false} direction="top">
+            {/* Mobile Search Menu trigger button (replaces the search bar on sm screens) */}
             <DrawerTrigger asChild>
               <ServiceSearchTriggerButton className="block md:hidden" />
             </DrawerTrigger>
-            <DrawerContent variant="top">
-              <div className="px-4 py-5">Hello</div>
+            <DrawerContent variant="top" className="focus-ring-none">
+              <div className="px-4 py-5">
+                <div className="mb-6 flex justify-between align-middle">
+                  <h4 className="text-lg font-bold text-slate-900">Find a Provider</h4>
+                  <DrawerClose asChild>
+                    <Button variant="text-dark" size="text">
+                      <XMarkIcon className="h-4 w-4" />
+                    </Button>
+                  </DrawerClose>
+                </div>
+                <ServiceSearchBar orientation="vertical" />
+              </div>
             </DrawerContent>
           </Drawer>
         </div>
