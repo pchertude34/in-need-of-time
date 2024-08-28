@@ -84,7 +84,7 @@ export function ProviderListItem(props: ProviderListItemProps) {
               <BusinessStatusBadge isOpen={place?.opening_hours?.isOpen()} className="ml-auto" />
             </div>
             {description && (
-              <div className="prose prose-h1:text-xl prose-h2:text-lg prose-h3:text-md prose-p:my-4 prose-ul:my-4 prose-li:my-0 ">
+              <div className="prose-h3:text-md prose prose-h1:text-xl prose-h2:text-lg prose-p:my-4 prose-ul:my-4 prose-li:my-0 ">
                 <PortableText value={description} />
               </div>
             )}
@@ -118,13 +118,13 @@ export function ProviderListItem(props: ProviderListItemProps) {
             )}
           </div>
           <DialogFooter>
-            <Button variant="default" asChild>
+            <Button variant="primary" asChild>
               <a href={generateGoogleNavigationLink(placeId, name)} target="_blank" rel="noreferrer noopener">
                 Take Me There
               </a>
             </Button>
             <DialogClose asChild>
-              <Button type="button" variant="secondary">
+              <Button type="button" variant="light">
                 Close
               </Button>
             </DialogClose>
