@@ -13,6 +13,7 @@ import {
   BookOpenIcon,
 } from "@heroicons/react/24/outline";
 import { Collapsible, CollapsibleTrigger, CollapsibleContent } from "@/components/ui/collapsible";
+import { Drawer, DrawerClose, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
 import {
   NavigationMenu,
   NavigationMenuItem,
@@ -25,32 +26,22 @@ import { Button } from "@/components/ui/button";
 export const navigation = [{ name: "Home", href: "/" }];
 
 export default function Header() {
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const pathname = usePathname();
 
   return (
-    <Collapsible
-      open={isMobileMenuOpen}
-      onOpenChange={(open: boolean) => setIsMobileMenuOpen(open)}
-      className="border-b border-gray-200 bg-white"
-    >
+    <Drawer shouldScaleBackground={false} direction="top">
       <>
-        {isMobileMenuOpen && (
-          <div className="fixed z-10 h-screen w-screen bg-[#01181C] opacity-80 mix-blend-overlay sm:hidden"></div>
-        )}
         <div className="relative z-20 mx-auto max-w-7xl bg-white px-4 py-5 sm:px-6 lg:p-5">
-          <div className="flex">
-            <div className="flex flex-1 items-center">
-              <div className="flex flex-shrink-0 items-center">
-                <Link href="/" passHref>
-                  <Image src="/logo.svg" alt="Logo" height={45} width={66} className="hidden h-12 w-auto lg:block" />
-                </Link>
-                <Link href="/" passHref>
-                  <Image src="/logo.svg" alt="Logo" height={40} width={59} className="block h-10 w-auto lg:hidden" />
-                </Link>
-              </div>
+          <div className="flex items-center">
+            <div className="flex-1 flex-shrink-0">
+              <Link href="/" passHref>
+                <Image src="/logo.svg" alt="Logo" height={45} width={66} className="hidden h-12 w-auto lg:block" />
+              </Link>
+              <Link href="/" passHref>
+                <Image src="/logo.svg" alt="Logo" height={40} width={59} className="block h-10 w-auto lg:hidden" />
+              </Link>
             </div>
-            <div className="hidden flex-1 items-center justify-center sm:flex">
+            <div className="hidden flex-1 md:flex">
               <NavigationMenu>
                 <NavigationMenuList>
                   <NavigationMenuItem>
@@ -99,32 +90,38 @@ export default function Header() {
                 </NavigationMenuList>
               </NavigationMenu>
             </div>
-            <div className="hidden flex-1 items-center justify-end sm:flex">
+            <div className="hidden flex-1 items-center justify-end md:flex">
               <Button variant="primary" asChild>
                 <Link href="/find">
                   Find a Provider <ArrowRightIcon className="ml-2 h-3 w-3" />
                 </Link>
               </Button>
             </div>
-            <div className="-mr-2 flex items-center sm:hidden">
+            <div className="-mr-2 flex items-center md:hidden">
               {/* Mobile menu button */}
-              <CollapsibleTrigger asChild>
+              <DrawerTrigger asChild>
                 <Button variant="text-dark" size="text">
                   <span className="sr-only">Open main menu</span>
-                  {isMobileMenuOpen ? (
-                    <XMarkIcon className="block h-6 w-6" aria-hidden="true" />
-                  ) : (
-                    <Bars3Icon className="block h-6 w-6" aria-hidden="true" />
-                  )}
+                  <Bars3Icon className="block h-6 w-6" aria-hidden="true" />
                 </Button>
-              </CollapsibleTrigger>
+              </DrawerTrigger>
             </div>
           </div>
         </div>
 
         {/* Mobile Menu */}
-        <CollapsibleContent className="absolute z-10 w-screen rounded-b-xl bg-white sm:hidden">
-          <div className="px-4 pb-5 pt-2">
+        <DrawerContent variant="top" className="focus-ring-none">
+          <div className="px-4 pb-5">
+            <div className="flex items-center justify-between py-5">
+              <Link href="/" passHref>
+                <Image src="/logo.svg" alt="Logo" height={40} width={59} className="h-10 w-auto" />
+              </Link>
+              <DrawerClose asChild>
+                <Button variant="text-dark" size="text">
+                  <XMarkIcon className="h-6 w-6" />
+                </Button>
+              </DrawerClose>
+            </div>
             <NavigationMenu orientation="vertical" className="max-w-full flex-col items-stretch">
               <NavigationMenuList className="flex-col items-stretch">
                 <NavigationMenuItem>
@@ -149,6 +146,17 @@ export default function Header() {
                     </NavigationMenuLink>
                   </Link>
                 </NavigationMenuItem>
+                <NavigationMenuItem>
+                  <Link href="/about" legacyBehavior passHref>
+                    <NavigationMenuLink
+                      data-active={pathname === "/about" ? true : null}
+                      className={`${navigationMenuTriggerStyle()} w-max-w w-full`}
+                    >
+                      <BookOpenIcon className="mr-2 h-4 w-4" />
+                      About
+                    </NavigationMenuLink>
+                  </Link>
+                </NavigationMenuItem>
               </NavigationMenuList>
             </NavigationMenu>
             <Button variant="primary" asChild className="mt-6 w-full">
@@ -157,8 +165,8 @@ export default function Header() {
               </Link>
             </Button>
           </div>
-        </CollapsibleContent>
+        </DrawerContent>
       </>
-    </Collapsible>
+    </Drawer>
   );
 }
