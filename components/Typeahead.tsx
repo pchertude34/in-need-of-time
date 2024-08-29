@@ -62,9 +62,12 @@ export function Typeahead(props: TypeaheadProps) {
         </InputRightElement>
       </InputGroup>
       <ul
-        className={cn("absolute z-10 mt-1 max-h-80 w-72 overflow-scroll rounded-xl bg-white p-0 shadow-xl", {
-          hidden: !(isOpen && items.length),
-        })}
+        className={cn(
+          "absolute z-10 mt-2 max-h-80 w-72 overflow-scroll rounded-xl border border-slate-300 bg-white p-0 leading-5 shadow-xl",
+          {
+            hidden: !(isOpen && items.length),
+          },
+        )}
         {...getMenuProps()}
       >
         {isOpen &&
