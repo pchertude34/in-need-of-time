@@ -1,3 +1,5 @@
+"use client";
+
 import { useEffect, useState } from "react";
 import { loadGoogleMapsApi } from "@/lib/loadGoogleMapsApi";
 import { NEXT_PUBLIC_GOOGLE_API_KEY } from "@/env";

@@ -1,3 +1,4 @@
+"use client";
 import React, { useState, useEffect, useCallback, useRef } from "react";
 // import { useGoogleMaps } from "@/hooks/useGoogleMaps";
 
@@ -9,7 +10,7 @@ type GoogleMapProps = {
   onMapClick?: (event: google.maps.MapMouseEvent) => void;
   style?: React.CSSProperties;
   className?: string;
-  children: (map: google.maps.Map) => React.ReactNode;
+  children?: (map: google.maps.Map) => React.ReactNode;
 };
 
 export function GoogleMap(props: GoogleMapProps) {
@@ -80,7 +81,7 @@ export function GoogleMap(props: GoogleMapProps) {
       <div style={style} className={className}>
         <div ref={setMapElement} style={{ height: "100%", width: "100%" }}></div>
       </div>
-      {map && children(map)}
+      {map && children && children(map)}
     </>
   );
 }
