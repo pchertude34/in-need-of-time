@@ -2,20 +2,26 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 // import { useGoogleMaps } from "@/hooks/useGoogleMaps";
 
+const DEFUALT_LOCATION = { lat: 45.5152, lng: -122.6784 };
+const DEFAULT_MAP_SETTINGS = {
+  zoom: 8,
+  streetViewControl: false,
+  mapTypeControl: true,
+  fullscreenControl: true,
+};
+
 type GoogleMapProps = {
-  googleMapApi: typeof window.google.maps;
-  location: { lat: number; lng: number };
-  defaultLocation?: { lat: number; lng: number };
-  defaultZoom?: number;
+  googleMapsApi: typeof window.google.maps;
+  location?: { lat: number; lng: number };
   onMapClick?: (event: google.maps.MapMouseEvent) => void;
   style?: React.CSSProperties;
   className?: string;
   children?: (map: google.maps.Map) => React.ReactNode;
+  mapSettings?: google.maps.MapOptions;
 };
 
 export function GoogleMap(props: GoogleMapProps) {
-  const { googleMapApi, defaultZoom = 8, defaultLocation, location, onMapClick, style, className, children } = props;
-
+  const { googleMapsApi, mapSettings, location = DEFUALT_LOCATION, onMapClick, style, className, children } = props;
   const [map, setMap] = useState<google.maps.Map | undefined>();
   // const mapRef = useRef<google.maps.Map | undefined>();
   const mapElementRef = useRef<HTMLDivElement | null>(null);
@@ -34,7 +40,7 @@ export function GoogleMap(props: GoogleMapProps) {
 
     // Add the new click handler to the map
     if (onMapClick) {
-      const clickHandler = googleMapApi.event.addListener(map, "click", onMapClick);
+      const clickHandler = googleMapsApi.event.addListener(map, "click", onMapClick);
       mapClickHandlerRef.current = clickHandler;
     }
   }, [onMapClick, map]);
@@ -49,17 +55,15 @@ export function GoogleMap(props: GoogleMapProps) {
   }, []);
 
   function getCenter() {
-    if (location) return new googleMapApi.LatLng(location.lat, location.lng);
-    else if (defaultLocation) return new googleMapApi.LatLng(defaultLocation.lat, defaultLocation.lng);
+    return new googleMapsApi.LatLng(location.lat, location.lng);
   }
 
   // Build the map and place it on the element parameter
   function constructMap(element: HTMLDivElement) {
-    const map = new googleMapApi.Map(element, {
-      zoom: defaultZoom,
+    const map = new googleMapsApi.Map(element, {
       center: getCenter(),
-      streetViewControl: false,
-      mapTypeControl: true,
+      ...DEFAULT_MAP_SETTINGS,
+      ...mapSettings,
     });
 
     return map;

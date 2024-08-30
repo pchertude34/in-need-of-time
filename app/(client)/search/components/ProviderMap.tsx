@@ -2,7 +2,7 @@
 
 import React, { useEffect, useRef } from "react";
 import { GoogleMapsProxy } from "@/hooks/useLoadGoogleMaps";
-import { GoogleMap } from "@/sanity/components/MapInput/GoogleMap";
+import { GoogleMap } from "@/components/maps/GoogleMap";
 
 const DEFUALT_LOCATION = { lat: 45.5152, lng: -122.6784 };
 
@@ -20,10 +20,24 @@ export function ProviderMap(props: MapProps) {
     <GoogleMapsProxy>
       {(googleMapsApi) => (
         <GoogleMap
-          googleMapApi={googleMapsApi}
+          googleMapsApi={googleMapsApi}
           location={DEFUALT_LOCATION}
           className="h-[calc(100vh-88px)] w-full"
-          // style={{ height: "600px", width: "100%" }}
+          mapSettings={{
+            zoomControlOptions: {
+              position: googleMapsApi.ControlPosition.RIGHT_BOTTOM,
+              style: googleMapsApi.ZoomControlStyle.SMALL,
+            },
+            mapTypeControlOptions: {
+              position: googleMapsApi.ControlPosition.BOTTOM_RIGHT,
+            },
+            streetViewControl: true,
+            streetViewControlOptions: {
+              position: googleMapsApi.ControlPosition.RIGHT_BOTTOM,
+            },
+            mapTypeControl: true,
+            fullscreenControl: false,
+          }}
         />
       )}
     </GoogleMapsProxy>

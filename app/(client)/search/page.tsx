@@ -7,9 +7,9 @@ type SearchPageProps = {
 };
 
 export default function SearchPage(props: SearchPageProps) {
-  console.log("props :>> ", props);
   return (
     <div>
+      <h1 className="absolute right-0 z-10">Hello world</h1>
       <ProviderMap />
     </div>
   );

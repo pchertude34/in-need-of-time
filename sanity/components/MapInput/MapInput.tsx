@@ -2,7 +2,7 @@ import React, { useState, useCallback } from "react";
 import { ObjectInputProps, set } from "sanity";
 import { TextInput, Text, Stack, Label, Flex, Checkbox } from "@sanity/ui";
 import { GoogleMapsProxy } from "@/hooks/useLoadGoogleMaps";
-import { GoogleMap } from "./GoogleMap";
+import { GoogleMap } from "@/components/maps/GoogleMap";
 import { MapMarker } from "./MapMarker";
 import { MapCircle } from "./MapCircle";
 
@@ -70,7 +70,7 @@ export default function MapInput(props: ObjectInputProps) {
           <>
             {!isNational && (
               <GoogleMap
-                googleMapApi={googleMapsApi}
+                googleMapsApi={googleMapsApi}
                 location={DEFUALT_LOCATION}
                 onMapClick={handleMapClick}
                 style={{ height: "600px", width: "100%" }}
