@@ -54,7 +54,7 @@ export function ServiceSearchBar(props: ServiceSearchBarProps) {
       <Typeahead placeholder="Search provider type" className="grow" />
       {/* <SearchBarDivider orientation={variant} /> */}
       <SearchBarDivider orientation={orientation} />
-      <InputGroup>
+      <InputGroup className="w-[200px]">
         <InputLeftElement>
           <ViewfinderCircleIcon className="h-4 w-4" />
         </InputLeftElement>

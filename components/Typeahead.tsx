@@ -63,7 +63,7 @@ export function Typeahead(props: TypeaheadProps) {
       </InputGroup>
       <ul
         className={cn(
-          "absolute z-10 mt-2 max-h-96 min-w-[8rem] overflow-scroll rounded-xl border border-slate-300 bg-white p-0 leading-5 shadow-xl",
+          "absolute z-10 mt-2 max-h-96 min-w-[8rem] overflow-auto rounded-xl border border-slate-300 bg-white p-0 leading-5 shadow-xl",
           {
             hidden: !(isOpen && items.length),
           },
