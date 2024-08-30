@@ -63,7 +63,7 @@ export function Typeahead(props: TypeaheadProps) {
       </InputGroup>
       <ul
         className={cn(
-          "absolute z-10 mt-2 max-h-80 w-72 overflow-scroll rounded-xl border border-slate-300 bg-white p-0 leading-5 shadow-xl",
+          "absolute z-10 mt-2 max-h-96 min-w-[8rem] overflow-scroll rounded-xl border border-slate-300 bg-white p-0 leading-5 shadow-xl",
           {
             hidden: !(isOpen && items.length),
           },
@@ -73,8 +73,8 @@ export function Typeahead(props: TypeaheadProps) {
         {isOpen &&
           items.map((item, index) => (
             <li
-              className={cn("px-5 py-2 hover:bg-gray-100", {
-                "bg-gray-100": highlightedIndex === index,
+              className={cn("px-5 py-2 hover:bg-slate-100", {
+                "bg-slate-100": highlightedIndex === index,
               })}
               key={item.id}
               {...getItemProps({ item, index })}
