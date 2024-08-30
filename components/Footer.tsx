@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 
 export function Footer() {
   return (
-    <div className="container flex flex-col gap-8 p-16 md:flex-row">
+    <div className="container flex flex-col gap-8 px-6 py-8 md:flex-row md:p-16">
       <div className="flex flex-1 flex-col space-y-4 text-sm text-slate-900">
         <Link href="/" passHref>
           <Image src="/logo.svg" alt="In Time of Need" height={68} width={96} className="h-auto w-24" />

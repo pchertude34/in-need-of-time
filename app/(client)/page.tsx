@@ -111,7 +111,7 @@ export default function Home() {
         </div>
       </div>
       {/* Call to action */}
-      <div className="bg-cta-image my-32  overflow-hidden rounded-3xl bg-[45%] ">
+      <div className="bg-cta-image my-16 overflow-hidden  rounded-3xl bg-[45%] md:my-32 ">
         <div className="flex h-[550px] w-full items-end justify-center bg-gradient-to-t from-primary-500/95 from-45% to-primary-500/10 to-100% p-6 md:h-[400px] md:items-center md:justify-start md:bg-gradient-to-r md:from-primary-500/85">
           <div className="max-w-[311px] md:ml-8 md:max-w-[346px]">
             <p className="text-4xl font-bold text-slate-900">
