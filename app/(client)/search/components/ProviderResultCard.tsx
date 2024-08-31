@@ -3,6 +3,7 @@ import Link from "next/link";
 import { ArrowRightIcon, MapIcon } from "@heroicons/react/24/outline";
 import { PhoneIcon, GlobeAltIcon, MapPinIcon } from "@heroicons/react/24/solid";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 
 type ProviderResultCardProps = {
   name: string;
@@ -21,7 +22,7 @@ export function ProviderResultCard(props: ProviderResultCardProps) {
       <div>
         <div className="mb-2 flex items-start justify-between">
           <h2 className="text-lg font-bold">{name}</h2>
-          <p className="text-sm font-semibold">{serviceType}</p>
+          <Badge className="text-sm font-semibold">{serviceType}</Badge>
         </div>
         <div className="flex items-center">
           <MapPinIcon className="mr-1 h-4 w-4 text-slate-600" />
