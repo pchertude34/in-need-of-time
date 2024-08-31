@@ -28,21 +28,8 @@ export default function SearchPage(props: SearchPageProps) {
                 website="https://example.com"
               />
             </div>
-            {/* <div className="p-4">
-              <h4 className="mb-4 text-sm font-medium leading-none">Tags</h4>
-              {tags.map((tag) => (
-                <>
-                  <div key={tag} className="text-sm">
-                    {tag}
-                  </div>
-                  <Separator className="my-2" />
-                </>
-              ))}
-            </div> */}
           </ScrollArea>
-          {/* <div className="z-10 bg-white shadow-xl"> */}
           <ServiceSearchBar className="z-10 ml-4 bg-white shadow-xl" orientation="horizontal" />
-          {/* </div> */}
         </div>
       </ProviderMap>
     </div>
