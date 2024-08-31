@@ -1,6 +1,7 @@
 import React from "react";
 import Link from "next/link";
-import { ArrowRightIcon, GlobeAltIcon, MapIcon, MapPinIcon, PhoneIcon } from "@heroicons/react/24/outline";
+import { ArrowRightIcon, MapIcon } from "@heroicons/react/24/outline";
+import { PhoneIcon, GlobeAltIcon, MapPinIcon } from "@heroicons/react/24/solid";
 import { Button } from "@/components/ui/button";
 
 type ProviderResultCardProps = {
@@ -16,18 +17,18 @@ export function ProviderResultCard(props: ProviderResultCardProps) {
   const { name, address, serviceType, description, phone, website } = props;
 
   return (
-    <div className="flex w-full flex-col space-y-4 rounded-lg border border-slate-200 bg-white p-4">
+    <div className="flex w-full flex-col space-y-4 rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
       <div>
         <div className="mb-2 flex items-start justify-between">
           <h2 className="text-lg font-bold">{name}</h2>
           <p className="text-sm font-semibold">{serviceType}</p>
         </div>
         <div className="flex items-center">
-          <MapPinIcon className="mr-1 h-4 w-4 text-gray-500" />
+          <MapPinIcon className="mr-1 h-4 w-4 text-slate-600" />
           <Link href="" passHref>
             <Button variant="text-primary" size="text">
               {address}
-              <MapIcon className="ml-2 h-4 w-4" />
+              <MapIcon className="ml-2 h-4 w-4 " />
             </Button>
           </Link>
         </div>
