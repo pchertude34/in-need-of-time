@@ -14,6 +14,8 @@ const buttonVariants = cva(
         dark: "bg-slate-700 text-white hover:bg-slate-800 active:bg-slate-900 active:border-slate-300 disabled:bg-slate-500 focus:ring-slate-200",
         light:
           "text-slate-900 bg-slate-100 hover:bg-slate-200 active:bg-slate:300 active:border-slate-50 disabled:bg-slate-50 disabled:text-slate-500 focus:ring-slate-200",
+        "hollow-primary":
+          "border-primary-500 text-primary-500 active:border-primary-700 hover:bg-primary-50 active:bg-primary-50 focus-ring-primary",
         "text-dark":
           "text-slate-600 bg-transparent hover:text-800 disabled:text-500 active:text-900 focus:ring-slate-200",
         "text-primary":

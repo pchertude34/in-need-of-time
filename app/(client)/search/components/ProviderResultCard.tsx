@@ -47,7 +47,7 @@ export function ProviderResultCard(props: ProviderResultCardProps) {
           </a>
         </Button>
       </div>
-      <Button variant="primary">
+      <Button variant="hollow-primary">
         Learn More <ArrowRightIcon className="ml-2 h-4 w-4" />
       </Button>
     </div>
