@@ -12,7 +12,7 @@ import { cn } from "@/lib/utils";
 
 const DEFAULT_ORIENTATION = "horizontal";
 
-const searchBarVariant = cva("p-1 border border-slate-200", {
+const searchBarVariant = cva("p-1 border border-slate-300", {
   variants: {
     orientation: {
       horizontal: "flex items-stretch px-3 py-4 rounded-full",

@@ -8,10 +8,11 @@ const DEFUALT_LOCATION = { lat: 45.5152, lng: -122.6784 };
 
 type MapProps = {
   className?: string;
+  children?: React.ReactNode;
 };
 
 export function ProviderMap(props: MapProps) {
-  const { className } = props;
+  const { className, children } = props;
   const mapRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {}, []);
@@ -38,7 +39,9 @@ export function ProviderMap(props: MapProps) {
             mapTypeControl: true,
             fullscreenControl: false,
           }}
-        />
+        >
+          {(map) => <>{children}</>}
+        </GoogleMap>
       )}
     </GoogleMapsProxy>
   );

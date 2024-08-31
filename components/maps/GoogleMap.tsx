@@ -83,9 +83,9 @@ export function GoogleMap(props: GoogleMapProps) {
   return (
     <>
       <div style={style} className={className}>
+        {map && children && children(map)}
         <div ref={setMapElement} style={{ height: "100%", width: "100%" }}></div>
       </div>
-      {map && children && children(map)}
     </>
   );
 }
