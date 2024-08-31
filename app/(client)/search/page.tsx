@@ -1,10 +1,12 @@
 import React from "react";
-
+import { XMarkIcon } from "@heroicons/react/24/outline";
 import { ProviderMap } from "./components/ProviderMap";
 import { ServiceSearchBar } from "@/components/ServiceSearchBar";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ProviderResultCard } from "./components/ProviderResultCard";
+import { DrawerContent, DrawerClose, Drawer, DrawerTrigger } from "@/components/ui/drawer";
+import { Button } from "@/components/ui/button";
 
 type SearchPageProps = {
   searchParams?: { [key: string]: string };
@@ -14,8 +16,9 @@ export default function SearchPage(props: SearchPageProps) {
   return (
     <div>
       <ProviderMap>
-        <div className="absolute flex h-[calc(100vh-88px)] w-full items-start p-6">
-          <ScrollArea className="z-10 flex max-h-full w-[403px] flex-shrink-0 flex-col rounded-2xl bg-white shadow-xl">
+        {/* Desktop UI */}
+        <div className="absolute hidden h-[calc(100vh-88px)] w-full items-start p-6 lg:flex">
+          <ScrollArea className="z-10 hidden max-h-full w-[403px] flex-shrink-0 flex-col rounded-2xl bg-white shadow-xl">
             <div className="space-y-4 p-6">
               <span className="font-bold text-secondary-500">10 results found</span>
               <Tabs defaultValue="locations">
@@ -76,7 +79,31 @@ export default function SearchPage(props: SearchPageProps) {
               </div>
             </div>
           </ScrollArea>
-          <ServiceSearchBar className="z-10 ml-4 bg-white shadow-xl" orientation="horizontal" />
+          <ServiceSearchBar className="z-10 ml-4 hidden bg-white shadow-xl" orientation="horizontal" />
+        </div>
+
+        {/* Mobile UI */}
+        <div className="absolute flex h-[calc(100vh-88px)] w-full justify-center p-6 lg:hidden">
+          <Drawer shouldScaleBackground={false} direction="top">
+            <DrawerTrigger asChild>
+              <Button variant="primary" className="z-10 shadow-xl">
+                Modify your search
+              </Button>
+            </DrawerTrigger>
+            <DrawerContent variant="top" className="focus-ring-none">
+              <div className="px-4 py-5">
+                <div className="mb-6 flex justify-between align-middle">
+                  <h4 className="text-lg font-bold text-slate-900">Find a Provider</h4>
+                  <DrawerClose asChild>
+                    <Button variant="text-dark" size="text">
+                      <XMarkIcon className="h-4 w-4" />
+                    </Button>
+                  </DrawerClose>
+                </div>
+                <ServiceSearchBar orientation="vertical" />
+              </div>
+            </DrawerContent>
+          </Drawer>
         </div>
       </ProviderMap>
     </div>
