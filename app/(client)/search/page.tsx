@@ -4,6 +4,7 @@ import { ProviderMap } from "./components/ProviderMap";
 import { ServiceSearchBar } from "@/components/ServiceSearchBar";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
+import { ProviderResultCard } from "./components/ProviderResultCard";
 
 type SearchPageProps = {
   searchParams?: { [key: string]: string };
@@ -17,7 +18,17 @@ export default function SearchPage(props: SearchPageProps) {
       <ProviderMap>
         <div className="absolute flex h-[calc(100vh-88px)] w-full items-start overflow-hidden p-6">
           <ScrollArea className="z-10 h-full w-[403px] rounded-2xl bg-white shadow-xl">
-            <div className="p-4">
+            <div className="p-6">
+              <ProviderResultCard
+                name="St. Austin's Day Care"
+                address="1234 Main St, Portland, OR 97201"
+                serviceType="Housing"
+                description="A great place for kids to learn and grow."
+                phone="(503) 555-1234"
+                website="https://example.com"
+              />
+            </div>
+            {/* <div className="p-4">
               <h4 className="mb-4 text-sm font-medium leading-none">Tags</h4>
               {tags.map((tag) => (
                 <>
@@ -27,7 +38,7 @@ export default function SearchPage(props: SearchPageProps) {
                   <Separator className="my-2" />
                 </>
               ))}
-            </div>
+            </div> */}
           </ScrollArea>
           {/* <div className="z-10 bg-white shadow-xl"> */}
           <ServiceSearchBar className="z-10 ml-4 bg-white shadow-xl" orientation="horizontal" />
