@@ -25,12 +25,12 @@ export function ProviderResultCard(props: ProviderResultCardProps) {
         </div>
         <div className="flex items-center">
           <MapPinIcon className="mr-1 h-4 w-4 text-slate-600" />
-          <Link href="" passHref>
-            <Button variant="text-primary" size="text">
+          <Button variant="text-primary" size="text" asChild>
+            <Link href="">
               {address}
               <MapIcon className="ml-2 h-4 w-4 " />
-            </Button>
-          </Link>
+            </Link>
+          </Button>
         </div>
       </div>
       <p className="text-sm text-gray-600">{description}</p>
