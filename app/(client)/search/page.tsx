@@ -10,16 +10,13 @@ type SearchPageProps = {
   searchParams?: { [key: string]: string };
 };
 
-const tags = Array.from({ length: 50 }).map((_, i, a) => `v1.2.0-beta.${a.length - i}`);
-
 export default function SearchPage(props: SearchPageProps) {
   return (
     <div>
       <ProviderMap>
-        <div className="absolute flex h-[calc(100vh-88px)] w-full flex-grow items-start p-6">
-          <ScrollArea className="z-10 flex max-h-full w-[403px] flex-col rounded-2xl bg-white shadow-xl">
+        <div className="absolute flex h-[calc(100vh-88px)] w-full items-start p-6">
+          <ScrollArea className="z-10 flex max-h-full w-[403px] flex-shrink-0 flex-col rounded-2xl bg-white shadow-xl">
             <div className="space-y-4 p-6">
-              {/* <div className="z-10 flex max-h-full w-[403px] flex-col space-y-4 rounded-2xl bg-white p-6 shadow-xl"> */}
               <span className="font-bold text-secondary-500">10 results found</span>
               <Tabs defaultValue="locations">
                 <TabsList className="grid w-full grid-cols-2">
@@ -77,7 +74,6 @@ export default function SearchPage(props: SearchPageProps) {
                   website="https://example.com"
                 />
               </div>
-              {/* </div> */}
             </div>
           </ScrollArea>
           <ServiceSearchBar className="z-10 ml-4 bg-white shadow-xl" orientation="horizontal" />
