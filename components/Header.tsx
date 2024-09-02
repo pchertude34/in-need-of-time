@@ -13,7 +13,7 @@ import {
   BookOpenIcon,
 } from "@heroicons/react/24/outline";
 import { Collapsible, CollapsibleTrigger, CollapsibleContent } from "@/components/ui/collapsible";
-import { Drawer, DrawerClose, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
+import { Drawer, DrawerClose, DrawerContent, DrawerTitle, DrawerTrigger } from "@/components/ui/drawer";
 import {
   NavigationMenu,
   NavigationMenuItem,
@@ -110,7 +110,8 @@ export default function Header() {
         </div>
 
         {/* Mobile Menu */}
-        <DrawerContent variant="top" className="focus-ring-none">
+        <DrawerContent variant="top" className="focus-ring-none" aria-describedby={undefined}>
+          <DrawerTitle className="sr-only">Main Menu</DrawerTitle>
           <div className="px-4 pb-5">
             <div className="flex items-center justify-between py-5">
               <Link href="/" passHref>

@@ -23,7 +23,7 @@ export function ProviderMap(props: MapProps) {
         <GoogleMap
           googleMapsApi={googleMapsApi}
           location={DEFUALT_LOCATION}
-          className="h-[calc(100vh-88px)] w-full"
+          className={className}
           mapSettings={{
             zoomControlOptions: {
               position: googleMapsApi.ControlPosition.RIGHT_BOTTOM,

@@ -7,6 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ProviderResultCard } from "./components/ProviderResultCard";
 import { DrawerContent, DrawerClose, Drawer, DrawerTrigger } from "@/components/ui/drawer";
 import { Button } from "@/components/ui/button";
+import { MobileResultsDrawer } from "./components/MobileResultsDrawer";
 
 type SearchPageProps = {
   searchParams?: { [key: string]: string };
@@ -15,10 +16,10 @@ type SearchPageProps = {
 export default function SearchPage(props: SearchPageProps) {
   return (
     <div>
-      <ProviderMap>
+      <ProviderMap className="h-[calc(100vh-80px)] w-full lg:h-[calc(100vh-88px)]">
         {/* Desktop UI */}
         <div className="absolute hidden h-[calc(100vh-88px)] w-full items-start p-6 lg:flex">
-          <ScrollArea className="z-10 hidden max-h-full w-[403px] flex-shrink-0 flex-col rounded-2xl bg-white shadow-xl">
+          <ScrollArea className="z-10 max-h-full w-[403px] flex-shrink-0 flex-col rounded-2xl bg-white shadow-xl">
             <div className="space-y-4 p-6">
               <span className="font-bold text-secondary-500">10 results found</span>
               <Tabs defaultValue="locations">
@@ -79,11 +80,12 @@ export default function SearchPage(props: SearchPageProps) {
               </div>
             </div>
           </ScrollArea>
-          <ServiceSearchBar className="z-10 ml-4 hidden bg-white shadow-xl" orientation="horizontal" />
+          <ServiceSearchBar className="z-10 ml-4 bg-white shadow-xl" orientation="horizontal" />
         </div>
 
         {/* Mobile UI */}
-        <div className="absolute flex h-[calc(100vh-88px)] w-full justify-center p-6 lg:hidden">
+        <div className="absolute flex h-[calc(100vh-80px)] w-full justify-center p-6 lg:hidden">
+          {/* Search Drawer */}
           <Drawer shouldScaleBackground={false} direction="top">
             <DrawerTrigger asChild>
               <Button variant="primary" className="z-10 shadow-xl">
@@ -104,6 +106,70 @@ export default function SearchPage(props: SearchPageProps) {
               </div>
             </DrawerContent>
           </Drawer>
+          {/* Results Drawer */}
+
+          <MobileResultsDrawer>
+            <div className="mx-auto my-3 h-2 w-[100px] rounded-full bg-slate-400 dark:bg-slate-800" />
+            <span className="mb-3 ml-4 font-bold text-secondary-500">10 results found</span>
+            <div className="mx-auto flex w-full flex-col space-y-4 overflow-auto p-4">
+              <Tabs defaultValue="locations">
+                <TabsList className="grid w-full grid-cols-2">
+                  <TabsTrigger value="locations">Locations</TabsTrigger>
+                  <TabsTrigger value="others">Others</TabsTrigger>
+                </TabsList>
+              </Tabs>
+              <div className="space-y-5">
+                <ProviderResultCard
+                  name="St. Austin's Day Care"
+                  address="1234 Main St, Portland, OR 97201"
+                  serviceType="Housing"
+                  description="A great place for kids to learn and grow."
+                  phone="(503) 555-1234"
+                  website="https://example.com"
+                />
+                <ProviderResultCard
+                  name="St. Austin's Day Care"
+                  address="1234 Main St, Portland, OR 97201"
+                  serviceType="Housing"
+                  description="A great place for kids to learn and grow."
+                  phone="(503) 555-1234"
+                  website="https://example.com"
+                />
+                <ProviderResultCard
+                  name="St. Austin's Day Care"
+                  address="1234 Main St, Portland, OR 97201"
+                  serviceType="Housing"
+                  description="A great place for kids to learn and grow."
+                  phone="(503) 555-1234"
+                  website="https://example.com"
+                />
+                <ProviderResultCard
+                  name="St. Austin's Day Care"
+                  address="1234 Main St, Portland, OR 97201"
+                  serviceType="Housing"
+                  description="A great place for kids to learn and grow."
+                  phone="(503) 555-1234"
+                  website="https://example.com"
+                />
+                <ProviderResultCard
+                  name="St. Austin's Day Care"
+                  address="1234 Main St, Portland, OR 97201"
+                  serviceType="Housing"
+                  description="A great place for kids to learn and grow."
+                  phone="(503) 555-1234"
+                  website="https://example.com"
+                />
+                <ProviderResultCard
+                  name="Last ONe"
+                  address="1234 Main St, Portland, OR 97201"
+                  serviceType="Housing"
+                  description="A great place for kids to learn and grow."
+                  phone="(503) 555-1234"
+                  website="https://example.com"
+                />
+              </div>
+            </div>
+          </MobileResultsDrawer>
         </div>
       </ProviderMap>
     </div>
