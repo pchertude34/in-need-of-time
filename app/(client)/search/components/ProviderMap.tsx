@@ -38,7 +38,7 @@ export function ProviderMap(props: MapProps) {
             },
             mapTypeControl: true,
             fullscreenControl: false,
-            gestureHandling: "cooperative",
+            gestureHandling: "greedy",
           }}
         >
           {(map) => <>{children}</>}
