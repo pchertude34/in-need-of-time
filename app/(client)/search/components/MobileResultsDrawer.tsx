@@ -12,13 +12,13 @@ type MobileResultsDrawerProps = {
 // need to create another one using the underlying vaul component.
 export function MobileResultsDrawer(props: MobileResultsDrawerProps) {
   const { children } = props;
-  const [snap, setSnap] = useState<number | string | null>("152dp");
+  const [snap, setSnap] = useState<number | string | null>("152px");
 
   return (
     <Drawer.Root
       // allow interacting with the content behind the drawer
       modal={false}
-      snapPoints={["152dp", 1]}
+      snapPoints={["152px", 1]}
       activeSnapPoint={snap}
       setActiveSnapPoint={setSnap}
       dismissible={false}
