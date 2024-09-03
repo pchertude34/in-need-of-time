@@ -16,7 +16,7 @@ type SearchPageProps = {
 export default function SearchPage(props: SearchPageProps) {
   return (
     <div>
-      <ProviderMap className="h-[calc(100vh-80px)] w-full lg:h-[calc(100vh-88px)]">
+      <ProviderMap className="h-[calc(100vh-5rem)] w-full lg:h-[calc(100vh-5.5rem)]">
         {/* Desktop UI */}
         <div className="absolute hidden h-[calc(100vh-88px)] w-full items-start p-6 lg:flex">
           <ScrollArea className="z-10 max-h-full w-[403px] flex-shrink-0 flex-col rounded-2xl bg-white shadow-xl">
@@ -84,7 +84,7 @@ export default function SearchPage(props: SearchPageProps) {
         </div>
 
         {/* Mobile UI */}
-        <div className="absolute flex h-[calc(100vh-80px)] w-full justify-center p-6 lg:hidden">
+        <div className="absolute flex h-[calc(100vh-5rem)] w-full justify-center p-6 lg:hidden">
           {/* Search Drawer */}
           <Drawer shouldScaleBackground={false} direction="top">
             <DrawerTrigger asChild>
