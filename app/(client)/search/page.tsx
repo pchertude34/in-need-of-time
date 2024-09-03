@@ -108,7 +108,7 @@ export default function SearchPage(props: SearchPageProps) {
           </Drawer>
           {/* Results Drawer */}
 
-          <MobileResultsDrawer>
+          {/* <MobileResultsDrawer>
             <div className="mx-auto my-3 box-border h-4 w-[100px] rounded-full bg-slate-400 dark:bg-slate-800" />
             <span className="mb-3 ml-4 font-bold text-secondary-500">10 results found</span>
             <div className="mx-auto  flex w-full flex-col space-y-4 overflow-auto p-4">
@@ -169,7 +169,7 @@ export default function SearchPage(props: SearchPageProps) {
                 />
               </div>
             </div>
-          </MobileResultsDrawer>
+          </MobileResultsDrawer> */}
         </div>
       </ProviderMap>
     </div>
