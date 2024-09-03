@@ -109,9 +109,9 @@ export default function SearchPage(props: SearchPageProps) {
           {/* Results Drawer */}
 
           <MobileResultsDrawer>
-            <div className="mx-auto my-3 h-2 w-[100px] rounded-full bg-slate-400 dark:bg-slate-800" />
+            <div className="mx-auto my-3 box-border h-4 w-[100px] rounded-full bg-slate-400 dark:bg-slate-800" />
             <span className="mb-3 ml-4 font-bold text-secondary-500">10 results found</span>
-            <div className="mx-auto flex w-full flex-col space-y-4 overflow-auto p-4">
+            <div className="mx-auto  flex w-full flex-col space-y-4 overflow-auto p-4">
               <Tabs defaultValue="locations">
                 <TabsList className="grid w-full grid-cols-2">
                   <TabsTrigger value="locations">Locations</TabsTrigger>

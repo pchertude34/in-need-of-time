@@ -8,6 +8,8 @@ type MobileResultsDrawerProps = {
   children?: React.ReactNode;
 };
 
+// Apparently there are issues with snap points in Shadcd's drawer component so we
+// need to create another one using the underlying vaul component.
 export function MobileResultsDrawer(props: MobileResultsDrawerProps) {
   const { children } = props;
   const [snap, setSnap] = useState<number | string | null>("152px");
