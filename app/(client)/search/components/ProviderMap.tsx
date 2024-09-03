@@ -26,17 +26,11 @@ export function ProviderMap(props: MapProps) {
           className={className}
           mapSettings={{
             zoomControlOptions: {
-              position: googleMapsApi.ControlPosition.RIGHT_BOTTOM,
+              position: googleMapsApi.ControlPosition.RIGHT_CENTER,
               style: googleMapsApi.ZoomControlStyle.SMALL,
             },
-            mapTypeControlOptions: {
-              position: googleMapsApi.ControlPosition.BOTTOM_RIGHT,
-            },
-            streetViewControl: true,
-            streetViewControlOptions: {
-              position: googleMapsApi.ControlPosition.RIGHT_BOTTOM,
-            },
-            mapTypeControl: true,
+            streetViewControl: false,
+            mapTypeControl: false,
             fullscreenControl: false,
             gestureHandling: "greedy",
           }}
