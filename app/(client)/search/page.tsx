@@ -16,9 +16,9 @@ type SearchPageProps = {
 export default function SearchPage(props: SearchPageProps) {
   return (
     <div>
-      <ProviderMap className="h-[calc(100vh-5rem)] w-full lg:h-[calc(100vh-5.5rem)]">
+      <ProviderMap className="h-[calc(100dvh-5rem)] w-full lg:h-[calc(100dvh-5.5rem)]">
         {/* Desktop UI */}
-        <div className="absolute hidden h-[calc(100vh-88px)] w-full items-start p-6 lg:flex">
+        <div className="absolute hidden h-[calc(100dvh-88px)] w-full items-start p-6 lg:flex">
           <ScrollArea className="z-10 max-h-full w-[403px] flex-shrink-0 flex-col rounded-2xl bg-white shadow-xl">
             <div className="space-y-4 p-6">
               <span className="font-bold text-secondary-500">10 results found</span>
@@ -84,7 +84,7 @@ export default function SearchPage(props: SearchPageProps) {
         </div>
 
         {/* Mobile UI */}
-        <div className="absolute flex h-[calc(100vh-5rem)] w-full justify-center p-6 lg:hidden">
+        <div className="absolute flex h-[calc(100dvh-5rem)] w-full justify-center p-6 lg:hidden">
           {/* Search Drawer */}
           <Drawer shouldScaleBackground={false} direction="top">
             <DrawerTrigger asChild>
@@ -108,7 +108,7 @@ export default function SearchPage(props: SearchPageProps) {
           </Drawer>
           {/* Results Drawer */}
 
-          {/* <MobileResultsDrawer>
+          <MobileResultsDrawer>
             <div className="mx-auto my-3 box-border h-4 w-[100px] rounded-full bg-slate-400 dark:bg-slate-800" />
             <span className="mb-3 ml-4 font-bold text-secondary-500">10 results found</span>
             <div className="mx-auto  flex w-full flex-col space-y-4 overflow-auto p-4">
@@ -169,7 +169,7 @@ export default function SearchPage(props: SearchPageProps) {
                 />
               </div>
             </div>
-          </MobileResultsDrawer> */}
+          </MobileResultsDrawer>
         </div>
       </ProviderMap>
     </div>

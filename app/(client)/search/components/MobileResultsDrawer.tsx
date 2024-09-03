@@ -27,7 +27,7 @@ export function MobileResultsDrawer(props: MobileResultsDrawerProps) {
       <Drawer.Portal>
         <Drawer.Content
           aria-describedby={undefined}
-          className="focus-ring-none border-b-none fixed bottom-0 left-0 right-0 z-20 mx-[-1px] flex h-full max-h-[calc(100vh-88px)] flex-col rounded-t-xl border border-t border-slate-300  bg-white lg:hidden"
+          className="focus-ring-none border-b-none fixed bottom-0 left-0 right-0 z-20 mx-[-1px] flex h-full max-h-[calc(100dvh-88px)] flex-col rounded-t-xl border border-t border-slate-300  bg-white lg:hidden"
         >
           <Drawer.Title className="sr-only">Provider search results</Drawer.Title>
           {children}
