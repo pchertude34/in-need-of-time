@@ -41,7 +41,7 @@ export default function Header() {
                 <Image src="/logo.svg" alt="Logo" height={40} width={59} className="block h-10 w-auto lg:hidden" />
               </Link>
             </div>
-            <div className="hidden flex-1 md:flex">
+            <div className="hidden flex-1 lg:flex">
               <NavigationMenu>
                 <NavigationMenuList>
                   <NavigationMenuItem>
@@ -90,14 +90,14 @@ export default function Header() {
                 </NavigationMenuList>
               </NavigationMenu>
             </div>
-            <div className="hidden flex-1 items-center justify-end md:flex">
+            <div className="hidden flex-1 items-center justify-end lg:flex">
               <Button variant="primary" asChild>
                 <Link href="/find">
                   Find a Provider <ArrowRightIcon className="ml-2 h-3 w-3" />
                 </Link>
               </Button>
             </div>
-            <div className="-mr-2 flex items-center md:hidden">
+            <div className="-mr-2 flex items-center lg:hidden">
               {/* Mobile menu button */}
               <DrawerTrigger asChild>
                 <Button variant="text-dark" size="text">
