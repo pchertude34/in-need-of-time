@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import { MapPinIcon, MagnifyingGlassIcon, ViewfinderCircleIcon, ArrowRightIcon } from "@heroicons/react/24/outline";
 import { cva, VariantProps } from "class-variance-authority";
@@ -9,6 +11,7 @@ import { InputGroup, InputLeftElement, InputRightElement } from "./ui/input-grou
 import { Typeahead } from "./Typeahead";
 import { Select, SelectTrigger, SelectContent, SelectGroup, SelectItem, SelectValue } from "./ui/select";
 import { cn } from "@/lib/utils";
+import { LocationInput } from "./LocationInput";
 
 const DEFAULT_ORIENTATION = "horizontal";
 
@@ -34,21 +37,7 @@ export function ServiceSearchBar(props: ServiceSearchBarProps) {
   return (
     <div className={cn(searchBarVariant({ orientation, className }))}>
       {/* Location input */}
-      <InputGroup className="grow">
-        <InputLeftElement>
-          <MapPinIcon className="h-4 w-4 text-slate-500" />
-        </InputLeftElement>
-        <Input
-          className=" rounded-full border-transparent px-10 focus:border focus:border-slate-400 focus:bg-slate-50"
-          type="text"
-          placeholder="Enter your location or ZIP"
-        />
-        <InputRightElement>
-          <Button variant="text-primary" size="text">
-            <LocateFixed className="h-4 w-4" />
-          </Button>
-        </InputRightElement>
-      </InputGroup>
+      <LocationInput className="grow" onLocationChange={() => {}} />
       <SearchBarDivider orientation={orientation} />
       {/* Provider type selector */}
       <Typeahead placeholder="Search provider type" className="grow" />
