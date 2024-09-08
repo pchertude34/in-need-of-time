@@ -15,7 +15,7 @@ const DEFAULT_PLACEHOLDER = "Enter your location";
 const USING_LOCATION_PLACEHOLER = "Using your location";
 
 type LocationInputProps = {
-  onLocationChange: (location: Location) => void;
+  onLocationChange: (location: Location | null) => void;
   className?: string;
 };
 export function LocationInput(props: LocationInputProps) {
@@ -26,22 +26,25 @@ export function LocationInput(props: LocationInputProps) {
 
   const addressInputRef = useRef<HTMLInputElement>(null);
 
-  const { place } = useGooglePlaceSearch({
+  const { cleanup } = useGooglePlaceSearch({
     refElem: addressInputRef,
     fields: ["address_components", "geometry", "name", "place_id"],
     types: ["address"],
+    onPlaceChange: (place) => {
+      const latitude = place?.geometry?.location.lat();
+      const longitude = place?.geometry?.location.lng();
+      if (latitude && longitude) {
+        setLocation({ latitude, longitude });
+      }
+    },
   });
 
   // Call the onLocationChange prop function in this use effect when the location changes
-  // since location can change in two places. (either from the places input, or the "use my current location" button)
+  // since location can change in multiple places.
   useEffect(() => {
-    const latitude = place?.geometry?.location.lat();
-    const longitude = place?.geometry?.location.lng();
-
-    if (latitude && longitude) {
-      onLocationChange({ longitude, latitude });
-    }
-  }, [place, onLocationChange]);
+    onLocationChange(location);
+    return () => cleanup();
+  }, [location]);
 
   /**
    * Use native browser functionality to calculate the user's current coordinates.

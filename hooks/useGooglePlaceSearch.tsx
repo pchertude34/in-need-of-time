@@ -8,13 +8,14 @@ type UseGooglePlaceSearchParams = {
   componentRestrictions?: any;
   fields: string[];
   types: string[];
+  onPlaceChange?: (place: google.maps.places.PlaceResult | undefined) => void;
 };
 
 const DEFAULT_COMPONENT_RESTRICTIONS = { country: ["us"] };
 const LISTENER_TYPE = "place_changed";
 
 export function useGooglePlaceSearch(params: UseGooglePlaceSearchParams) {
-  const { refElem, componentRestrictions = DEFAULT_COMPONENT_RESTRICTIONS, fields, types } = params;
+  const { refElem, componentRestrictions = DEFAULT_COMPONENT_RESTRICTIONS, fields, types, onPlaceChange } = params;
   const [place, setPlace] = useState<google.maps.places.PlaceResult>();
   const { isLoadingMaps, googleMapsApi, mapsError } = useLoadGoogleMaps();
   const autocomplete = useRef<google.maps.places.Autocomplete>();
@@ -32,10 +33,17 @@ export function useGooglePlaceSearch(params: UseGooglePlaceSearchParams) {
       });
 
       autocompleteListener.current = autocomplete.current.addListener(LISTENER_TYPE, () => {
-        setPlace(autocomplete.current?.getPlace());
+        const place = autocomplete.current?.getPlace();
+        setPlace(place);
+        onPlaceChange && onPlaceChange(place);
       });
     }
-  }, [isLoadingMaps, types, fields, componentRestrictions, refElem]);
+  }, [isLoadingMaps, types, fields, componentRestrictions, onPlaceChange, refElem]);
 
-  return { place };
+  // Function to clean up the autocomplete listener
+  function cleanup() {
+    autocompleteListener.current?.remove();
+  }
+
+  return { place, isLoadingMaps, mapsError, cleanup };
 }
