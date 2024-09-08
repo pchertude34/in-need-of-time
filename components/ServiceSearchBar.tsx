@@ -37,7 +37,7 @@ export function ServiceSearchBar(props: ServiceSearchBarProps) {
   return (
     <div className={cn(searchBarVariant({ orientation, className }))}>
       {/* Location input */}
-      <LocationInput className="grow" onLocationChange={() => {}} />
+      <LocationInput className="grow-0" onLocationChange={() => {}} />
       <SearchBarDivider orientation={orientation} />
       {/* Provider type selector */}
       <Typeahead placeholder="Search provider type" className="grow" />

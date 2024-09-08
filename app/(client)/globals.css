@@ -7,6 +7,10 @@
     @apply focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-100 focus:ring-primary-200;
   }
 
+  .focus-ring-success {
+    @apply focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-100 focus:ring-success-100 focus:ring-opacity-80;
+  }
+
   .focus-ring-none {
     @apply focus:outline-none focus:ring-0;
   }

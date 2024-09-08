@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { MapPinIcon } from "@heroicons/react/24/outline";
 import { LocateFixed } from "lucide-react";
+import { CheckCircleIcon } from "@heroicons/react/24/solid";
 import { InputGroup, InputLeftElement, InputRightElement } from "./ui/input-group";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
@@ -60,6 +61,21 @@ export function LocationInput(props: LocationInputProps) {
     }
   }
 
+  /**
+   * Handler for the location input onKeyDown event.
+   * If the user changes the input when a location is set, clear the location
+   * and reset the input value.
+   */
+  function handleKeyDown() {
+    if (location) {
+      setLocation(null);
+
+      if (addressInputRef.current) {
+        addressInputRef.current.value = "";
+      }
+    }
+  }
+
   return (
     <InputGroup className={className}>
       <InputLeftElement>
@@ -67,11 +83,16 @@ export function LocationInput(props: LocationInputProps) {
       </InputLeftElement>
       <Input
         ref={addressInputRef}
-        className=" rounded-full border-transparent px-10 focus:border focus:border-slate-400 focus:bg-slate-50"
+        className={cn("grow-0 rounded-full  pl-10 pr-14 focus:border  focus:bg-slate-50", {
+          "border-transparent focus:border-slate-400": !location,
+        })}
         type="text"
         placeholder={DEFAULT_PLACEHOLDER}
+        onKeyDown={handleKeyDown}
+        variant={location ? "success" : "primary"}
       />
       <InputRightElement>
+        {location && <CheckCircleIcon className="mr-1 h-5 w-5 text-success-400" />}
         <Button variant="text-primary" size="text" onClick={calculateLocation}>
           <LocateFixed className="h-4 w-4" />
         </Button>

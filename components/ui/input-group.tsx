@@ -46,7 +46,7 @@ export function InputRightElement(props: InputRightElementProps) {
   return (
     <div
       className={cn(
-        " absolute inset-y-0 right-0 flex items-center pr-3",
+        "absolute inset-y-0 right-0 flex items-center pr-3",
         {
           "pointer-events-auto": isButton,
           "pointer-events-none": !isButton,
