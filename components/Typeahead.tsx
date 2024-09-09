@@ -8,39 +8,26 @@ import { InputGroup, InputLeftElement, InputRightElement } from "./ui/input-grou
 import { Button } from "./ui/button";
 import { cn } from "@/lib/utils";
 
-const books = [
-  { id: "book-1", author: "Harper Lee", title: "To Kill a Mockingbird" },
-  { id: "book-2", author: "Lev Tolstoy", title: "War and Peace" },
-  { id: "book-3", author: "Fyodor Dostoyevsy", title: "The Idiot" },
-  { id: "book-4", author: "Oscar Wilde", title: "A Picture of Dorian Gray" },
-  { id: "book-5", author: "George Orwell", title: "1984" },
-  { id: "book-6", author: "Jane Austen", title: "Pride and Prejudice" },
-  { id: "book-7", author: "Marcus Aurelius", title: "Meditations" },
-  {
-    id: "book-8",
-    author: "Fyodor Dostoevsky",
-    title: "The Brothers Karamazov",
-  },
-  { id: "book-9", author: "Lev Tolstoy", title: "Anna Karenina" },
-  { id: "book-10", author: "Fyodor Dostoevsky", title: "Crime and Punishment" },
-];
-
-type TypeaheadProps = {
+type TypeaheadProps<T> = {
+  items?: T[];
+  onFilter: (item: T, query: string) => boolean;
+  getDisplay: (item: T) => string;
+  getKey: (item: T) => string;
   placeholder?: string;
   className?: string;
 };
 
-export function Typeahead(props: TypeaheadProps) {
-  const { placeholder, className } = props;
-  const [items, setItems] = useState(books);
+export function Typeahead<T>(props: TypeaheadProps<T>) {
+  const { items = [], onFilter, getDisplay, getKey, placeholder, className } = props;
+  const [filteredItems, setFilteredItems] = useState(items);
 
   const { isOpen, getToggleButtonProps, getMenuProps, getInputProps, highlightedIndex, getItemProps } = useCombobox({
-    items,
+    items: filteredItems,
     onInputValueChange: ({ inputValue }) => {
-      setItems(books.filter((item) => item.title.toLowerCase().startsWith(inputValue.toLowerCase())));
+      setFilteredItems(items.filter((item) => onFilter(item, inputValue)));
     },
     itemToString(item) {
-      return item ? item.title : "";
+      return item ? getDisplay(item) : "";
     },
   });
 
@@ -65,21 +52,21 @@ export function Typeahead(props: TypeaheadProps) {
         className={cn(
           "absolute z-10 mt-2 max-h-96 min-w-[8rem] overflow-auto rounded-xl border border-slate-300 bg-white p-0 leading-5 shadow-xl",
           {
-            hidden: !(isOpen && items.length),
+            hidden: !(isOpen && filteredItems.length),
           },
         )}
         {...getMenuProps()}
       >
         {isOpen &&
-          items.map((item, index) => (
+          filteredItems.map((item, index) => (
             <li
+              key={getKey(item)}
               className={cn("px-5 py-2 hover:bg-slate-100", {
                 "bg-slate-100": highlightedIndex === index,
               })}
-              key={item.id}
               {...getItemProps({ item, index })}
             >
-              {item.title}
+              {getDisplay(item)}
             </li>
           ))}
       </ul>

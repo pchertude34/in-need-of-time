@@ -83,7 +83,11 @@ export default async function SearchPage(props: SearchPageProps) {
               </div>
             </div>
           </ScrollArea>
-          <ServiceSearchBar className="z-10 ml-4 bg-white shadow-xl" orientation="horizontal" />
+          <ServiceSearchBar
+            serviceTypes={serviceTypes}
+            className="z-10 ml-4 bg-white shadow-xl"
+            orientation="horizontal"
+          />
         </div>
 
         {/* Mobile UI */}

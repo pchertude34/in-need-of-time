@@ -1,17 +1,16 @@
 "use client";
 
 import React from "react";
-import { MapPinIcon, MagnifyingGlassIcon, ViewfinderCircleIcon, ArrowRightIcon } from "@heroicons/react/24/outline";
+import { MagnifyingGlassIcon, ViewfinderCircleIcon, ArrowRightIcon } from "@heroicons/react/24/outline";
 import { cva, VariantProps } from "class-variance-authority";
-import { LocateFixed } from "lucide-react";
 import { Button } from "./ui/button";
-import { Input } from "./ui/input";
 import { Separator } from "./ui/separator";
 import { InputGroup, InputLeftElement, InputRightElement } from "./ui/input-group";
 import { Typeahead } from "./Typeahead";
 import { Select, SelectTrigger, SelectContent, SelectGroup, SelectItem, SelectValue } from "./ui/select";
 import { cn } from "@/lib/utils";
 import { LocationInput } from "./LocationInput";
+import type { ServiceType } from "@/lib/types";
 
 const DEFAULT_ORIENTATION = "horizontal";
 
@@ -28,11 +27,13 @@ const searchBarVariant = cva("p-1 border border-slate-300", {
 });
 
 type ServiceSearchBarProps = {
+  serviceTypes?: ServiceType[];
   className?: string;
 } & VariantProps<typeof searchBarVariant>;
 
 export function ServiceSearchBar(props: ServiceSearchBarProps) {
-  const { orientation, className } = props;
+  const { serviceTypes, orientation, className } = props;
+  // console.log("serviceTypes :>> ", serviceTypes);
 
   return (
     <div className={cn(searchBarVariant({ orientation, className }))}>
@@ -40,7 +41,14 @@ export function ServiceSearchBar(props: ServiceSearchBarProps) {
       <LocationInput className="grow-0" onLocationChange={() => {}} />
       <SearchBarDivider orientation={orientation} />
       {/* Provider type selector */}
-      <Typeahead placeholder="Search provider type" className="grow" />
+      <Typeahead
+        items={serviceTypes}
+        onFilter={(item, query) => item.name?.toLowerCase().includes(query.toLowerCase())}
+        getDisplay={(item) => item.name}
+        getKey={(item) => item.slug}
+        placeholder="Search provider type"
+        className="grow"
+      />
       {/* <SearchBarDivider orientation={variant} /> */}
       <SearchBarDivider orientation={orientation} />
       <InputGroup className="min-w-[200px]">
