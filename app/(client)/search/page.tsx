@@ -8,12 +8,15 @@ import { ProviderResultCard } from "./components/ProviderResultCard";
 import { DrawerContent, DrawerClose, Drawer, DrawerTrigger } from "@/components/ui/drawer";
 import { Button } from "@/components/ui/button";
 import { MobileResultsDrawer } from "./components/MobileResultsDrawer";
+import { queryAllServiceTypes } from "@/lib/queries/getServiceTypes";
 
 type SearchPageProps = {
   searchParams?: { [key: string]: string };
 };
 
-export default function SearchPage(props: SearchPageProps) {
+export default async function SearchPage(props: SearchPageProps) {
+  const serviceTypes = await queryAllServiceTypes();
+
   return (
     <div>
       <ProviderMap className="h-[calc(100dvh-5rem)] w-full lg:h-[calc(100dvh-5.5rem)]">
