@@ -1,12 +1,13 @@
 "use client";
 
-import React, { useState } from "react";
-import { useCombobox } from "downshift";
+import React, { useState, useCallback } from "react";
+import { useCombobox, UseComboboxState, UseComboboxStateChangeOptions } from "downshift";
 import { ChevronDownIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import { Input } from "./ui/input";
 import { InputGroup, InputLeftElement, InputRightElement } from "./ui/input-group";
 import { Button } from "./ui/button";
 import { cn } from "@/lib/utils";
+import { CheckCircleIcon } from "@heroicons/react/24/solid";
 
 type TypeaheadProps<T> = {
   items?: T[];
@@ -21,7 +22,35 @@ export function Typeahead<T>(props: TypeaheadProps<T>) {
   const { items = [], onFilter, getDisplay, getKey, placeholder, className } = props;
   const [filteredItems, setFilteredItems] = useState(items);
 
-  const { isOpen, getToggleButtonProps, getMenuProps, getInputProps, highlightedIndex, getItemProps } = useCombobox({
+  const stateReducer = useCallback((state: UseComboboxState<T>, actionAndChanges: UseComboboxStateChangeOptions<T>) => {
+    const { type, changes } = actionAndChanges;
+
+    switch (type) {
+      case useCombobox.stateChangeTypes.InputChange:
+        // Clear the selected item when the user types if an item is selected
+        if (state.selectedItem)
+          return {
+            ...changes,
+            selectedItem: null,
+            // Clear the input since the selected item is cleared
+            inputValue: "",
+          };
+        else return changes;
+      default:
+        return changes;
+    }
+  }, []);
+
+  const {
+    isOpen,
+    getToggleButtonProps,
+    getMenuProps,
+    getInputProps,
+    highlightedIndex,
+    getItemProps,
+    selectedItem,
+    selectItem,
+  } = useCombobox({
     items: filteredItems,
     onInputValueChange: ({ inputValue }) => {
       setFilteredItems(items.filter((item) => onFilter(item, inputValue)));
@@ -29,6 +58,7 @@ export function Typeahead<T>(props: TypeaheadProps<T>) {
     itemToString(item) {
       return item ? getDisplay(item) : "";
     },
+    stateReducer,
   });
 
   return (
@@ -38,11 +68,15 @@ export function Typeahead<T>(props: TypeaheadProps<T>) {
           <MagnifyingGlassIcon className="h-4 w-4" />
         </InputLeftElement>
         <Input
-          className="rounded-full border-transparent px-10 focus:border focus:border-slate-400 focus:bg-slate-50"
+          className={cn("rounded-full px-10 focus:border focus:bg-slate-50", {
+            "border-transparent focus:border-slate-400": !selectedItem,
+          })}
           placeholder={placeholder}
+          variant={selectedItem ? "success" : "primary"}
           {...getInputProps()}
         />
         <InputRightElement>
+          {selectedItem && <CheckCircleIcon className="mr-1 h-5 w-5 text-success-400" />}
           <Button variant="text-dark" size="text" {...getToggleButtonProps()} aria-label="toggle menu">
             <ChevronDownIcon className="h-4 w-4" />
           </Button>
