@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { MagnifyingGlassIcon, ViewfinderCircleIcon, ArrowRightIcon } from "@heroicons/react/24/outline";
 import { cva, VariantProps } from "class-variance-authority";
 import { Button } from "./ui/button";
@@ -10,7 +10,7 @@ import { Typeahead } from "./Typeahead";
 import { Select, SelectTrigger, SelectContent, SelectGroup, SelectItem, SelectValue } from "./ui/select";
 import { cn } from "@/lib/utils";
 import { LocationInput } from "./LocationInput";
-import type { ServiceType } from "@/lib/types";
+import type { Location, ServiceType } from "@/lib/types";
 
 const DEFAULT_ORIENTATION = "horizontal";
 
@@ -33,30 +33,42 @@ type ServiceSearchBarProps = {
 
 export function ServiceSearchBar(props: ServiceSearchBarProps) {
   const { serviceTypes, orientation, className } = props;
-  // console.log("serviceTypes :>> ", serviceTypes);
+  const [location, setLocation] = useState<Location | null>(null);
+  const [serviceType, setServiceType] = useState<ServiceType | null>(null);
+  const [radius, setRadius] = useState<string | undefined>();
 
   return (
     <div className={cn(searchBarVariant({ orientation, className }))}>
       {/* Location input */}
-      <LocationInput className="grow-0" onLocationChange={() => {}} />
+      <LocationInput
+        className="grow-0"
+        onLocationChange={(location) => {
+          setLocation(location);
+        }}
+      />
       <SearchBarDivider orientation={orientation} />
       {/* Provider type selector */}
       <Typeahead
         items={serviceTypes}
         onFilter={(item, query) => item.name?.toLowerCase().includes(query.toLowerCase())}
+        onItemSelected={(selectedItem) => setServiceType(selectedItem)}
         getDisplay={(item) => item.name}
         getKey={(item) => item.slug}
         placeholder="Search provider type"
         className="grow"
       />
-      {/* <SearchBarDivider orientation={variant} /> */}
       <SearchBarDivider orientation={orientation} />
       <InputGroup className="min-w-[200px]">
         <InputLeftElement>
           <ViewfinderCircleIcon className="h-4 w-4" />
         </InputLeftElement>
-        <Select>
-          <SelectTrigger className="rounded-full border-transparent pl-10 focus:border focus:border-slate-400 focus:bg-slate-50">
+        <Select onValueChange={(radius) => setRadius(radius)} value={radius}>
+          <SelectTrigger
+            variant={radius ? "success" : "primary"}
+            className={cn("rounded-full pl-10 focus:bg-slate-50", {
+              "border-transparent focus:border-slate-400": !radius,
+            })}
+          >
             <SelectValue placeholder="Select radius" />
           </SelectTrigger>
           <SelectContent>

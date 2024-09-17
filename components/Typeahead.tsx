@@ -14,12 +14,13 @@ type TypeaheadProps<T> = {
   onFilter: (item: T, query: string) => boolean;
   getDisplay: (item: T) => string;
   getKey: (item: T) => string;
+  onItemSelected: (selectedItem: T) => void;
   placeholder?: string;
   className?: string;
 };
 
 export function Typeahead<T>(props: TypeaheadProps<T>) {
-  const { items = [], onFilter, getDisplay, getKey, placeholder, className } = props;
+  const { items = [], onFilter, onItemSelected, getDisplay, getKey, placeholder, className } = props;
   const [filteredItems, setFilteredItems] = useState(items);
 
   const stateReducer = useCallback((state: UseComboboxState<T>, actionAndChanges: UseComboboxStateChangeOptions<T>) => {
@@ -41,25 +42,22 @@ export function Typeahead<T>(props: TypeaheadProps<T>) {
     }
   }, []);
 
-  const {
-    isOpen,
-    getToggleButtonProps,
-    getMenuProps,
-    getInputProps,
-    highlightedIndex,
-    getItemProps,
-    selectedItem,
-    selectItem,
-  } = useCombobox({
-    items: filteredItems,
-    onInputValueChange: ({ inputValue }) => {
-      setFilteredItems(items.filter((item) => onFilter(item, inputValue)));
-    },
-    itemToString(item) {
-      return item ? getDisplay(item) : "";
-    },
-    stateReducer,
-  });
+  const { isOpen, getToggleButtonProps, getMenuProps, getInputProps, highlightedIndex, getItemProps, selectedItem } =
+    useCombobox({
+      items: filteredItems,
+      onInputValueChange: ({ inputValue }) => {
+        setFilteredItems(items.filter((item) => onFilter(item, inputValue)));
+      },
+      onSelectedItemChange: ({ selectedItem }) => {
+        if (selectedItem) {
+          onItemSelected([selectedItem]);
+        }
+      },
+      itemToString(item) {
+        return item ? getDisplay(item) : "";
+      },
+      stateReducer,
+    });
 
   return (
     <div className={className}>
