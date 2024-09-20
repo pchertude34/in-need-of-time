@@ -9,6 +9,7 @@ import { InputGroup, InputLeftElement, InputRightElement } from "./ui/input-grou
 import { Typeahead } from "./Typeahead";
 import { Select, SelectTrigger, SelectContent, SelectGroup, SelectItem, SelectValue } from "./ui/select";
 import { cn } from "@/lib/utils";
+import { CheckCircleIcon } from "@heroicons/react/24/solid";
 import { LocationInput } from "./LocationInput";
 import type { Location, ServiceType } from "@/lib/types";
 
@@ -69,7 +70,10 @@ export function ServiceSearchBar(props: ServiceSearchBarProps) {
               "border-transparent focus:border-slate-400": !radius,
             })}
           >
-            <SelectValue placeholder="Select radius" />
+            <div className="flex w-full flex-grow items-center">
+              <SelectValue placeholder="Select radius" />
+              {radius && <CheckCircleIcon className="ml-auto mr-1 h-5 w-5 text-success-400" />}
+            </div>
           </SelectTrigger>
           <SelectContent>
             <SelectGroup>
