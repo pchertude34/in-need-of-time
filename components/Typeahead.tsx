@@ -49,9 +49,7 @@ export function Typeahead<T>(props: TypeaheadProps<T>) {
         setFilteredItems(items.filter((item) => onFilter(item, inputValue)));
       },
       onSelectedItemChange: ({ selectedItem }) => {
-        if (selectedItem) {
-          onItemSelected([selectedItem]);
-        }
+        onItemSelected(selectedItem);
       },
       itemToString(item) {
         return item ? getDisplay(item) : "";
