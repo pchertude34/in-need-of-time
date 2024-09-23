@@ -1,11 +1,12 @@
 "use client";
 
 import React, { useState } from "react";
+import { useRouter } from "next/navigation";
 import { MagnifyingGlassIcon, ViewfinderCircleIcon, ArrowRightIcon } from "@heroicons/react/24/outline";
 import { cva, VariantProps } from "class-variance-authority";
 import { Button } from "./ui/button";
 import { Separator } from "./ui/separator";
-import { InputGroup, InputLeftElement, InputRightElement } from "./ui/input-group";
+import { InputGroup, InputLeftElement } from "./ui/input-group";
 import { Typeahead } from "./Typeahead";
 import { Select, SelectTrigger, SelectContent, SelectGroup, SelectItem, SelectValue } from "./ui/select";
 import { cn } from "@/lib/utils";
@@ -34,9 +35,16 @@ type ServiceSearchBarProps = {
 
 export function ServiceSearchBar(props: ServiceSearchBarProps) {
   const { serviceTypes, orientation, className } = props;
+  const router = useRouter();
   const [location, setLocation] = useState<Location | null>(null);
   const [serviceType, setServiceType] = useState<ServiceType | null>(null);
   const [radius, setRadius] = useState<string | undefined>();
+
+  function handleSearch() {
+    router.push(
+      `/search?lat=${location?.latitude}&lng=${location?.longitude}&type=${serviceType?.slug}&radius=${radius}`,
+    );
+  }
 
   return (
     <div className={cn(searchBarVariant({ orientation, className }))}>
@@ -88,6 +96,8 @@ export function ServiceSearchBar(props: ServiceSearchBarProps) {
       <Button
         variant="primary"
         size="icon"
+        onClick={handleSearch}
+        disabled={!location || !serviceType || !radius}
         className={cn({ "ml-2": orientation === "horizontal", "mt-5 w-full": orientation === "vertical" })}
       >
         {orientation === "horizontal" ? (
