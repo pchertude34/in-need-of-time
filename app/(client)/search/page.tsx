@@ -9,7 +9,7 @@ import { DrawerContent, DrawerClose, Drawer, DrawerTrigger } from "@/components/
 import { Button } from "@/components/ui/button";
 import { MobileResultsDrawer } from "./components/MobileResultsDrawer";
 import { queryAllServiceTypes } from "@/lib/queries/getServiceTypes";
-import { GROQResponse, searchProviders } from "@/lib/queries/getProviders";
+import { searchProviders } from "@/lib/queries/getProviders";
 import { convertMilesToMeters } from "@/lib/utils";
 
 type SearchPageProps = {
@@ -26,19 +26,20 @@ export default async function SearchPage(props: SearchPageProps) {
   const { lat, lng, radius, type } = searchParams || {};
   // const { searchParams: { lat, lng, distance, type } = {} } = props;
   const serviceTypes = await queryAllServiceTypes();
-  let providers: GROQResponse[] = [];
-
-  if (lat && lng && radius && type) {
-    providers = await searchProviders({ lat, lng, radius: convertMilesToMeters(radius), serviceTypeSlug: type });
-  }
+  const providers = await searchProviders({
+    lat,
+    lng,
+    radius: convertMilesToMeters(radius || 0),
+    serviceTypeSlug: type,
+  });
 
   return (
     <div>
       <ProviderMap className="h-[calc(100dvh-5rem)] w-full lg:h-[calc(100dvh-5.5rem)]">
         {/* Desktop UI */}
         <div className="absolute hidden h-[calc(100dvh-88px)] w-full items-start p-6 lg:flex">
-          <ScrollArea className="z-10 max-h-full w-[403px] flex-shrink-0 flex-col rounded-2xl bg-white shadow-xl">
-            <div className="space-y-4 p-6">
+          <ScrollArea className="z-10 flex max-h-full w-[403px] flex-grow flex-col rounded-2xl bg-white shadow-xl">
+            <div className="max-w-full space-y-4 p-6">
               <span className="font-bold text-secondary-500">10 results found</span>
               <Tabs defaultValue="locations">
                 <TabsList className="grid w-full grid-cols-2">
@@ -46,55 +47,27 @@ export default async function SearchPage(props: SearchPageProps) {
                   <TabsTrigger value="others">Others</TabsTrigger>
                 </TabsList>
               </Tabs>
-              <div className="space-y-5">
-                <ProviderResultCard
+              <div className="max-w-full space-y-5">
+                {providers.map((provider) => (
+                  <ProviderResultCard
+                    key={provider._id}
+                    name={provider.title}
+                    address={provider.place?.address || "No address available"}
+                    serviceType={provider.serviceTypes[0].name}
+                    // description={provider.description}
+                    // phone={provider.phone}
+                    // website={provider.website}
+                  />
+                ))}
+
+                {/* <ProviderResultCard
                   name="St. Austin's Day Care"
                   address="1234 Main St, Portland, OR 97201"
                   serviceType="Housing"
                   description="A great place for kids to learn and grow."
                   phone="(503) 555-1234"
                   website="https://example.com"
-                />
-                <ProviderResultCard
-                  name="St. Austin's Day Care"
-                  address="1234 Main St, Portland, OR 97201"
-                  serviceType="Housing"
-                  description="A great place for kids to learn and grow."
-                  phone="(503) 555-1234"
-                  website="https://example.com"
-                />
-                <ProviderResultCard
-                  name="St. Austin's Day Care"
-                  address="1234 Main St, Portland, OR 97201"
-                  serviceType="Housing"
-                  description="A great place for kids to learn and grow."
-                  phone="(503) 555-1234"
-                  website="https://example.com"
-                />
-                <ProviderResultCard
-                  name="St. Austin's Day Care"
-                  address="1234 Main St, Portland, OR 97201"
-                  serviceType="Housing"
-                  description="A great place for kids to learn and grow."
-                  phone="(503) 555-1234"
-                  website="https://example.com"
-                />
-                <ProviderResultCard
-                  name="St. Austin's Day Care"
-                  address="1234 Main St, Portland, OR 97201"
-                  serviceType="Housing"
-                  description="A great place for kids to learn and grow."
-                  phone="(503) 555-1234"
-                  website="https://example.com"
-                />
-                <ProviderResultCard
-                  name="St. Austin's Day Care"
-                  address="1234 Main St, Portland, OR 97201"
-                  serviceType="Housing"
-                  description="A great place for kids to learn and grow."
-                  phone="(503) 555-1234"
-                  website="https://example.com"
-                />
+                /> */}
               </div>
             </div>
           </ScrollArea>
@@ -141,54 +114,17 @@ export default async function SearchPage(props: SearchPageProps) {
                 </TabsList>
               </Tabs>
               <div className="space-y-5">
-                <ProviderResultCard
-                  name="St. Austin's Day Care"
-                  address="1234 Main St, Portland, OR 97201"
-                  serviceType="Housing"
-                  description="A great place for kids to learn and grow."
-                  phone="(503) 555-1234"
-                  website="https://example.com"
-                />
-                <ProviderResultCard
-                  name="St. Austin's Day Care"
-                  address="1234 Main St, Portland, OR 97201"
-                  serviceType="Housing"
-                  description="A great place for kids to learn and grow."
-                  phone="(503) 555-1234"
-                  website="https://example.com"
-                />
-                <ProviderResultCard
-                  name="St. Austin's Day Care"
-                  address="1234 Main St, Portland, OR 97201"
-                  serviceType="Housing"
-                  description="A great place for kids to learn and grow."
-                  phone="(503) 555-1234"
-                  website="https://example.com"
-                />
-                <ProviderResultCard
-                  name="St. Austin's Day Care"
-                  address="1234 Main St, Portland, OR 97201"
-                  serviceType="Housing"
-                  description="A great place for kids to learn and grow."
-                  phone="(503) 555-1234"
-                  website="https://example.com"
-                />
-                <ProviderResultCard
-                  name="St. Austin's Day Care"
-                  address="1234 Main St, Portland, OR 97201"
-                  serviceType="Housing"
-                  description="A great place for kids to learn and grow."
-                  phone="(503) 555-1234"
-                  website="https://example.com"
-                />
-                <ProviderResultCard
-                  name="Last ONe"
-                  address="1234 Main St, Portland, OR 97201"
-                  serviceType="Housing"
-                  description="A great place for kids to learn and grow."
-                  phone="(503) 555-1234"
-                  website="https://example.com"
-                />
+                {providers.map((provider) => (
+                  <ProviderResultCard
+                    key={`${provider._id}-mobile`}
+                    name={provider.title}
+                    address={provider.place?.address || "No address available"}
+                    serviceType={provider.serviceTypes[0].name}
+                    // description={provider.description}
+                    // phone={provider.phone}
+                    // website={provider.website}
+                  />
+                ))}
               </div>
             </div>
           </MobileResultsDrawer>

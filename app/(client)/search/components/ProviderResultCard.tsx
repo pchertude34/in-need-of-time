@@ -9,9 +9,9 @@ type ProviderResultCardProps = {
   name: string;
   address: string;
   serviceType: string;
-  description: string;
-  phone: string;
-  website: string;
+  description?: string;
+  phone?: string;
+  website?: string;
 };
 
 export function ProviderResultCard(props: ProviderResultCardProps) {

@@ -1,21 +1,6 @@
 import { client } from "@/sanity/lib/client";
 import { groq } from "next-sanity";
-
-export type GROQResponse = {
-  services: {
-    _id: string;
-    title: string;
-    place?: {
-      address: string;
-      placeId: string;
-      location: {
-        lat: number;
-        lng: number;
-      };
-    };
-    description?: string;
-  }[];
-};
+import type { Provider } from "../types";
 
 type SearchProvidersParamsType = {
   lat?: string | number;
@@ -24,7 +9,7 @@ type SearchProvidersParamsType = {
   serviceTypeSlug?: string;
 };
 
-export function searchProviders(params: SearchProvidersParamsType): Promise<GROQResponse[]> {
+export function searchProviders(params: SearchProvidersParamsType): Promise<Provider[]> {
   const { lat, lng, radius, serviceTypeSlug } = params;
 
   const query = groq`*[_type == "provider" && 

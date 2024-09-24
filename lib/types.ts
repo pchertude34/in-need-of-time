@@ -20,5 +20,6 @@ export type Provider = {
     placeId: string;
     location: Location;
   };
-  description?: string;
+  serviceTypes: ServiceType[];
+  description?: any[];
 };
