@@ -24,7 +24,7 @@ type SearchPageProps = {
 export default async function SearchPage(props: SearchPageProps) {
   const { searchParams } = props;
   const { lat, lng, radius, type } = searchParams || {};
-  // const { searchParams: { lat, lng, distance, type } = {} } = props;
+
   const serviceTypes = await queryAllServiceTypes();
   const providers = await searchProviders({
     lat,

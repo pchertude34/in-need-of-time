@@ -16,6 +16,5 @@ export function searchProviders(params: SearchProvidersParamsType): Promise<Prov
     geo::distance(geo::latLng(place.location.lat, place.location.lng), geo::latLng(${lat}, ${lng})) < ${radius} && 
     "${serviceTypeSlug}" in (serviceTypes[]->slug.current)]`;
 
-  console.log(query);
   return client.fetch(query);
 }
