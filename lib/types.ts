@@ -1,3 +1,5 @@
+import type { PortableTextBlock } from "@portabletext/types";
+
 export type Location = {
   latitude: number;
   longitude: number;
@@ -12,14 +14,20 @@ export type ServiceType = {
   description: string;
 };
 
+export type PublicContact = {
+  phone: string;
+  website: string;
+};
+
 export type Provider = {
   _id: string;
   title: string;
-  place?: {
+  place: {
     address: string;
     placeId: string;
     location: Location;
   };
+  description: PortableTextBlock[];
+  publicContact?: PublicContact;
   serviceTypes: ServiceType[];
-  description?: any[];
 };
