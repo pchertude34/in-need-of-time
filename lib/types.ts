@@ -11,3 +11,14 @@ export type ServiceType = {
   slug: string;
   description: string;
 };
+
+export type Provider = {
+  _id: string;
+  title: string;
+  place?: {
+    address: string;
+    placeId: string;
+    location: Location;
+  };
+  description?: string;
+};

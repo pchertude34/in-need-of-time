@@ -12,8 +12,8 @@ export function convertMetersToMiles(meters: number) {
   return Number(miles.toFixed(2));
 }
 
-export function convertMilesToMeters(miles: number) {
-  const meters = miles * METERS_PER_MILE;
+export function convertMilesToMeters(miles: number | string) {
+  const meters = Number(miles) * METERS_PER_MILE;
   return Number(meters.toFixed(2));
 }
 

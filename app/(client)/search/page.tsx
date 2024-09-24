@@ -9,13 +9,28 @@ import { DrawerContent, DrawerClose, Drawer, DrawerTrigger } from "@/components/
 import { Button } from "@/components/ui/button";
 import { MobileResultsDrawer } from "./components/MobileResultsDrawer";
 import { queryAllServiceTypes } from "@/lib/queries/getServiceTypes";
+import { GROQResponse, searchProviders } from "@/lib/queries/getProviders";
+import { convertMilesToMeters } from "@/lib/utils";
 
 type SearchPageProps = {
-  searchParams?: { [key: string]: string };
+  searchParams?: {
+    lat?: string;
+    lng?: string;
+    radius?: string;
+    type?: string;
+  };
 };
 
 export default async function SearchPage(props: SearchPageProps) {
+  const { searchParams } = props;
+  const { lat, lng, radius, type } = searchParams || {};
+  // const { searchParams: { lat, lng, distance, type } = {} } = props;
   const serviceTypes = await queryAllServiceTypes();
+  let providers: GROQResponse[] = [];
+
+  if (lat && lng && radius && type) {
+    providers = await searchProviders({ lat, lng, radius: convertMilesToMeters(radius), serviceTypeSlug: type });
+  }
 
   return (
     <div>
