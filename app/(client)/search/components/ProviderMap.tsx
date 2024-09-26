@@ -3,7 +3,7 @@
 import React, { useEffect, useRef } from "react";
 import { GoogleMapsProxy } from "@/hooks/useLoadGoogleMaps";
 import { GoogleMap } from "@/components/maps/GoogleMap";
-import { ProviderMapMarker } from "./ProviderMapMarker";
+import { MapMarker } from "@/components/maps/MapMarker";
 import { Location, Provider } from "@/lib/types";
 
 const DEFUALT_LOCATION = { lat: 45.5152, lng: -122.6784 };
@@ -42,14 +42,11 @@ export function ProviderMap(props: MapProps) {
           {(map) => (
             <>
               {providerList.map((provider) => (
-                <ProviderMapMarker
+                <MapMarker
                   key={provider._id}
                   googleMapsApi={googleMapsApi}
                   googleMap={map}
                   position={provider.place.location}
-                  onClick={() => {
-                    console.log("Clicked on provider", provider);
-                  }}
                 />
               ))}
               {children}
