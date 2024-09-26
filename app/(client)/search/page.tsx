@@ -51,6 +51,7 @@ export default async function SearchPage(props: SearchPageProps) {
                 {providers.map((provider) => (
                   <ProviderResultCard
                     key={provider._id}
+                    placeId={provider.place.placeId}
                     name={provider.title}
                     description={provider.description}
                     address={provider.place?.address || "No address available"}
@@ -108,6 +109,7 @@ export default async function SearchPage(props: SearchPageProps) {
                 {providers.map((provider) => (
                   <ProviderResultCard
                     key={`${provider._id}-mobile`}
+                    placeId={provider.place.placeId}
                     name={provider.title}
                     description={provider.description}
                     address={provider.place?.address || "No address available"}

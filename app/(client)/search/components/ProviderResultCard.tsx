@@ -6,9 +6,10 @@ import { PhoneIcon, GlobeAltIcon, MapPinIcon } from "@heroicons/react/24/solid";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import type { PortableTextBlock } from "@portabletext/types";
-import { formatPhoneNumberForHref } from "@/lib/utils";
+import { formatPhoneNumberForHref, generateGoogleNavigationLink } from "@/lib/utils";
 
 type ProviderResultCardProps = {
+  placeId: string;
   name: string;
   address: string;
   serviceType: string;
@@ -18,7 +19,7 @@ type ProviderResultCardProps = {
 };
 
 export function ProviderResultCard(props: ProviderResultCardProps) {
-  const { name, address, serviceType, description, phone, website } = props;
+  const { placeId, name, address, serviceType, description, phone, website } = props;
 
   const shouldRenderContactInfo = phone || website;
 
@@ -31,7 +32,7 @@ export function ProviderResultCard(props: ProviderResultCardProps) {
         </div>
 
         <Button variant="text-primary" size="text" asChild>
-          <Link href="">
+          <Link target="_blank" rel="noreferrer noopener" href={generateGoogleNavigationLink(placeId, name)}>
             <MapPinIcon className="mr-1 mt-1 h-4 w-4 self-start text-slate-600" />
             <span className="text-wrap">{address}</span>
           </Link>
@@ -50,7 +51,7 @@ export function ProviderResultCard(props: ProviderResultCardProps) {
           )}
           {website && (
             <Button variant="text-dark" size="text" asChild>
-              <a href={website}>
+              <a href={website} target="_blank" rel="noreferrer noopener">
                 <GlobeAltIcon className="mr-2 h-4 w-4" />
                 Website
               </a>
