@@ -3,8 +3,9 @@ import { ObjectInputProps, set } from "sanity";
 import { TextInput, Text, Stack, Label, Flex, Checkbox } from "@sanity/ui";
 import { GoogleMapsProxy } from "@/hooks/useLoadGoogleMaps";
 import { GoogleMap } from "@/components/maps/GoogleMap";
-import { MapMarker } from "./MapMarker";
+import { MapMarker } from "@/components/maps/MapMarker";
 import { MapCircle } from "./MapCircle";
+import type { Location } from "@/lib/types";
 
 // Default to Portland, OR
 const DEFUALT_LOCATION = { lat: 45.5152, lng: -122.6784 };
@@ -12,7 +13,7 @@ const DEFUALT_LOCATION = { lat: 45.5152, lng: -122.6784 };
 export default function MapInput(props: ObjectInputProps) {
   const { onChange, value, elementProps } = props;
   const [isNational, setIsNational] = useState<boolean>(value?.isNational || false);
-  const [location, setLocation] = useState<{ lat: number; lng: number } | undefined>(value?.location);
+  const [location, setLocation] = useState<Location | undefined>(value?.location);
   const [distanceRadius, setDistanceRadius] = useState<number>(value?.distanceRadius || 0);
 
   // Handler to update the isNational value
@@ -79,7 +80,7 @@ export default function MapInput(props: ObjectInputProps) {
                   <>
                     {location && (
                       <MapMarker
-                        googleMapApi={googleMapsApi}
+                        googleMapsApi={googleMapsApi}
                         googleMap={map}
                         position={location}
                         onMove={handleMarkerDragEnd}

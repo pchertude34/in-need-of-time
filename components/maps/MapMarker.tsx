@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import type { Location } from "@/lib/types";
 
-type ProvierMapMarkerProps = {
+type MapMarkerProps = {
   googleMapsApi: typeof window.google.maps;
   googleMap: google.maps.Map;
   position: Location;
@@ -9,10 +9,11 @@ type ProvierMapMarkerProps = {
   onClick?: (event: google.maps.MapMouseEvent) => void;
 };
 
-export function ProviderMapMarker(props: ProvierMapMarkerProps) {
-  const { googleMapsApi, googleMap, position, onClick } = props;
+export function MapMarker(props: MapMarkerProps) {
+  const { googleMapsApi, googleMap, position, onClick, onMove } = props;
 
   const markerRef = useRef<google.maps.Marker | undefined>(undefined);
+  const markerMoveHandlerRef = useRef<google.maps.MapsEventListener | undefined>(undefined);
   const markerClickHandlerRef = useRef<google.maps.MapsEventListener | undefined>(undefined);
 
   useEffect(() => {
@@ -20,10 +21,12 @@ export function ProviderMapMarker(props: ProvierMapMarkerProps) {
       const marker = new googleMapsApi.Marker({
         position: getPosition(),
         map: googleMap,
+        draggable: onMove ? true : false,
       });
 
       markerRef.current = marker;
       attachClickHandler();
+      attachMoveHandler();
     }
 
     return () => {
@@ -33,6 +36,12 @@ export function ProviderMapMarker(props: ProvierMapMarkerProps) {
       }
     };
   }, []);
+
+  useEffect(() => {
+    if (markerRef.current) {
+      markerRef.current.setPosition(position);
+    }
+  }, [position]);
 
   function getPosition() {
     return new googleMapsApi.LatLng(position.lat, position.lng);
@@ -44,6 +53,15 @@ export function ProviderMapMarker(props: ProvierMapMarkerProps) {
     }
     if (markerRef.current && onClick) {
       markerClickHandlerRef.current = googleMapsApi.event.addListener(markerRef.current, "click", onClick);
+    }
+  }
+
+  function attachMoveHandler() {
+    if (markerMoveHandlerRef.current) {
+      markerMoveHandlerRef.current.remove();
+    }
+    if (markerRef.current && onMove) {
+      markerMoveHandlerRef.current = googleMapsApi.event.addListener(markerRef.current, "dragend", props.onMove);
     }
   }
 
