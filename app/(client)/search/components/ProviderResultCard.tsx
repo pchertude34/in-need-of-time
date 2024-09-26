@@ -1,15 +1,17 @@
 import React from "react";
 import Link from "next/link";
+import { PortableText } from "@portabletext/react";
 import { ArrowRightIcon, MapIcon } from "@heroicons/react/24/outline";
 import { PhoneIcon, GlobeAltIcon, MapPinIcon } from "@heroicons/react/24/solid";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import type { PortableTextBlock } from "@portabletext/types";
 
 type ProviderResultCardProps = {
   name: string;
   address: string;
   serviceType: string;
-  description?: string;
+  description?: PortableTextBlock[];
   phone?: string;
   website?: string;
 };
@@ -34,7 +36,7 @@ export function ProviderResultCard(props: ProviderResultCardProps) {
           </Button>
         </div>
       </div>
-      <p className="text-sm text-gray-600">{description}</p>
+      {description && <PortableText value={description} />}
       <div className="flex justify-around border-b border-t border-slate-200 p-3">
         <Button variant="text-dark" size="text" asChild>
           <a href="">

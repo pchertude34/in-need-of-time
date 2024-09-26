@@ -52,6 +52,7 @@ export default async function SearchPage(props: SearchPageProps) {
                   <ProviderResultCard
                     key={provider._id}
                     name={provider.title}
+                    description={provider.description}
                     address={provider.place?.address || "No address available"}
                     serviceType={provider.serviceTypes[0].name}
                     // description={provider.description}
