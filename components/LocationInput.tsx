@@ -34,7 +34,7 @@ export function LocationInput(props: LocationInputProps) {
       const latitude = place?.geometry?.location.lat();
       const longitude = place?.geometry?.location.lng();
       if (latitude && longitude) {
-        setLocation({ latitude, longitude });
+        setLocation({ lat: latitude, lng: longitude });
       }
     },
   });
@@ -54,7 +54,7 @@ export function LocationInput(props: LocationInputProps) {
     setIsCalculatingLocation(true);
     navigator.geolocation.getCurrentPosition((position) => {
       const { coords } = position;
-      setLocation({ latitude: coords.latitude, longitude: coords.longitude });
+      setLocation({ lat: coords.latitude, lng: coords.longitude });
     });
     setIsCalculatingLocation(false);
 

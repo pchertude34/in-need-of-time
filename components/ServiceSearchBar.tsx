@@ -41,9 +41,7 @@ export function ServiceSearchBar(props: ServiceSearchBarProps) {
   const [radius, setRadius] = useState<string | undefined>();
 
   function handleSearch() {
-    router.push(
-      `/search?lat=${location?.latitude}&lng=${location?.longitude}&type=${serviceType?.slug}&radius=${radius}`,
-    );
+    router.push(`/search?lat=${location?.lat}&lng=${location?.lng}&type=${serviceType?.slug}&radius=${radius}`);
   }
 
   return (
