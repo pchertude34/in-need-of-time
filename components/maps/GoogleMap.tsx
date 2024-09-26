@@ -57,14 +57,12 @@ export function GoogleMap(props: GoogleMapProps) {
 
   // Recenter the map when the center prop changes
   useEffect(() => {
-    console.log("attempting to center");
     if (map && center) {
       map.setCenter(new googleMapsApi.LatLng(center.lat, center.lng));
     }
   }, [center]);
 
   function getCenter() {
-    console.log("centering");
     return new googleMapsApi.LatLng(center.lat, center.lng);
   }
 

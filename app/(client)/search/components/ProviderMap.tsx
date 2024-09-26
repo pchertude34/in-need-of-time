@@ -17,7 +17,6 @@ export function ProviderMap(props: MapProps) {
   const { className, children, center = DEFUALT_LOCATION } = props;
   const mapRef = useRef<HTMLDivElement>(null);
 
-  console.log("center :>> ", center);
   useEffect(() => {}, []);
 
   return (
