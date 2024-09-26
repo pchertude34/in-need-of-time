@@ -23,18 +23,16 @@ export function ProviderResultCard(props: ProviderResultCardProps) {
     <div className="flex w-full flex-col space-y-4 rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
       <div>
         <div className="mb-2 flex items-start justify-between">
-          <h2 className="text-lg font-bold">{name}</h2>
-          <Badge className="text-sm font-semibold">{serviceType}</Badge>
+          <h2 className="mr-2 text-lg font-bold">{name}</h2>
+          <Badge className="text-nowrap text-sm font-semibold">{serviceType}</Badge>
         </div>
-        <div className="flex items-center">
-          <MapPinIcon className="mr-1 h-4 w-4 text-slate-600" />
-          <Button variant="text-primary" size="text" asChild>
-            <Link href="">
-              {address}
-              <MapIcon className="ml-2 h-4 w-4 " />
-            </Link>
-          </Button>
-        </div>
+
+        <Button variant="text-primary" size="text" asChild>
+          <Link href="">
+            <MapPinIcon className="mr-1 mt-1 h-4 w-4 self-start text-slate-600" />
+            <span className="text-wrap">{address}</span>
+          </Link>
+        </Button>
       </div>
       {description && <PortableText value={description} />}
       <div className="flex justify-around border-b border-t border-slate-200 p-3">

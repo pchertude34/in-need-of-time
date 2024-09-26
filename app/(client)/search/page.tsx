@@ -38,7 +38,7 @@ export default async function SearchPage(props: SearchPageProps) {
       <ProviderMap className="h-[calc(100dvh-5rem)] w-full lg:h-[calc(100dvh-5.5rem)]">
         {/* Desktop UI */}
         <div className="absolute hidden h-[calc(100dvh-88px)] w-full items-start p-6 lg:flex">
-          <ScrollArea className="z-10 flex max-h-full w-[403px] flex-grow flex-col rounded-2xl bg-white shadow-xl">
+          <ScrollArea className="z-10 flex max-h-full w-[403px]  flex-col rounded-2xl bg-white shadow-xl">
             <div className="max-w-full space-y-4 p-6">
               <span className="font-bold text-secondary-500">10 results found</span>
               <Tabs defaultValue="locations">
