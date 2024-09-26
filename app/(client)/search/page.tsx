@@ -38,7 +38,7 @@ export default async function SearchPage(props: SearchPageProps) {
       <ProviderMap className="h-[calc(100dvh-5rem)] w-full lg:h-[calc(100dvh-5.5rem)]">
         {/* Desktop UI */}
         <div className="absolute hidden h-[calc(100dvh-88px)] w-full items-start p-6 lg:flex">
-          <ScrollArea className="z-10 flex max-h-full w-[403px]  flex-col rounded-2xl bg-white shadow-xl">
+          <ScrollArea className="z-10 flex max-h-full w-[403px] flex-shrink-0 flex-col rounded-2xl bg-white shadow-xl">
             <div className="max-w-full space-y-4 p-6">
               <span className="font-bold text-secondary-500">10 results found</span>
               <Tabs defaultValue="locations">
@@ -57,20 +57,8 @@ export default async function SearchPage(props: SearchPageProps) {
                     serviceType={provider.serviceTypes[0].name}
                     phone={provider.publicContact?.phone}
                     website={provider.publicContact?.website}
-                    // description={provider.description}
-                    // phone={provider.phone}
-                    // website={provider.website}
                   />
                 ))}
-
-                {/* <ProviderResultCard
-                  name="St. Austin's Day Care"
-                  address="1234 Main St, Portland, OR 97201"
-                  serviceType="Housing"
-                  description="A great place for kids to learn and grow."
-                  phone="(503) 555-1234"
-                  website="https://example.com"
-                /> */}
               </div>
             </div>
           </ScrollArea>
@@ -121,11 +109,11 @@ export default async function SearchPage(props: SearchPageProps) {
                   <ProviderResultCard
                     key={`${provider._id}-mobile`}
                     name={provider.title}
+                    description={provider.description}
                     address={provider.place?.address || "No address available"}
                     serviceType={provider.serviceTypes[0].name}
-                    // description={provider.description}
-                    // phone={provider.phone}
-                    // website={provider.website}
+                    phone={provider.publicContact?.phone}
+                    website={provider.publicContact?.website}
                   />
                 ))}
               </div>
