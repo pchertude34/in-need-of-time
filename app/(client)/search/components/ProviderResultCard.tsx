@@ -6,6 +6,7 @@ import { PhoneIcon, GlobeAltIcon, MapPinIcon } from "@heroicons/react/24/solid";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import type { PortableTextBlock } from "@portabletext/types";
+import { formatPhoneNumberForHref } from "@/lib/utils";
 
 type ProviderResultCardProps = {
   name: string;
@@ -41,7 +42,7 @@ export function ProviderResultCard(props: ProviderResultCardProps) {
         <div className="flex justify-around border-b border-t border-slate-200 p-3">
           {phone && (
             <Button variant="text-dark" size="text" asChild>
-              <a href="">
+              <a href={formatPhoneNumberForHref(phone)}>
                 <PhoneIcon className="mr-2 h-4 w-4" />
                 {phone}
               </a>
@@ -49,7 +50,7 @@ export function ProviderResultCard(props: ProviderResultCardProps) {
           )}
           {website && (
             <Button variant="text-dark" size="text" asChild>
-              <a href="">
+              <a href={website}>
                 <GlobeAltIcon className="mr-2 h-4 w-4" />
                 Website
               </a>

@@ -55,6 +55,8 @@ export default async function SearchPage(props: SearchPageProps) {
                     description={provider.description}
                     address={provider.place?.address || "No address available"}
                     serviceType={provider.serviceTypes[0].name}
+                    phone={provider.publicContact?.phone}
+                    website={provider.publicContact?.website}
                     // description={provider.description}
                     // phone={provider.phone}
                     // website={provider.website}

@@ -22,6 +22,10 @@ export function getCurrentDay() {
   return (day + 6) % 7;
 }
 
+export function formatPhoneNumberForHref(phoneNumber: string) {
+  return `tel:+1${phoneNumber.replace(/\D/g, "")}`;
+}
+
 /**
  * Helper function to build out a link for a google place.
  * @param {string} placeId The id of a google place to generate a google link for.
