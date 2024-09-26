@@ -11,7 +11,7 @@ import { MobileResultsDrawer } from "./components/MobileResultsDrawer";
 import { queryAllServiceTypes } from "@/lib/queries/getServiceTypes";
 import { searchProviders } from "@/lib/queries/getProviders";
 import { cn, convertMilesToMeters } from "@/lib/utils";
-import type { Provider } from "@/lib/types";
+import type { Location, Provider } from "@/lib/types";
 import { EmptySearchResults } from "./components/EmptySearchResults";
 
 type SearchPageProps = {
@@ -26,6 +26,7 @@ type SearchPageProps = {
 export default async function SearchPage(props: SearchPageProps) {
   const { searchParams } = props;
   const { lat, lng, radius, type } = searchParams || {};
+  let userLocation: Location | undefined;
 
   const shouldSearch = lat && lng && radius && type;
 
@@ -40,16 +41,18 @@ export default async function SearchPage(props: SearchPageProps) {
 
   if (shouldSearch) {
     providers = await searchProviders({
-      lat,
-      lng,
+      lat: parseFloat(lat),
+      lng: parseFloat(lng),
       radius: convertMilesToMeters(radius || 0),
       serviceTypeSlug: type,
     });
+    // Center the google maps location to the user on search
+    userLocation = { lat: parseFloat(lat), lng: parseFloat(lng) };
   }
 
   return (
     <div>
-      <ProviderMap className="h-[calc(100dvh-5rem)] w-full lg:h-[calc(100dvh-5.5rem)]">
+      <ProviderMap className="h-[calc(100dvh-5rem)] w-full lg:h-[calc(100dvh-5.5rem)]" center={userLocation}>
         {/* Desktop UI */}
         <div className="absolute hidden h-[calc(100dvh-88px)] w-full items-start p-6 lg:flex">
           {/* If providers is truthy, we know the user made a search */}

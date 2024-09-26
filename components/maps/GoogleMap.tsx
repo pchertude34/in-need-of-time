@@ -1,4 +1,5 @@
 "use client";
+import { Location } from "@/lib/types";
 import React, { useState, useEffect, useCallback, useRef } from "react";
 // import { useGoogleMaps } from "@/hooks/useGoogleMaps";
 
@@ -12,7 +13,7 @@ const DEFAULT_MAP_SETTINGS = {
 
 type GoogleMapProps = {
   googleMapsApi: typeof window.google.maps;
-  location?: { lat: number; lng: number };
+  center?: Location;
   onMapClick?: (event: google.maps.MapMouseEvent) => void;
   style?: React.CSSProperties;
   className?: string;
@@ -21,7 +22,7 @@ type GoogleMapProps = {
 };
 
 export function GoogleMap(props: GoogleMapProps) {
-  const { googleMapsApi, mapSettings, location = DEFUALT_LOCATION, onMapClick, style, className, children } = props;
+  const { googleMapsApi, mapSettings, center = DEFUALT_LOCATION, onMapClick, style, className, children } = props;
   const [map, setMap] = useState<google.maps.Map | undefined>();
   // const mapRef = useRef<google.maps.Map | undefined>();
   const mapElementRef = useRef<HTMLDivElement | null>(null);
@@ -54,8 +55,17 @@ export function GoogleMap(props: GoogleMapProps) {
     };
   }, []);
 
+  // Recenter the map when the center prop changes
+  useEffect(() => {
+    console.log("attempting to center");
+    if (map && center) {
+      map.setCenter(new googleMapsApi.LatLng(center.lat, center.lng));
+    }
+  }, [center]);
+
   function getCenter() {
-    return new googleMapsApi.LatLng(location.lat, location.lng);
+    console.log("centering");
+    return new googleMapsApi.LatLng(center.lat, center.lng);
   }
 
   // Build the map and place it on the element parameter
