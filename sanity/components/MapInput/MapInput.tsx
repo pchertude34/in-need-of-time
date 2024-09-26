@@ -71,7 +71,7 @@ export default function MapInput(props: ObjectInputProps) {
             {!isNational && (
               <GoogleMap
                 googleMapsApi={googleMapsApi}
-                location={DEFUALT_LOCATION}
+                center={DEFUALT_LOCATION}
                 onMapClick={handleMapClick}
                 style={{ height: "600px", width: "100%" }}
               >

@@ -52,7 +52,11 @@ export default async function SearchPage(props: SearchPageProps) {
 
   return (
     <div>
-      <ProviderMap className="h-[calc(100dvh-5rem)] w-full lg:h-[calc(100dvh-5.5rem)]" center={userLocation}>
+      <ProviderMap
+        className="h-[calc(100dvh-5rem)] w-full lg:h-[calc(100dvh-5.5rem)]"
+        center={userLocation}
+        providerList={providers}
+      >
         {/* Desktop UI */}
         <div className="absolute hidden h-[calc(100dvh-88px)] w-full items-start p-6 lg:flex">
           {/* If providers is truthy, we know the user made a search */}

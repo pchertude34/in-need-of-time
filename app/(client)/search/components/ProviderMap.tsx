@@ -3,18 +3,20 @@
 import React, { useEffect, useRef } from "react";
 import { GoogleMapsProxy } from "@/hooks/useLoadGoogleMaps";
 import { GoogleMap } from "@/components/maps/GoogleMap";
-import { Location } from "@/lib/types";
+import { ProviderMapMarker } from "./ProviderMapMarker";
+import { Location, Provider } from "@/lib/types";
 
 const DEFUALT_LOCATION = { lat: 45.5152, lng: -122.6784 };
 
 type MapProps = {
   className?: string;
   center?: Location;
+  providerList?: Provider[];
   children?: React.ReactNode;
 };
 
 export function ProviderMap(props: MapProps) {
-  const { className, children, center = DEFUALT_LOCATION } = props;
+  const { providerList = [], center = DEFUALT_LOCATION, className, children } = props;
   const mapRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {}, []);
@@ -37,7 +39,22 @@ export function ProviderMap(props: MapProps) {
             gestureHandling: "greedy",
           }}
         >
-          {(map) => <>{children}</>}
+          {(map) => (
+            <>
+              {providerList.map((provider) => (
+                <ProviderMapMarker
+                  key={provider._id}
+                  googleMapsApi={googleMapsApi}
+                  googleMap={map}
+                  position={provider.place.location}
+                  onClick={() => {
+                    console.log("Clicked on provider", provider);
+                  }}
+                />
+              ))}
+              {children}
+            </>
+          )}
         </GoogleMap>
       )}
     </GoogleMapsProxy>
