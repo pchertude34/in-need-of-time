@@ -12,6 +12,7 @@ import { queryAllServiceTypes } from "@/lib/queries/getServiceTypes";
 import { searchProviders } from "@/lib/queries/getProviders";
 import { cn, convertMilesToMeters } from "@/lib/utils";
 import type { Provider } from "@/lib/types";
+import { EmptySearchResults } from "./components/EmptySearchResults";
 
 type SearchPageProps = {
   searchParams?: {
@@ -55,27 +56,33 @@ export default async function SearchPage(props: SearchPageProps) {
           {providers && (
             <ScrollArea className="z-10 flex max-h-full w-[403px] flex-shrink-0 flex-col rounded-2xl bg-white shadow-xl">
               <div className="max-w-full space-y-4 p-6">
-                <span className="font-bold text-secondary-500">10 results found</span>
-                <Tabs defaultValue="locations">
-                  <TabsList className="grid w-full grid-cols-2">
-                    <TabsTrigger value="locations">Locations</TabsTrigger>
-                    <TabsTrigger value="others">Others</TabsTrigger>
-                  </TabsList>
-                </Tabs>
-                <div className="max-w-full space-y-5">
-                  {providers.map((provider) => (
-                    <ProviderResultCard
-                      key={provider._id}
-                      placeId={provider.place.placeId}
-                      name={provider.title}
-                      description={provider.description}
-                      address={provider.place?.address || "No address available"}
-                      serviceType={provider.serviceTypes[0].name}
-                      phone={provider.publicContact?.phone}
-                      website={provider.publicContact?.website}
-                    />
-                  ))}
-                </div>
+                <span className="font-bold text-secondary-500">{providers.length} results found</span>
+                {providers.length > 0 ? (
+                  <>
+                    <Tabs defaultValue="locations">
+                      <TabsList className="grid w-full grid-cols-2">
+                        <TabsTrigger value="locations">Locations</TabsTrigger>
+                        <TabsTrigger value="others">Others</TabsTrigger>
+                      </TabsList>
+                    </Tabs>
+                    <div className="max-w-full space-y-5">
+                      {providers.map((provider) => (
+                        <ProviderResultCard
+                          key={provider._id}
+                          placeId={provider.place.placeId}
+                          name={provider.title}
+                          description={provider.description}
+                          address={provider.place?.address || "No address available"}
+                          serviceType={provider.serviceTypes[0].name}
+                          phone={provider.publicContact?.phone}
+                          website={provider.publicContact?.website}
+                        />
+                      ))}
+                    </div>
+                  </>
+                ) : (
+                  <EmptySearchResults />
+                )}
               </div>
             </ScrollArea>
           )}
@@ -107,7 +114,7 @@ export default async function SearchPage(props: SearchPageProps) {
                     </Button>
                   </DrawerClose>
                 </div>
-                <ServiceSearchBar orientation="vertical" />
+                <ServiceSearchBar serviceTypes={serviceTypes} orientation="vertical" />
               </div>
             </DrawerContent>
           </Drawer>
@@ -116,28 +123,34 @@ export default async function SearchPage(props: SearchPageProps) {
           {providers && (
             <MobileResultsDrawer>
               <div className="mx-auto my-3 box-border h-4 w-[100px] rounded-full bg-slate-400 dark:bg-slate-800" />
-              <span className="mb-3 ml-4 font-bold text-secondary-500">10 results found</span>
+              <span className="mb-3 ml-4 font-bold text-secondary-500">{providers.length} results found</span>
               <div className="mx-auto  flex w-full flex-col space-y-4 overflow-auto p-4">
-                <Tabs defaultValue="locations">
-                  <TabsList className="grid w-full grid-cols-2">
-                    <TabsTrigger value="locations">Locations</TabsTrigger>
-                    <TabsTrigger value="others">Others</TabsTrigger>
-                  </TabsList>
-                </Tabs>
-                <div className="space-y-5">
-                  {providers.map((provider) => (
-                    <ProviderResultCard
-                      key={`${provider._id}-mobile`}
-                      placeId={provider.place.placeId}
-                      name={provider.title}
-                      description={provider.description}
-                      address={provider.place?.address || "No address available"}
-                      serviceType={provider.serviceTypes[0].name}
-                      phone={provider.publicContact?.phone}
-                      website={provider.publicContact?.website}
-                    />
-                  ))}
-                </div>
+                {providers.length > 0 ? (
+                  <>
+                    <Tabs defaultValue="locations">
+                      <TabsList className="grid w-full grid-cols-2">
+                        <TabsTrigger value="locations">Locations</TabsTrigger>
+                        <TabsTrigger value="others">Others</TabsTrigger>
+                      </TabsList>
+                    </Tabs>
+                    <div className="space-y-5">
+                      {providers.map((provider) => (
+                        <ProviderResultCard
+                          key={`${provider._id}-mobile`}
+                          placeId={provider.place.placeId}
+                          name={provider.title}
+                          description={provider.description}
+                          address={provider.place?.address || "No address available"}
+                          serviceType={provider.serviceTypes[0].name}
+                          phone={provider.publicContact?.phone}
+                          website={provider.publicContact?.website}
+                        />
+                      ))}
+                    </div>
+                  </>
+                ) : (
+                  <EmptySearchResults />
+                )}
               </div>
             </MobileResultsDrawer>
           )}
