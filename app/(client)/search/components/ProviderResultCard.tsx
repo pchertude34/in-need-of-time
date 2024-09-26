@@ -19,6 +19,8 @@ type ProviderResultCardProps = {
 export function ProviderResultCard(props: ProviderResultCardProps) {
   const { name, address, serviceType, description, phone, website } = props;
 
+  const shouldRenderContactInfo = phone || website;
+
   return (
     <div className="flex w-full flex-col space-y-4 rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
       <div>
@@ -35,20 +37,26 @@ export function ProviderResultCard(props: ProviderResultCardProps) {
         </Button>
       </div>
       {description && <PortableText value={description} />}
-      <div className="flex justify-around border-b border-t border-slate-200 p-3">
-        <Button variant="text-dark" size="text" asChild>
-          <a href="">
-            <PhoneIcon className="mr-2 h-4 w-4" />
-            {phone}
-          </a>
-        </Button>
-        <Button variant="text-dark" size="text" asChild>
-          <a href="">
-            <GlobeAltIcon className="mr-2 h-4 w-4" />
-            Website
-          </a>
-        </Button>
-      </div>
+      {shouldRenderContactInfo && (
+        <div className="flex justify-around border-b border-t border-slate-200 p-3">
+          {phone && (
+            <Button variant="text-dark" size="text" asChild>
+              <a href="">
+                <PhoneIcon className="mr-2 h-4 w-4" />
+                {phone}
+              </a>
+            </Button>
+          )}
+          {website && (
+            <Button variant="text-dark" size="text" asChild>
+              <a href="">
+                <GlobeAltIcon className="mr-2 h-4 w-4" />
+                Website
+              </a>
+            </Button>
+          )}
+        </div>
+      )}
       <Button variant="hollow-primary">
         Learn More <ArrowRightIcon className="ml-2 h-4 w-4" />
       </Button>
