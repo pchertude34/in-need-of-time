@@ -5,7 +5,7 @@ type MapMarkerProps = {
   googleMapsApi: typeof window.google.maps;
   googleMap: google.maps.Map;
   position: Location;
-  onMove?: (event?: google.maps.MapMouseEvent) => void;
+  onMove?: (event: google.maps.MapMouseEvent) => void;
   onClick?: (event: google.maps.MapMouseEvent) => void;
 };
 

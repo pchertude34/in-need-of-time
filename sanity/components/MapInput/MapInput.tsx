@@ -37,11 +37,13 @@ export default function MapInput(props: ObjectInputProps) {
 
   // Handler marker to place or move a maker when the map is clicked
   const handleMapClick = useCallback((event: google.maps.MapMouseEvent) => {
-    const lat = event.latLng.lat();
-    const lng = event.latLng.lng();
+    if (event.latLng) {
+      const lat = event.latLng.lat();
+      const lng = event.latLng.lng();
 
-    setLocation({ lat, lng });
-    onChange([set({ lat, lng, _type: "geopoint" }, ["location"])]);
+      setLocation({ lat, lng });
+      onChange([set({ lat, lng, _type: "geopoint" }, ["location"])]);
+    }
   }, []);
 
   // Handler to update the location value when the user drags the marker
