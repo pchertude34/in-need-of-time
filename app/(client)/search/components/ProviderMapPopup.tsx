@@ -1,17 +1,19 @@
 import React from "react";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { XMarkIcon, ArrowRightIcon } from "@heroicons/react/24/outline";
 import { PortableText } from "@portabletext/react";
 import { PortableTextBlock } from "@portabletext/types";
 
 type ProviderMapPopupProps = {
+  id: string;
   title: string;
   description?: PortableTextBlock[];
   onClose: () => void;
 };
 
 export function ProviderMapPopup(props: ProviderMapPopupProps) {
-  const { title, description, onClose } = props;
+  const { id, title, description, onClose } = props;
   return (
     <div className="absolute bottom-[8px] left-0 w-full after:absolute after:left-0 after:top-0 after:h-0 after:w-0 after:-translate-x-2/4 after:border-l-[6px] after:border-r-[6px] after:border-t-[8px] after:border-l-transparent after:border-r-transparent after:border-t-primary-600 after:content-['']">
       <div className="padding-[5px] absolute left-0 top-0 -translate-x-2/4 -translate-y-full overflow-y-auto rounded-xl bg-primary-600 shadow-2xl">
@@ -27,8 +29,10 @@ export function ProviderMapPopup(props: ProviderMapPopupProps) {
               <PortableText value={description} />
             </article>
           )}
-          <Button variant="light" size="sm" className="mt-5" onClick={() => console.log("clicked a thing")}>
-            Learn more <ArrowRightIcon className="ml-2 h-4 w-4" />
+          <Button variant="light" size="sm" className="mt-5" asChild>
+            <Link href={`/providers/${id}`}>
+              Learn more <ArrowRightIcon className="ml-2 h-4 w-4" />
+            </Link>
           </Button>
         </div>
       </div>

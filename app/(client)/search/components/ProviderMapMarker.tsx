@@ -28,7 +28,14 @@ export function ProviderMapMarker(props: ProvierMapMarkerProps) {
       if (!popupRef.current) {
         const popup = new MapPopup(
           new googleMapsApi.LatLng(provider.place.location.lat, provider.place.location.lng),
-          <ProviderMapPopup title={provider.title} description={provider.description} onClose={handlePopupClose} />,
+          (
+            <ProviderMapPopup
+              id={provider._id}
+              title={provider.title}
+              description={provider.description}
+              onClose={handlePopupClose}
+            />
+          ),
         );
         popup.setMap(googleMap);
         popupRef.current = popup;

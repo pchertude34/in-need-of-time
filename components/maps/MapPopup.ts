@@ -1,6 +1,14 @@
 import React from "react";
 import { createRoot } from "react-dom/client";
 
+/**
+ * Extend the google.maps.OverlayView class to create a custom popup for the map.
+ * This class will create the container div for the popup and align it to the correct
+ * position on the map.
+ *
+ * Due to the need for google maps to be loaded prior to this class being instantiated,
+ * most of the time this will probably need to be dynamically imported with an async import.
+ */
 export class MapPopup extends google.maps.OverlayView {
   position: google.maps.LatLng;
   containerDiv: HTMLDivElement;
@@ -22,7 +30,6 @@ export class MapPopup extends google.maps.OverlayView {
 
   /** Called when the popup is added to the map. */
   onAdd() {
-    console.log("on add");
     this.getPanes()!.floatPane.appendChild(this.containerDiv);
   }
 
@@ -57,7 +64,6 @@ export class MapPopup extends google.maps.OverlayView {
 
   /** Called each frame when the popup needs to draw itself. */
   draw() {
-    console.log("drawing");
     const divPosition = this.getProjection().fromLatLngToDivPixel(this.position)!;
 
     // Hide the popup when it is far out of view.

@@ -50,8 +50,6 @@ export default async function SearchPage(props: SearchPageProps) {
     userLocation = { lat: parseFloat(lat), lng: parseFloat(lng) };
   }
 
-  console.log("providers :>> ", providers);
-
   return (
     <div>
       <ProviderMap
