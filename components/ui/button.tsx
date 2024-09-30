@@ -18,6 +18,7 @@ const buttonVariants = cva(
           "border-primary-500 text-primary-500 active:border-primary-700 hover:bg-primary-50 active:bg-primary-50 focus-ring-primary",
         "text-dark":
           "text-slate-600 bg-transparent hover:text-800 disabled:text-500 active:text-900 focus:ring-slate-200",
+        "text-light": "text-white bg-transparent hover:text-slate-50 disabled:text-slate-100 focus:ring-white",
         "text-primary":
           "text-primary-500 bg-transparent hover:text-primary-600 disabled:text-primary-300 active:text-primary-700 focus:ring-primary-200",
       },

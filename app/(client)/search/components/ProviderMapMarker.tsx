@@ -1,50 +1,66 @@
-import { useEffect, useRef } from "react";
-import type { Location } from "@/lib/types";
+"use client";
+
+import React, { useEffect, useRef } from "react";
+import { MapMarker } from "@/components/maps/MapMarker";
+import { ProviderMapPopup } from "./ProviderMapPopup";
+import type { Provider } from "@/lib/types";
+import type { MapPopup as MapPopupType } from "@/components/maps/MapPopup";
 
 type ProvierMapMarkerProps = {
   googleMapsApi: typeof window.google.maps;
   googleMap: google.maps.Map;
-  position: Location;
-  onMove?: (event: google.maps.MapMouseEvent) => void;
-  onClick?: (event: google.maps.MapMouseEvent) => void;
+  provider: Provider;
 };
 
 export function ProviderMapMarker(props: ProvierMapMarkerProps) {
-  const { googleMapsApi, googleMap, position, onClick } = props;
+  const { googleMapsApi, googleMap, provider } = props;
 
-  const markerRef = useRef<google.maps.Marker | undefined>(undefined);
-  const markerClickHandlerRef = useRef<google.maps.MapsEventListener | undefined>(undefined);
+  const popupRef = useRef<MapPopupType | undefined>(undefined);
 
   useEffect(() => {
-    if (!markerRef.current) {
-      const marker = new googleMapsApi.Marker({
-        position: getPosition(),
-        map: googleMap,
-      });
+    async function loadProviderPopover() {
+      // We need to dynamically import MapPopup since the google maps is not defined
+      // on compilation. This will ensure google maps is available before trying to create
+      // a class that extends it.
+      // An unfortunate circumstance of loading google maps from a script tag.
+      const { MapPopup } = await import("@/components/maps/MapPopup");
 
-      markerRef.current = marker;
-      attachClickHandler();
+      if (!popupRef.current) {
+        const popup = new MapPopup(
+          new googleMapsApi.LatLng(provider.place.location.lat, provider.place.location.lng),
+          <ProviderMapPopup title={provider.title} description={provider.description} onClose={handlePopupClose} />,
+        );
+        popup.setMap(googleMap);
+        popupRef.current = popup;
+      }
     }
 
-    return () => {
-      if (markerRef.current) {
-        markerRef.current.setMap(null);
-        markerRef.current = undefined;
-      }
-    };
+    loadProviderPopover();
   }, []);
 
-  function getPosition() {
-    return new googleMapsApi.LatLng(position.lat, position.lng);
+  function handleMarkerClick() {
+    if (popupRef.current) {
+      popupRef.current.show();
+    }
   }
 
-  function attachClickHandler() {
-    if (markerClickHandlerRef.current) {
-      markerClickHandlerRef.current.remove();
+  function handlePopupClose() {
+    if (popupRef.current) {
+      popupRef.current.hide();
     }
-    if (markerRef.current && onClick) {
-      markerClickHandlerRef.current = googleMapsApi.event.addListener(markerRef.current, "click", onClick);
-    }
+  }
+
+  if (typeof google !== "undefined" && google.maps && google.maps.OverlayView) {
+    return (
+      <>
+        <MapMarker
+          googleMapsApi={googleMapsApi}
+          googleMap={googleMap}
+          position={provider.place.location}
+          onClick={handleMarkerClick}
+        />
+      </>
+    );
   }
 
   return null;

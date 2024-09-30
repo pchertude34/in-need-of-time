@@ -5,6 +5,7 @@ import { GoogleMapsProxy } from "@/hooks/useLoadGoogleMaps";
 import { GoogleMap } from "@/components/maps/GoogleMap";
 import { MapMarker } from "@/components/maps/MapMarker";
 import { Location, Provider } from "@/lib/types";
+import { ProviderMapMarker } from "./ProviderMapMarker";
 
 const DEFUALT_LOCATION = { lat: 45.5152, lng: -122.6784 };
 
@@ -42,11 +43,11 @@ export function ProviderMap(props: MapProps) {
           {(map) => (
             <>
               {providerList.map((provider) => (
-                <MapMarker
+                <ProviderMapMarker
                   key={provider._id}
                   googleMapsApi={googleMapsApi}
                   googleMap={map}
-                  position={provider.place.location}
+                  provider={provider}
                 />
               ))}
               {children}
