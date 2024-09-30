@@ -42,7 +42,5 @@ export function getProvider(params: GetProviderParams): Promise<Provider> {
     serviceTypes[]->{name, desctiption, 'slug': slug.current},
   }[0]`;
 
-  console.log(query);
-
   return client.fetch(query);
 }

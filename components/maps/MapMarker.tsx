@@ -5,7 +5,7 @@ type MapMarkerProps = {
   googleMapsApi: typeof window.google.maps;
   googleMap: google.maps.Map;
   position: Location;
-  onMove?: (event: google.maps.MapMouseEvent) => void;
+  onMove?: (event?: google.maps.MapMouseEvent) => void;
   onClick?: (event: google.maps.MapMouseEvent) => void;
 };
 
@@ -61,7 +61,7 @@ export function MapMarker(props: MapMarkerProps) {
       markerMoveHandlerRef.current.remove();
     }
     if (markerRef.current && onMove) {
-      markerMoveHandlerRef.current = googleMapsApi.event.addListener(markerRef.current, "dragend", props.onMove);
+      markerMoveHandlerRef.current = googleMapsApi.event.addListener(markerRef.current, "dragend", onMove);
     }
   }
 
