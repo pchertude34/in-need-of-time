@@ -22,7 +22,11 @@ export function ProviderMapPopup(props: ProviderMapPopupProps) {
             </Button>
           </div>
           <p className="mb-2 text-lg font-bold">{title}</p>
-          {description && <PortableText value={description} />}
+          {description && (
+            <article className="prose text-white prose-p:text-sm prose-p:leading-snug">
+              <PortableText value={description} />
+            </article>
+          )}
           <Button variant="light" size="sm" className="mt-5" onClick={() => console.log("clicked a thing")}>
             Learn more <ArrowRightIcon className="ml-2 h-4 w-4" />
           </Button>

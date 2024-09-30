@@ -1,10 +1,9 @@
 import React from "react";
 import Link from "next/link";
 import { PortableText } from "@portabletext/react";
-import { ArrowRightIcon, MapIcon } from "@heroicons/react/24/outline";
+import { ArrowRightIcon } from "@heroicons/react/24/outline";
 import { PhoneIcon, GlobeAltIcon, MapPinIcon } from "@heroicons/react/24/solid";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import type { PortableTextBlock } from "@portabletext/types";
 import { formatPhoneNumberForHref, generateGoogleNavigationLink } from "@/lib/utils";
 
@@ -12,14 +11,13 @@ type ProviderResultCardProps = {
   placeId: string;
   name: string;
   address: string;
-  serviceType: string;
   description?: PortableTextBlock[];
   phone?: string;
   website?: string;
 };
 
 export function ProviderResultCard(props: ProviderResultCardProps) {
-  const { placeId, name, address, serviceType, description, phone, website } = props;
+  const { placeId, name, address, description, phone, website } = props;
 
   const shouldRenderContactInfo = phone || website;
 
@@ -28,7 +26,7 @@ export function ProviderResultCard(props: ProviderResultCardProps) {
       <div>
         <div className="mb-2 flex items-start justify-between">
           <h2 className="mr-2 text-lg font-bold">{name}</h2>
-          <Badge className="text-nowrap text-sm font-semibold">{serviceType}</Badge>
+          {/* <Badge className="text-nowrap text-sm font-semibold">{serviceType}</Badge> */}
         </div>
 
         <Button variant="text-primary" size="text" asChild>
