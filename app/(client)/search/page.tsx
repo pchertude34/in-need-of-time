@@ -50,6 +50,8 @@ export default async function SearchPage(props: SearchPageProps) {
     userLocation = { lat: parseFloat(lat), lng: parseFloat(lng) };
   }
 
+  console.log("providers :>> ", providers);
+
   return (
     <div>
       <ProviderMap
@@ -80,7 +82,7 @@ export default async function SearchPage(props: SearchPageProps) {
                           name={provider.title}
                           description={provider.description}
                           address={provider.place?.address || "No address available"}
-                          serviceType={provider.serviceTypes[0].name}
+                          // serviceType={provider.serviceTypes[0].name}
                           phone={provider.publicContact?.phone}
                           website={provider.publicContact?.website}
                         />
@@ -148,7 +150,7 @@ export default async function SearchPage(props: SearchPageProps) {
                           name={provider.title}
                           description={provider.description}
                           address={provider.place?.address || "No address available"}
-                          serviceType={provider.serviceTypes[0].name}
+                          // serviceType={provider.serviceTypes[0].name}
                           phone={provider.publicContact?.phone}
                           website={provider.publicContact?.website}
                         />

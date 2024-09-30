@@ -25,3 +25,24 @@ export function searchProviders(params: SearchProvidersParamsType): Promise<Prov
 
   return client.fetch(query);
 }
+
+type GetProviderParams = {
+  id: string;
+};
+
+export function getProvider(params: GetProviderParams): Promise<Provider> {
+  const { id } = params;
+
+  const query = groq`*[_type == "provider" && _id == '${id}'] {
+    _id,
+    title,
+    place,
+    description,
+    publicContact,
+    serviceTypes[]->{name, desctiption, 'slug': slug.current},
+  }[0]`;
+
+  console.log(query);
+
+  return client.fetch(query);
+}
