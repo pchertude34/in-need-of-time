@@ -8,6 +8,7 @@ import type { PortableTextBlock } from "@portabletext/types";
 import { formatPhoneNumberForHref, generateGoogleNavigationLink } from "@/lib/utils";
 
 type ProviderResultCardProps = {
+  id: string;
   placeId: string;
   name: string;
   address: string;
@@ -17,7 +18,7 @@ type ProviderResultCardProps = {
 };
 
 export function ProviderResultCard(props: ProviderResultCardProps) {
-  const { placeId, name, address, description, phone, website } = props;
+  const { id, placeId, name, address, description, phone, website } = props;
 
   const shouldRenderContactInfo = phone || website;
 
@@ -57,8 +58,10 @@ export function ProviderResultCard(props: ProviderResultCardProps) {
           )}
         </div>
       )}
-      <Button variant="hollow-primary">
-        Learn More <ArrowRightIcon className="ml-2 h-4 w-4" />
+      <Button variant="hollow-primary" asChild>
+        <Link href={`/providers/${id}`}>
+          Learn More <ArrowRightIcon className="ml-2 h-4 w-4" />
+        </Link>
       </Button>
     </div>
   );

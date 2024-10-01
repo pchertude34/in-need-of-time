@@ -76,6 +76,7 @@ export default async function SearchPage(props: SearchPageProps) {
                       {providers.map((provider) => (
                         <ProviderResultCard
                           key={provider._id}
+                          id={provider._id}
                           placeId={provider.place.placeId}
                           name={provider.title}
                           description={provider.description}
