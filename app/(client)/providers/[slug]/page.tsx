@@ -1,5 +1,6 @@
 import React from "react";
 import Link from "next/link";
+import { PortableText } from "@portabletext/react";
 import { ArrowLeftIcon, MapPinIcon, GlobeAltIcon, PhoneIcon } from "@heroicons/react/24/solid";
 import { Button } from "@/components/ui/button";
 import { Footer } from "@/components/Footer";
@@ -43,7 +44,7 @@ export default async function ProviderPage(props: ProviderPageProps) {
             </Button>
           </div>
           {shouldRenderContactInfo && (
-            <div className="ml-auto flex">
+            <div className="ml-auto flex space-x-6">
               {provider.publicContact?.phone && (
                 <Button variant="text-dark" size="text" asChild>
                   <a href={formatPhoneNumberForHref(provider.publicContact.phone)}>
@@ -61,6 +62,41 @@ export default async function ProviderPage(props: ProviderPageProps) {
               )}
             </div>
           )}
+        </div>
+
+        <div className="flex">
+          <div className="space-y-8">
+            <article className="prose text-slate-900 prose-p:leading-snug">
+              {provider.description && <PortableText value={provider.description} />}
+            </article>
+            {shouldRenderContactInfo && (
+              <div className="space-y-4 rounded-md bg-slate-100 p-4">
+                <h2 className="text-xl font-bold">Contact Details</h2>
+                <div className="flex">
+                  {provider.publicContact?.phone && (
+                    <div className="mr-14 flex flex-col">
+                      <span className="mb-1 text-slate-600">Phone Number</span>
+                      <Button variant="text-primary" size="text">
+                        {provider.publicContact?.phone}
+                      </Button>
+                    </div>
+                  )}
+                  <div className="flex flex-col ">
+                    <span className="mb-1 text-slate-600">Email Address</span>
+                    <Button variant="text-primary" size="text">
+                      info@austinsdaycare.com
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            )}
+            <p className="text-sm text-slate-500">
+              The community resource directory information is up to date to the best of our knowledge. However, you
+              should always call the provider to confirm this information and make an appointment. Be sure to confirm
+              payment information with the provider, if payment is required. In Time of Need does not rate, recommend or
+              endorse any agency. We simply provide information as a public service.
+            </p>
+          </div>
         </div>
       </main>
       <Footer />
