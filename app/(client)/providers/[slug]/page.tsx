@@ -1,7 +1,8 @@
 import React from "react";
 import Link from "next/link";
 import { PortableText } from "@portabletext/react";
-import { ArrowLeftIcon, MapPinIcon, GlobeAltIcon, PhoneIcon } from "@heroicons/react/24/solid";
+import { ArrowLeftIcon, MapPinIcon, GlobeAltIcon, PhoneIcon, ArrowRightIcon } from "@heroicons/react/24/solid";
+import { InformationCircleIcon } from "@heroicons/react/24/outline";
 import { Button } from "@/components/ui/button";
 import { Footer } from "@/components/Footer";
 import { getProvider } from "@/lib/queries/getProviders";
@@ -98,8 +99,21 @@ export default async function ProviderPage(props: ProviderPageProps) {
               endorse any agency. We simply provide information as a public service.
             </p>
           </div>
-          <div className="ml-5">
+          <div className="ml-5 flex flex-col space-y-4">
             <ProviderDetailsMap className=" h-[300px] w-[400px]" providerLocation={provider.place.location} />
+            <div className="rounded-md bg-slate-50 p-6">
+              <div className="flex">
+                <InformationCircleIcon className=" mr-2 mt-1 h-5 w-5 self-start text-blue-600" />
+                <h3 className="mb-2 inline-block text-lg font-bold">Are you part of this agency?</h3>
+              </div>
+              <p className="mb-5 text-xs text-slate-600">
+                If you belong or a representative of this agency, you can request an update on the details of this
+                service provider. Just click the button below..
+              </p>
+              <Button variant="text-dark" size="text">
+                Request update <ArrowRightIcon className="ml-2 h-4 w-4" />
+              </Button>
+            </div>
           </div>
         </div>
       </main>
