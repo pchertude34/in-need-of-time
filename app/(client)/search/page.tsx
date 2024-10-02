@@ -1,6 +1,6 @@
 import React from "react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
-import { ProviderMap } from "./components/ProviderMap";
+import { ProviderSearchMap } from "./components/ProviderSearchMap";
 import { ServiceSearchBar } from "@/components/ServiceSearchBar";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -52,7 +52,7 @@ export default async function SearchPage(props: SearchPageProps) {
 
   return (
     <div>
-      <ProviderMap
+      <ProviderSearchMap
         className="h-[calc(100dvh-5rem)] w-full lg:h-[calc(100dvh-5.5rem)]"
         center={userLocation}
         providerList={providers}
@@ -145,6 +145,7 @@ export default async function SearchPage(props: SearchPageProps) {
                       {providers.map((provider) => (
                         <ProviderResultCard
                           key={`${provider._id}-mobile`}
+                          id={provider._id}
                           placeId={provider.place.placeId}
                           name={provider.title}
                           description={provider.description}
@@ -163,7 +164,7 @@ export default async function SearchPage(props: SearchPageProps) {
             </MobileResultsDrawer>
           )}
         </div>
-      </ProviderMap>
+      </ProviderSearchMap>
     </div>
   );
 }

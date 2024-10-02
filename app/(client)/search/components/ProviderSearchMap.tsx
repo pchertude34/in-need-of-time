@@ -13,14 +13,12 @@ type MapProps = {
   className?: string;
   center?: Location;
   providerList?: Provider[];
+  mapSettings?: google.maps.MapOptions;
   children?: React.ReactNode;
 };
 
-export function ProviderMap(props: MapProps) {
-  const { providerList = [], center = DEFUALT_LOCATION, className, children } = props;
-  const mapRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {}, []);
+export function ProviderSearchMap(props: MapProps) {
+  const { providerList = [], center = DEFUALT_LOCATION, mapSettings, className, children } = props;
 
   return (
     <GoogleMapsProxy>

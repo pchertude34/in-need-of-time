@@ -14,11 +14,11 @@ const DEFAULT_MAP_SETTINGS = {
 type GoogleMapProps = {
   googleMapsApi: typeof window.google.maps;
   center?: Location;
-  onMapClick?: (event: google.maps.MapMouseEvent) => void;
+  mapSettings?: google.maps.MapOptions;
   style?: React.CSSProperties;
   className?: string;
+  onMapClick?: (event: google.maps.MapMouseEvent) => void;
   children?: (map: google.maps.Map) => React.ReactNode;
-  mapSettings?: google.maps.MapOptions;
 };
 
 export function GoogleMap(props: GoogleMapProps) {

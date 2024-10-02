@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Footer } from "@/components/Footer";
 import { getProvider } from "@/lib/queries/getProviders";
 import { formatPhoneNumberForHref, generateGoogleLink } from "@/lib/utils";
+import { ProviderDetailsMap } from "./components/ProviderDetailsMap";
 
 type ProviderPageProps = {
   params: {
@@ -96,6 +97,9 @@ export default async function ProviderPage(props: ProviderPageProps) {
               payment information with the provider, if payment is required. In Time of Need does not rate, recommend or
               endorse any agency. We simply provide information as a public service.
             </p>
+          </div>
+          <div className="ml-5">
+            <ProviderDetailsMap className=" h-[300px] w-[400px]" providerLocation={provider.place.location} />
           </div>
         </div>
       </main>
