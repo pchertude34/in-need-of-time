@@ -38,7 +38,7 @@ export default async function ProviderPage(props: ProviderPageProps) {
             Back to Service Finder
           </Link>
         </Button>
-        <div className="flex items-center">
+        <div className="flex flex-wrap items-center gap-5 md:flex-nowrap">
           <div className="flex flex-col items-start">
             <h1 className="mb-2 text-2xl font-semibold">{provider.title}</h1>
             <Button variant="text-primary" size="text" asChild>
@@ -53,7 +53,7 @@ export default async function ProviderPage(props: ProviderPageProps) {
             </Button>
           </div>
           {shouldRenderContactInfo && (
-            <div className="ml-auto flex space-x-6">
+            <div className="flex space-x-6 md:ml-auto ">
               {provider.publicContact?.phone && (
                 <Button variant="text-dark" size="text" asChild>
                   <a href={formatPhoneNumberForHref(provider.publicContact.phone)}>
@@ -73,7 +73,7 @@ export default async function ProviderPage(props: ProviderPageProps) {
           )}
         </div>
 
-        <div className="flex">
+        <div className="flex flex-wrap gap-6 md:flex-nowrap">
           <div className="space-y-8">
             <article className="prose text-slate-900 prose-p:leading-snug">
               {provider.description && <PortableText value={provider.description} />}
@@ -99,15 +99,18 @@ export default async function ProviderPage(props: ProviderPageProps) {
                 </div>
               </div>
             )}
-            <p className="text-sm text-slate-500">
+            <p className="hidden text-sm text-slate-500 md:block">
               The community resource directory information is up to date to the best of our knowledge. However, you
               should always call the provider to confirm this information and make an appointment. Be sure to confirm
               payment information with the provider, if payment is required. In Time of Need does not rate, recommend or
               endorse any agency. We simply provide information as a public service.
             </p>
           </div>
-          <div className="ml-5 flex flex-col space-y-4">
-            <ProviderDetailsMap className=" h-[300px] w-[400px]" providerLocation={provider.place.location} />
+          <div className="flex flex-col space-y-4">
+            <ProviderDetailsMap
+              className=" mx-auto h-[300px] w-full md:w-[400px]"
+              providerLocation={provider.place.location}
+            />
             <div className="rounded-md bg-slate-50 p-6">
               <div className="flex">
                 <InformationCircleIcon className=" mr-2 mt-1 h-5 w-5 self-start text-blue-600" />
@@ -128,6 +131,12 @@ export default async function ProviderPage(props: ProviderPageProps) {
               </Button>
             </div>
           </div>
+          <p className="block text-sm text-slate-500 md:hidden">
+            The community resource directory information is up to date to the best of our knowledge. However, you should
+            always call the provider to confirm this information and make an appointment. Be sure to confirm payment
+            information with the provider, if payment is required. In Time of Need does not rate, recommend or endorse
+            any agency. We simply provide information as a public service.
+          </p>
         </div>
       </main>
       <Footer />
