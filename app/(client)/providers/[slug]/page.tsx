@@ -81,7 +81,7 @@ export default async function ProviderPage(props: ProviderPageProps) {
             {shouldRenderContactInfo && (
               <div className="space-y-4 rounded-md bg-slate-100 p-4">
                 <h2 className="text-xl font-bold">Contact Details</h2>
-                <div className="flex">
+                <div className="flex flex-wrap gap-5 md:flex-nowrap">
                   {provider.publicContact?.phone && (
                     <div className="mr-14 flex flex-col">
                       <span className="mb-1 text-slate-600">Phone Number</span>
