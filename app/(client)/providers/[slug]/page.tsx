@@ -1,7 +1,14 @@
 import React from "react";
 import Link from "next/link";
 import { PortableText } from "@portabletext/react";
-import { ArrowLeftIcon, MapPinIcon, GlobeAltIcon, PhoneIcon, ArrowRightIcon } from "@heroicons/react/24/solid";
+import {
+  ArrowLeftIcon,
+  MapPinIcon,
+  GlobeAltIcon,
+  PhoneIcon,
+  ArrowRightIcon,
+  FlagIcon,
+} from "@heroicons/react/24/solid";
 import { InformationCircleIcon } from "@heroicons/react/24/outline";
 import { Button } from "@/components/ui/button";
 import { Footer } from "@/components/Footer";
@@ -112,6 +119,12 @@ export default async function ProviderPage(props: ProviderPageProps) {
               </p>
               <Button variant="text-dark" size="text">
                 Request update <ArrowRightIcon className="ml-2 h-4 w-4" />
+              </Button>
+            </div>
+            <div>
+              <Button variant="light" className="rounded-sm font-bold">
+                <FlagIcon className="mr-2 h-4 w-4" />
+                Report an issue
               </Button>
             </div>
           </div>
