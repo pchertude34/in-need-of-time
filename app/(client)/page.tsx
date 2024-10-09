@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { ArrowRightIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { Button } from "@/components/ui/button";
 import { Footer } from "@/components/Footer";
@@ -87,9 +88,10 @@ export default async function Home() {
               <p className="mt-3 text-lg text-slate-900">
                 Search our wide selection of service providers to find the help you need.
               </p>
-              <Button className="mt-6" variant="light">
-                Find a Provider
-                <ArrowRightIcon className="ml-2 h-4 w-4" />
+              <Button className="mt-6" variant="light" asChild>
+                <Link href="/search">
+                  Find a Provider <ArrowRightIcon className="ml-2 h-4 w-4" />
+                </Link>
               </Button>
             </div>
           </div>
