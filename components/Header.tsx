@@ -32,12 +32,16 @@ export default function Header() {
         <div className="relative z-20 mx-auto max-w-7xl bg-white px-4 py-5 sm:px-6 lg:p-5">
           <div className="flex items-center">
             <div className="flex-1 flex-shrink-0">
-              <Link href="/" passHref>
-                <Image src="/logo.svg" alt="Logo" height={45} width={66} className="hidden h-12 w-auto lg:block" />
-              </Link>
-              <Link href="/" passHref>
-                <Image src="/logo.svg" alt="Logo" height={40} width={59} className="block h-10 w-auto lg:hidden" />
-              </Link>
+              <div className="hidden w-[66px] lg:block">
+                <Link href="/">
+                  <Image src="/logo.svg" alt="Logo" height={45} width={66} className=" h-12 w-auto" />
+                </Link>
+              </div>
+              <div className="block w-[59px] lg:hidden">
+                <Link href="/">
+                  <Image src="/logo.svg" alt="Logo" height={40} width={59} className="block h-10 w-auto lg:hidden" />
+                </Link>
+              </div>
             </div>
             <div className="hidden flex-1 lg:flex">
               <NavigationMenu>
