@@ -90,7 +90,7 @@ export default function Header() {
             </div>
             <div className="hidden flex-1 items-center justify-end lg:flex">
               <Button variant="primary" asChild>
-                <Link href="/find">
+                <Link href="/search">
                   Find a Provider <ArrowRightIcon className="ml-2 h-3 w-3" />
                 </Link>
               </Button>
@@ -159,7 +159,7 @@ export default function Header() {
               </NavigationMenuList>
             </NavigationMenu>
             <Button variant="primary" asChild className="mt-6 w-full">
-              <Link href="/find">
+              <Link href="/search">
                 Find a Provider <ArrowRightIcon className="ml-2 h-3 w-3" />
               </Link>
             </Button>
