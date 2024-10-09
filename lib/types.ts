@@ -8,6 +8,12 @@ export type Location = {
 ////////////////////////////////////////
 // GROQ responses
 ////////////////////////////////////////
+export type ServiceCategory = {
+  title: string;
+  slug: string;
+  description: string;
+  imageUrl: string;
+};
 export type ServiceType = {
   name: string;
   slug: string;

@@ -6,9 +6,11 @@ import { ServiceSearchBar } from "@/components/ServiceSearchBar";
 import { ServiceSearchTriggerButton } from "@/components/ServiceSearchTriggerButton";
 import { Drawer, DrawerClose, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
 import { queryAllServiceTypes } from "@/lib/queries/getServiceTypes";
+import { queryAllServiceCategories } from "@/lib/queries/getServiceCategories";
 
 export default async function Home() {
   const serviceTypes = await queryAllServiceTypes();
+  const serviceCategories = await queryAllServiceCategories();
 
   return (
     <>
@@ -64,55 +66,15 @@ export default async function Home() {
             <p className="text-lg text-slate-600 ">Select a provider type to start your narrowed search.</p>
           </div>
           <div className="flex flex-wrap justify-center gap-3 md:gap-6">
-            <ServiceCategoryCard
-              className="w-full sm:max-w-[260px]"
-              title="Housing"
-              icon="house"
-              description="Support services for finding and maintaining safe, affordable housing."
-              href="/"
-            />
-            <ServiceCategoryCard
-              className="w-full sm:max-w-[260px]"
-              title="Housing"
-              icon="house"
-              description="Support services for finding and maintaining safe, affordable housing."
-              href="/"
-            />
-            <ServiceCategoryCard
-              className="w-full sm:max-w-[260px]"
-              title="Housing"
-              icon="house"
-              description="Support services for finding and maintaining safe, affordable housing."
-              href="/"
-            />
-            <ServiceCategoryCard
-              className="w-full sm:max-w-[260px]"
-              title="Housing"
-              icon="house"
-              description="Support services for finding and maintaining safe, affordable housing."
-              href="/"
-            />
-            <ServiceCategoryCard
-              className="w-full sm:max-w-[260px]"
-              title="Housing"
-              icon="house"
-              description="Support services for finding and maintaining safe, affordable housing."
-              href="/"
-            />
-            <ServiceCategoryCard
-              className="w-full sm:max-w-[260px]"
-              title="Housing"
-              icon="house"
-              description="Support services for finding and maintaining safe, affordable housing."
-              href="/"
-            />
-            <ServiceCategoryCard
-              className="w-full sm:max-w-[260px]"
-              title="Housing"
-              icon="house"
-              description="Support services for finding and maintaining safe, affordable housing."
-              href="/"
-            />
+            {serviceCategories.map((category) => (
+              <ServiceCategoryCard
+                key={category.slug}
+                title={category.title}
+                description={category.description}
+                icon={category.imageUrl}
+                href={`/search?category=${category.slug}`}
+              />
+            ))}
           </div>
         </div>
         {/* Call to action */}
