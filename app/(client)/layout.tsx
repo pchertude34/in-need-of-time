@@ -5,6 +5,7 @@ import { Providers } from "@/components/Providers";
 import Header from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import "./globals.css";
+import { TooltipProvider } from "@/components/ui/tooltip";
 
 const fontSans = FontSans({
   subsets: ["latin"],
@@ -25,8 +26,10 @@ export default function RootLayout({
     <html lang="en">
       <body className={cn("bg-background min-h-[100dvh] font-sans antialiased", fontSans.variable)}>
         <Providers>
-          <Header />
-          {children}
+          <TooltipProvider>
+            <Header />
+            {children}
+          </TooltipProvider>
         </Providers>
       </body>
     </html>

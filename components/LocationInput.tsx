@@ -5,6 +5,7 @@ import { MapPinIcon } from "@heroicons/react/24/outline";
 import { LocateFixed } from "lucide-react";
 import { CheckCircleIcon } from "@heroicons/react/24/solid";
 import { InputGroup, InputLeftElement, InputRightElement } from "./ui/input-group";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./ui/tooltip";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import { useGooglePlaceSearch } from "@/hooks/useGooglePlaceSearch";
@@ -96,9 +97,14 @@ export function LocationInput(props: LocationInputProps) {
       />
       <InputRightElement>
         {location && <CheckCircleIcon className="mr-1 h-5 w-5 text-success-400" />}
-        <Button variant="text-primary" size="text" onClick={calculateLocation}>
-          <LocateFixed className="h-4 w-4" />
-        </Button>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button variant="text-primary" size="text" onClick={calculateLocation}>
+              <LocateFixed className="h-4 w-4" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>Use my location</TooltipContent>
+        </Tooltip>
       </InputRightElement>
     </InputGroup>
   );
