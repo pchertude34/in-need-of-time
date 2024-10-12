@@ -26,13 +26,13 @@ export function LocationInput(props: LocationInputProps) {
 
   const addressInputRef = useRef<HTMLInputElement>(null);
 
-  const { cleanup } = useGooglePlaceSearch({
+  useGooglePlaceSearch({
     refElem: addressInputRef,
     fields: ["address_components", "geometry", "name", "place_id"],
     types: ["address"],
     onPlaceChange: (place) => {
-      const latitude = place?.geometry?.location.lat();
-      const longitude = place?.geometry?.location.lng();
+      const latitude = place?.geometry?.location?.lat();
+      const longitude = place?.geometry?.location?.lng();
       if (latitude && longitude) {
         setLocation({ lat: latitude, lng: longitude });
       }
@@ -43,7 +43,6 @@ export function LocationInput(props: LocationInputProps) {
   // since location can change in multiple places.
   useEffect(() => {
     onLocationChange(location);
-    return () => cleanup();
   }, [location]);
 
   /**
