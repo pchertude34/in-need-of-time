@@ -45,7 +45,7 @@ export function LocationInput(props: LocationInputProps) {
   // since location can change in multiple places.
   useEffect(() => {
     onLocationChange(location);
-  }, [location]);
+  }, [location, onLocationChange]);
 
   /**
    * Use native browser functionality to calculate the user's current coordinates.
@@ -53,16 +53,21 @@ export function LocationInput(props: LocationInputProps) {
    */
   function calculateLocation() {
     setIsCalculatingLocation(true);
-    navigator.geolocation.getCurrentPosition((position) => {
-      const { coords } = position;
-      setLocation({ lat: coords.latitude, lng: coords.longitude });
-    });
-    setIsCalculatingLocation(false);
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const { coords } = position;
+        setLocation({ lat: coords.latitude, lng: coords.longitude });
+        setIsCalculatingLocation(false);
 
-    // Update the input value to show that we are using the user's location
-    if (addressInputRef.current) {
-      addressInputRef.current.value = USING_LOCATION_PLACEHOLER;
-    }
+        // Update the input value to show that we are using the user's location
+        if (addressInputRef.current) {
+          addressInputRef.current.value = USING_LOCATION_PLACEHOLER;
+        }
+      },
+      (error) => {
+        setIsCalculatingLocation(false);
+      },
+    );
   }
 
   /**
