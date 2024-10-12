@@ -11,6 +11,7 @@ import { Button } from "./ui/button";
 import { useGooglePlaceSearch } from "@/hooks/useGooglePlaceSearch";
 import { cn } from "@/lib/utils";
 import type { Location } from "@/lib/types";
+import { toast } from "sonner";
 
 const DEFAULT_PLACEHOLDER = "Enter your location";
 const USING_LOCATION_PLACEHOLER = "Using your location";
@@ -65,6 +66,10 @@ export function LocationInput(props: LocationInputProps) {
         }
       },
       (error) => {
+        toast.error("Unable to use current location", {
+          description:
+            "Please enable location services and try again, or use the search bar to enter your location manually.",
+        });
         setIsCalculatingLocation(false);
       },
     );
