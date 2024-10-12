@@ -13,6 +13,7 @@ import type { Location } from "@/lib/types";
 
 const DEFAULT_PLACEHOLDER = "Enter your location";
 const USING_LOCATION_PLACEHOLER = "Using your location";
+const CALCULATING_LOCATION_PLACEHOLDER = "Calculating your location...";
 
 type LocationInputProps = {
   onLocationChange: (location: Location | null) => void;
@@ -89,7 +90,7 @@ export function LocationInput(props: LocationInputProps) {
           "border-transparent focus:border-slate-400": !location,
         })}
         type="text"
-        placeholder={DEFAULT_PLACEHOLDER}
+        placeholder={isCalculatingLocation ? CALCULATING_LOCATION_PLACEHOLDER : DEFAULT_PLACEHOLDER}
         onKeyDown={handleKeyDown}
         variant={location ? "success" : "primary"}
       />
