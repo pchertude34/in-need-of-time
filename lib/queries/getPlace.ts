@@ -5,16 +5,8 @@ type GetPlaceArgs = {
   map?: google.maps.Map;
 };
 
-type GetPlaceResponse = {
-  name: string;
+type GetPlaceResponse = google.maps.places.PlaceResult & {
   address: string;
-  formatted_phone_number?: string;
-  website?: string;
-  url?: string;
-  geometry?: google.maps.places.PlaceGeometry;
-  opening_hours?: google.maps.places.OpeningHours;
-  business_status?: string;
-  address_components?: google.maps.GeocoderAddressComponent[];
 };
 
 /**
@@ -50,7 +42,7 @@ export async function getPlace({ placeId, map }: GetPlaceArgs): Promise<GetPlace
 
   return new Promise((resolve, reject) => {
     placeService.getDetails(request, (place, status) => {
-      if (status === google.maps.places.PlacesServiceStatus.OK) {
+      if (status === google.maps.places.PlacesServiceStatus.OK && place) {
         // Build out a human readable address for the place
         const address = buildPlaceAddress(place);
         resolve({ ...place, address });

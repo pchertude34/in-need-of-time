@@ -31,7 +31,7 @@ function _loadGoogleMapsApi(config: { locale: string; apiKey: string }) {
     script.onerror = (event: Event | string, source?: string, lineno?: number, colno?: number, error?: Error) =>
       reject(new Error(coeerceError(event, error)));
 
-    script.src = `https://maps.googleapis.com/maps/api/js?key=${config.apiKey}&libraries=places&callback=${callbackName}&language=${config.locale}`;
+    script.src = `https://maps.googleapis.com/maps/api/js?key=${config.apiKey}&libraries=places,marker&callback=${callbackName}&language=${config.locale}`;
     script.async = true;
 
     document.getElementsByTagName("head")[0]?.appendChild(script);

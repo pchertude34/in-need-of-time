@@ -41,8 +41,8 @@ export default function CustomStringInput(props: ObjectInputProps) {
       const placeAddress = buildPlaceAddress(place);
       const type = getPlaceType(place.types);
       setPlaceId(place.place_id);
-      setLat(place.geometry?.location.lat());
-      setLng(place.geometry?.location.lng());
+      setLat(place.geometry?.location?.lat());
+      setLng(place.geometry?.location?.lng());
       setAddress(placeAddress);
       setPlaceType(type);
 
@@ -51,8 +51,8 @@ export default function CustomStringInput(props: ObjectInputProps) {
         set(placeAddress, ["address"]),
         set(
           {
-            lat: place.geometry?.location.lat(),
-            lng: place.geometry?.location.lng(),
+            lat: place.geometry?.location?.lat(),
+            lng: place.geometry?.location?.lng(),
             _type: "geopoint",
           },
           ["location"],

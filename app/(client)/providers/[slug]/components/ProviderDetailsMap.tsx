@@ -24,7 +24,6 @@ export function ProviderDetailsMap(props: ProviderDetailsMapProps) {
             zoom: 14,
             zoomControlOptions: {
               position: googleMapsApi.ControlPosition.TOP_RIGHT,
-              style: googleMapsApi.ZoomControlStyle.SMALL,
             },
             streetViewControlOptions: {
               position: googleMapsApi.ControlPosition.TOP_RIGHT,

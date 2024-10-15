@@ -30,7 +30,6 @@ export function ProviderSearchMap(props: MapProps) {
           mapSettings={{
             zoomControlOptions: {
               position: googleMapsApi.ControlPosition.RIGHT_CENTER,
-              style: googleMapsApi.ZoomControlStyle.SMALL,
             },
             streetViewControl: false,
             mapTypeControl: false,
