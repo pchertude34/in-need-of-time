@@ -11,6 +11,7 @@ type AdvancedMapMarkerProps = {
   googleMapsApi: typeof window.google.maps;
   googleMap: google.maps.Map;
   position: Location;
+  iconImageUrl?: string;
   backgroundColor?: string;
   borderColor?: string;
   glyphColor?: string;
@@ -23,6 +24,7 @@ export function AdvancedMapMarker(props: AdvancedMapMarkerProps) {
     googleMapsApi,
     googleMap,
     position,
+    iconImageUrl,
     backgroundColor = DEFAULT_BACKGROUND_COLOR,
     borderColor = DEFAULT_BORDER_COLOR,
     glyphColor = DEFAULT_GLYPH_COLOR,
@@ -36,10 +38,17 @@ export function AdvancedMapMarker(props: AdvancedMapMarkerProps) {
 
   useEffect(() => {
     if (!markerRef.current) {
+      const icon = iconImageUrl ? document.createElement("img") : undefined;
+
+      if (icon && iconImageUrl) {
+        icon.src = iconImageUrl;
+      }
+
       const pin = new googleMapsApi.marker.PinElement({
         glyphColor: glyphColor,
         background: backgroundColor,
         borderColor: borderColor,
+        glyph: icon,
       });
 
       const marker = new googleMapsApi.marker.AdvancedMarkerElement({
