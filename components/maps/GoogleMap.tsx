@@ -1,7 +1,7 @@
 "use client";
 import { Location } from "@/lib/types";
 import React, { useState, useEffect, useCallback, useRef } from "react";
-// import { useGoogleMaps } from "@/hooks/useGoogleMaps";
+import { NEXT_PUBLIC_GOOGLE_MAPS_ID } from "@/env";
 
 const DEFUALT_LOCATION = { lat: 45.5152, lng: -122.6784 };
 const DEFAULT_MAP_SETTINGS = {
@@ -69,6 +69,7 @@ export function GoogleMap(props: GoogleMapProps) {
   // Build the map and place it on the element parameter
   function constructMap(element: HTMLDivElement) {
     const map = new googleMapsApi.Map(element, {
+      mapId: NEXT_PUBLIC_GOOGLE_MAPS_ID,
       center: getCenter(),
       ...DEFAULT_MAP_SETTINGS,
       ...mapSettings,

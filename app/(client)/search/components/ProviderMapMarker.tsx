@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef } from "react";
-import { MapMarker } from "@/components/maps/MapMarker";
+import { AdvancedMapMarker } from "@/components/maps/AdvancedMapMarker";
 import { ProviderMapPopup } from "./ProviderMapPopup";
 import type { Provider } from "@/lib/types";
 import type { MapPopup as MapPopupType } from "@/components/maps/MapPopup";
@@ -60,7 +60,7 @@ export function ProviderMapMarker(props: ProvierMapMarkerProps) {
   if (typeof google !== "undefined" && google.maps && google.maps.OverlayView) {
     return (
       <>
-        <MapMarker
+        <AdvancedMapMarker
           googleMapsApi={googleMapsApi}
           googleMap={googleMap}
           position={provider.place.location}
