@@ -3,34 +3,23 @@
 import { useEffect, useRef } from "react";
 import type { Location } from "@/lib/types";
 
-const DEFAULT_BACKGROUND_COLOR = "#285562";
-const DEFAULT_BORDER_COLOR = "#142E38";
-const DEFAULT_GLYPH_COLOR = "#ffffff";
+const DEFAULT_GLYPH_OPTIONS = {
+  glyphColor: "#ffffff",
+  background: "#285562",
+  borderColor: "#142E38",
+};
 
 type AdvancedMapMarkerProps = {
   googleMapsApi: typeof window.google.maps;
   googleMap: google.maps.Map;
   position: Location;
-  iconImageUrl?: string;
-  backgroundColor?: string;
-  borderColor?: string;
-  glyphColor?: string;
+  glyphOptions?: google.maps.marker.PinElementOptions;
   onMove?: (event: google.maps.MapMouseEvent) => void;
   onClick?: (event: google.maps.MapMouseEvent) => void;
 };
 
 export function AdvancedMapMarker(props: AdvancedMapMarkerProps) {
-  const {
-    googleMapsApi,
-    googleMap,
-    position,
-    iconImageUrl,
-    backgroundColor = DEFAULT_BACKGROUND_COLOR,
-    borderColor = DEFAULT_BORDER_COLOR,
-    glyphColor = DEFAULT_GLYPH_COLOR,
-    onClick,
-    onMove,
-  } = props;
+  const { googleMapsApi, googleMap, position, glyphOptions, onClick, onMove } = props;
 
   const markerRef = useRef<google.maps.marker.AdvancedMarkerElement | undefined>(undefined);
   const markerMoveHandlerRef = useRef<google.maps.MapsEventListener | undefined>(undefined);
@@ -38,17 +27,9 @@ export function AdvancedMapMarker(props: AdvancedMapMarkerProps) {
 
   useEffect(() => {
     if (!markerRef.current) {
-      const icon = iconImageUrl ? document.createElement("img") : undefined;
-
-      if (icon && iconImageUrl) {
-        icon.src = iconImageUrl;
-      }
-
       const pin = new googleMapsApi.marker.PinElement({
-        glyphColor: glyphColor,
-        background: backgroundColor,
-        borderColor: borderColor,
-        glyph: icon,
+        ...DEFAULT_GLYPH_OPTIONS,
+        ...glyphOptions,
       });
 
       const marker = new googleMapsApi.marker.AdvancedMarkerElement({
