@@ -57,18 +57,12 @@ export function ProviderMapMarker(props: ProvierMapMarkerProps) {
     }
   }
 
-  if (typeof google !== "undefined" && google.maps && google.maps.OverlayView) {
-    return (
-      <>
-        <AdvancedMapMarker
-          googleMapsApi={googleMapsApi}
-          googleMap={googleMap}
-          position={provider.place.location}
-          onClick={handleMarkerClick}
-        />
-      </>
-    );
-  }
-
-  return null;
+  return (
+    <AdvancedMapMarker
+      googleMapsApi={googleMapsApi}
+      googleMap={googleMap}
+      position={provider.place.location}
+      onClick={handleMarkerClick}
+    />
+  );
 }
