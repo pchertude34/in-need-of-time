@@ -20,8 +20,16 @@ export function searchProviders(params: SearchProvidersParamsType): Promise<Prov
       place,
       description,
       publicContact,
-      serviceTypes[]->{name, desctiption, 'slug': slug.current},
+      serviceTypes[(@->slug.current == "${serviceTypeSlug}")]->{
+        name, 
+        desctiption, 
+        'slug': slug.current
+      }
     }`;
+
+  // filter out provider service types that don't match the queried service type
+  // In the future when we want to support queries with multiple service types, we can use the following:
+  // serviceTypes[(@->slug.current in ${serviceTypeSlugs})]->{name, desctiption, 'slug': slug.current}
 
   return client.fetch(query);
 }

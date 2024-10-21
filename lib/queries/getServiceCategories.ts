@@ -9,3 +9,11 @@ export function queryAllServiceCategories(): Promise<ServiceCategory[]> {
 
   return client.fetch(query);
 }
+
+export function queryServiceCategoriesBySlug(slugs: string[]): Promise<ServiceCategory[]> {
+  const query = groq`*[_type == "serviceCategory" && slug.current in $slugs]{
+    title, description, 'imageUrl': icon.asset->url, 'slug': slug.current
+  }`;
+
+  return client.fetch(query, { slugs });
+}

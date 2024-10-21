@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef } from "react";
+import React from "react";
 import { GoogleMapsProxy } from "@/hooks/useLoadGoogleMaps";
 import { GoogleMap } from "@/components/maps/GoogleMap";
 import { MapMarker } from "@/components/maps/MapMarker";

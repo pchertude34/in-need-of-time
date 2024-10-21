@@ -46,6 +46,7 @@ export default async function SearchPage(props: SearchPageProps) {
       radius: convertMilesToMeters(radius || 0),
       serviceTypeSlug: type,
     });
+
     // Center the google maps location to the user on search
     userLocation = { lat: parseFloat(lat), lng: parseFloat(lng) };
   }
