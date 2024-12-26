@@ -7,3 +7,13 @@ export function queryAllServiceTypes(): Promise<ServiceType[]> {
 
   return client.fetch(query);
 }
+
+export function queryServiceTypesByCategory(categorySlug: string): Promise<ServiceType[]> {
+  const query = groq`*[_type == "serviceType" && "${categorySlug}" in serviceCategory[]->slug.current]{
+    name, description, 'slug': slug.current
+  }`;
+
+  console.log("query :>> ", query);
+
+  return client.fetch(query);
+}

@@ -73,7 +73,7 @@ export default async function Home() {
                 title={category.title}
                 description={category.description}
                 icon={category.imageUrl}
-                href={`/search?category=${category.slug}`}
+                href={`/category/${category.slug}`}
               />
             ))}
           </div>
