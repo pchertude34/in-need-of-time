@@ -21,6 +21,7 @@ export default async function CategoryPage(props: CategoryPageProps) {
       </div>
       {/* Main Content */}
       <main className="container max-w-[1080px] space-y-5 py-8">
+        <p className="text-slate-900">{category.description}</p>
         {serviceTypes.map((serviceType) => (
           <CategoryDetailsCard label={serviceType.name} description="Test" count={1} />
         ))}
