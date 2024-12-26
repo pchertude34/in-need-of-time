@@ -13,7 +13,5 @@ export function queryServiceTypesByCategory(categorySlug: string): Promise<Servi
     name, description, 'slug': slug.current
   }`;
 
-  console.log("query :>> ", query);
-
   return client.fetch(query);
 }
