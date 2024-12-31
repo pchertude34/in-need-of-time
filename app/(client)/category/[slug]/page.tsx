@@ -26,8 +26,8 @@ export default async function CategoryPage(props: CategoryPageProps) {
       {/* Main Content */}
       <main className="container max-w-[1080px] space-y-5 py-8">
         <p className="text-slate-900">{category.description}</p>
-        <div className="flex">
-          <ServiceTypeFilters />
+        <div className="flex justify-end">
+          <ServiceTypeFilters className="ml-auto" />
         </div>
         <div className="grid flex-wrap gap-4 lg:grid-cols-2">
           {serviceTypes.map((serviceType) => (

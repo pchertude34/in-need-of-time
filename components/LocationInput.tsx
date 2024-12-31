@@ -98,7 +98,7 @@ export function LocationInput(props: LocationInputProps) {
       </InputLeftElement>
       <Input
         ref={addressInputRef}
-        className={cn("grow-0   pl-10 pr-14 focus:border  focus:bg-slate-50", {
+        className={cn("pl-10 pr-14 focus:border  focus:bg-slate-50", {
           "border-transparent focus:border-slate-400": !location && variant === "transparent",
           "shadow-sm": variant === "default",
           "rounded-full": variant === "transparent",
