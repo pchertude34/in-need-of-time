@@ -5,7 +5,7 @@ import { MapPinIcon } from "@heroicons/react/24/outline";
 import { LocateFixed } from "lucide-react";
 import { CheckCircleIcon } from "@heroicons/react/24/solid";
 import { InputGroup, InputLeftElement, InputRightElement } from "./ui/input-group";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./ui/tooltip";
+import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import { useGooglePlaceSearch } from "@/hooks/useGooglePlaceSearch";
