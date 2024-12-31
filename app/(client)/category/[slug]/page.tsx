@@ -31,7 +31,7 @@ export default async function CategoryPage(props: CategoryPageProps) {
         </div>
         <div className="grid flex-wrap gap-4 lg:grid-cols-2">
           {serviceTypes.map((serviceType) => (
-            <CategoryDetailsCard label={serviceType.name} description="Test" count={1} />
+            <CategoryDetailsCard label={serviceType.name} description="Test" count={2} />
           ))}
         </div>
       </main>

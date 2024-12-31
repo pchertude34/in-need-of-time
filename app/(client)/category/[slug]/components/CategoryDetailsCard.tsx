@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { ArrowRightIcon } from "@heroicons/react/24/outline";
 import { cn } from "@/lib/utils";
+import { Badge } from "@/components/ui/badge";
 
 type CategoryDetailsCardProps = {
   label: string;
@@ -39,7 +40,11 @@ export function CategoryDetailsCard(props: CategoryDetailsCardProps) {
           </div>
         </div>
 
-        {count && <span className="">{count}</span>}
+        {count && (
+          <Badge variant="primary">
+            {count} Provider{count > 1 && "s"}
+          </Badge>
+        )}
       </div>
       <p className="text-slate-700">{description}</p>
     </Link>

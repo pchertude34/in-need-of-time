@@ -18,7 +18,7 @@ export function ServiceTypeFilters(props: ServiceTypeFiltersProps) {
     <div className={cn("flex items-center", className)}>
       <LocationInput variant="default" onLocationChange={() => {}} className="mr-2 shrink-0" />
       <Select onValueChange={(radius) => setRadius(radius)} value={radius}>
-        <SelectTrigger variant={radius ? "success" : "primary"} className="min-w-[144px]">
+        <SelectTrigger variant={radius ? "success" : "primary"} className="min-w-[144px] shadow-sm">
           <div className="flex w-full flex-grow items-center">
             <SelectValue placeholder="Select radius" />
             {radius && <CheckCircleIcon className="ml-auto mr-1 h-5 w-5 text-success-400" />}
