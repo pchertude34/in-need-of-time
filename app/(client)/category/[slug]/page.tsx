@@ -2,9 +2,6 @@ import React from "react";
 import { CategoryDetailsCard } from "./components/CategoryDetailsCard";
 import { queryServiceTypesByCategory } from "@/lib/queries/getServiceTypes";
 import { queryServiceCategoryBySlug } from "@/lib/queries/getServiceCategories";
-import { Input } from "@/components/ui/input";
-import { InputGroup, InputLeftElement } from "@/components/ui/input-group";
-import { LocationInput } from "@/components/LocationInput";
 import { ServiceTypeFilters } from "./components/ServiceTypeFilters";
 
 type CategoryPageProps = {
