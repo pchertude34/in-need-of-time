@@ -10,7 +10,7 @@ type ServiceTypeFiltersProps = {
 export function ServiceTypeFilters(props: ServiceTypeFiltersProps) {
   return (
     <div>
-      <LocationInput onLocationChange={() => {}} />
+      <LocationInput variant="default" onLocationChange={() => {}} />
     </div>
   );
 }
