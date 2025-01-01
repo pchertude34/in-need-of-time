@@ -27,9 +27,9 @@ export function CategoryDetailsCard(props: CategoryDetailsCardProps) {
       onMouseOver={() => setIsHovering(true)}
       onMouseOut={() => setIsHovering(false)}
     >
-      <div className="flex w-full items-center justify-between">
-        <div className="flex items-center">
-          <h3 className="text-lg font-semibold">{label}</h3>
+      <div className="flex w-full items-start justify-between">
+        <div className="mr-4 flex flex-grow-0 items-center">
+          <h3 className="text-pretty text-lg font-semibold">{label}</h3>
           <div
             className={cn("ml-2 transform transition-all", {
               "-translate-x-2 opacity-0": !isHovering,
@@ -41,7 +41,7 @@ export function CategoryDetailsCard(props: CategoryDetailsCardProps) {
         </div>
 
         {count && (
-          <Badge variant="primary">
+          <Badge variant="primary" className="flex-shrink-0">
             {count} Provider{count > 1 && "s"}
           </Badge>
         )}
