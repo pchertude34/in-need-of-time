@@ -1,12 +1,14 @@
 "use client";
 
 import React, { useState } from "react";
+import { useRouter } from "next/navigation";
 import { LocationInput } from "@/components/LocationInput";
 import { Select, SelectTrigger, SelectContent, SelectItem, SelectGroup, SelectValue } from "@/components/ui/select";
 import { CheckCircleIcon } from "@heroicons/react/24/solid";
 import { FunnelIcon } from "@heroicons/react/24/outline";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import type { Location } from "@/lib/types";
 
 type ServiceTypeFiltersProps = {
   className?: string;
@@ -14,11 +16,23 @@ type ServiceTypeFiltersProps = {
 
 export function ServiceTypeFilters(props: ServiceTypeFiltersProps) {
   const { className } = props;
+  const [location, setLocation] = useState<Location | null>(null);
   const [radius, setRadius] = useState<string | undefined>();
+  const router = useRouter();
+
+  function handleFilter() {
+    router.push(`?lat=${location?.lat}&lng=${location?.lng}&radius=${radius}`);
+  }
 
   return (
     <div className={cn("flex items-center space-x-2", className)}>
-      <LocationInput variant="default" onLocationChange={() => {}} className=" shrink-0" />
+      <LocationInput
+        variant="default"
+        onLocationChange={(location) => {
+          setLocation(location);
+        }}
+        className=" shrink-0"
+      />
       <Select onValueChange={(radius) => setRadius(radius)} value={radius}>
         <SelectTrigger variant={radius ? "success" : "primary"} className="min-w-[144px] shadow-sm">
           <div className="flex w-full flex-grow items-center">
@@ -35,7 +49,7 @@ export function ServiceTypeFilters(props: ServiceTypeFiltersProps) {
           </SelectGroup>
         </SelectContent>
       </Select>
-      <Button variant="primary" rounded="xl">
+      <Button variant="primary" rounded="xl" onClick={handleFilter}>
         Filter
         <FunnelIcon className="ml-2 h-5 w-5" />
       </Button>

@@ -8,6 +8,11 @@ type CategoryPageProps = {
   params: {
     slug: string;
   };
+  searchParams?: {
+    lat?: string;
+    lng?: string;
+    radius?: string;
+  };
 };
 
 export default async function CategoryPage(props: CategoryPageProps) {
@@ -28,7 +33,7 @@ export default async function CategoryPage(props: CategoryPageProps) {
         </div>
         <div className="grid flex-wrap gap-4 lg:grid-cols-2">
           {serviceTypes.map((serviceType) => (
-            <CategoryDetailsCard label={serviceType.name} description="Test" count={2} />
+            <CategoryDetailsCard label={serviceType.name} description={serviceType.description} count={2} />
           ))}
         </div>
       </main>
