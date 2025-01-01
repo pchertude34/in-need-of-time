@@ -12,7 +12,7 @@ type CategoryPageProps = {
 
 export default async function CategoryPage(props: CategoryPageProps) {
   const category = await queryServiceCategoryBySlug(props.params.slug);
-  const serviceTypes = await queryServiceTypesByCategory(props.params.slug);
+  const serviceTypes = await queryServiceTypesByCategory({ slug: props.params.slug });
 
   return (
     <div>

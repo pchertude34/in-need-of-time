@@ -8,10 +8,20 @@ export function queryAllServiceTypes(): Promise<ServiceType[]> {
   return client.fetch(query);
 }
 
-export function queryServiceTypesByCategory(categorySlug: string): Promise<ServiceType[]> {
-  const query = groq`*[_type == "serviceType" && "${categorySlug}" in serviceCategory[]->slug.current]{
+type ServiceTypeQueryParams = {
+  slug: string;
+  sortBy?: "name" | "_id";
+  sortDir?: "asc" | "desc";
+};
+
+export function queryServiceTypesByCategory({
+  slug,
+  sortBy = "name",
+  sortDir = "asc",
+}: ServiceTypeQueryParams): Promise<ServiceType[]> {
+  const query = groq`*[_type == "serviceType" && $slug in serviceCategory[]->slug.current] | order(${sortBy} ${sortDir}) {
     name, description, 'slug': slug.current
   }`;
 
-  return client.fetch(query);
+  return client.fetch(query, { slug });
 }
