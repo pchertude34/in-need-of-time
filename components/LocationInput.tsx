@@ -42,11 +42,15 @@ export function LocationInput(props: LocationInputProps) {
     },
   });
 
-  // Handle clearing the input when the location is cleared
-  // Remove any text in the input when the location changes to some falsey value
   useEffect(() => {
+    // Handle clearing the input when the location is cleared
+    // Remove any text in the input when the location changes to some falsey value
     if (!location && addressInputRef.current?.value) {
       addressInputRef.current.value = "";
+    }
+    // Use the "using location placeholder" when the location input is rendered with a default value.
+    if (location && addressInputRef.current && !addressInputRef.current.value) {
+      addressInputRef.current.value = USING_LOCATION_PLACEHOLER;
     }
   }, [location]);
 
