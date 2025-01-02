@@ -1,8 +1,9 @@
 import React from "react";
 import { CategoryDetailsCard } from "./components/CategoryDetailsCard";
-import { queryServiceTypesByCategory } from "@/lib/queries/getServiceTypes";
+import { queryAndFilterServiceTypesByCategory, queryServiceTypesByCategory } from "@/lib/queries/getServiceTypes";
 import { queryServiceCategoryBySlug } from "@/lib/queries/getServiceCategories";
 import { ServiceTypeFilters } from "./components/ServiceTypeFilters";
+import { convertMilesToMeters } from "@/lib/utils";
 
 type CategoryPageProps = {
   params: {
@@ -16,8 +17,27 @@ type CategoryPageProps = {
 };
 
 export default async function CategoryPage(props: CategoryPageProps) {
+  const { slug } = props.params;
+  const { lat, lng, radius } = props.searchParams || {};
+
+  const shouldSearch = lat && lng && radius;
+
   const category = await queryServiceCategoryBySlug(props.params.slug);
-  const serviceTypes = await queryServiceTypesByCategory({ slug: props.params.slug });
+  // const serviceTypes = await queryServiceTypesByCategory({ slug: props.params.slug });
+  const serviceTypes = await queryAndFilterServiceTypesByCategory({
+    categorySlug: slug,
+    filter: { lat, lng, radius: convertMilesToMeters(radius || 0) },
+  });
+
+  // if (shouldSearch) {
+  //   const p = await queryServiceTypesAndProviderCountByLocation({
+  //     slug,
+  //     lat: parseFloat(lat),
+  //     lng: parseFloat(lng),
+  //     radius: convertMilesToMeters(radius || 0),
+  //   });
+  //   console.log("p :>> ", p);
+  // }
 
   return (
     <div>
@@ -33,7 +53,11 @@ export default async function CategoryPage(props: CategoryPageProps) {
         </div>
         <div className="grid flex-wrap gap-4 lg:grid-cols-2">
           {serviceTypes.map((serviceType) => (
-            <CategoryDetailsCard label={serviceType.name} description={serviceType.description} count={2} />
+            <CategoryDetailsCard
+              label={serviceType.name}
+              description={serviceType.description}
+              count={serviceType.providerCount}
+            />
           ))}
         </div>
       </main>

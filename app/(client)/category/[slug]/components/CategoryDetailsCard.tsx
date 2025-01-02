@@ -14,7 +14,7 @@ type CategoryDetailsCardProps = {
 };
 
 export function CategoryDetailsCard(props: CategoryDetailsCardProps) {
-  const { label, description, count, className } = props;
+  const { label, description, count = 0, className } = props;
   const [isHovering, setIsHovering] = useState(false);
 
   return (
@@ -40,7 +40,7 @@ export function CategoryDetailsCard(props: CategoryDetailsCardProps) {
           </div>
         </div>
 
-        {count && (
+        {count > 0 && (
           <Badge variant="primary" className="flex-shrink-0">
             {count} Provider{count > 1 && "s"}
           </Badge>
