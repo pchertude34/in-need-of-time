@@ -1,6 +1,6 @@
 import React from "react";
 import { CategoryDetailsCard } from "./components/CategoryDetailsCard";
-import { queryAndFilterServiceTypesByCategory, queryServiceTypesByCategory } from "@/lib/queries/getServiceTypes";
+import { queryAndFilterServiceTypesByCategory } from "@/lib/queries/getServiceTypes";
 import { queryServiceCategoryBySlug } from "@/lib/queries/getServiceCategories";
 import { ServiceTypeFilters } from "./components/ServiceTypeFilters";
 import { convertMilesToMeters } from "@/lib/utils";
@@ -38,7 +38,7 @@ export default async function CategoryPage(props: CategoryPageProps) {
       <main className="container max-w-[1080px] space-y-5 py-8">
         <p className="text-slate-900">{category.description}</p>
         <div className="flex justify-end">
-          <ServiceTypeFilters className="ml-auto" initialLocation={location} />
+          <ServiceTypeFilters className="ml-auto" initialLocation={location} initialRadius={radius} />
         </div>
         <div className="grid flex-wrap gap-4 lg:grid-cols-2">
           {serviceTypes.map((serviceType) => (

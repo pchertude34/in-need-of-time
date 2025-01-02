@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { LocationInput } from "@/components/LocationInput";
 import { Select, SelectTrigger, SelectContent, SelectItem, SelectGroup, SelectValue } from "@/components/ui/select";
@@ -13,13 +13,24 @@ import type { Location } from "@/lib/types";
 type ServiceTypeFiltersProps = {
   className?: string;
   initialLocation?: Location;
+  initialRadius?: string;
 };
 
 export function ServiceTypeFilters(props: ServiceTypeFiltersProps) {
-  const { className, initialLocation } = props;
+  const { className, initialLocation, initialRadius } = props;
   const [location, setLocation] = useState<Location | null>(initialLocation || null);
-  const [radius, setRadius] = useState<string | undefined>();
+  const [radius, setRadius] = useState<string | undefined>(initialRadius);
   const router = useRouter();
+
+  const selectRenderKey = useRef(new Date().toISOString());
+
+  // This is super annoying, but the radix select component doesn't re-render the placeholder
+  // when the value changes from a non-falsy value to a falsy value. This is a hack to force a re-render
+  useEffect(() => {
+    if (!radius) {
+      selectRenderKey.current = new Date().toISOString();
+    }
+  }, [radius]);
 
   function handleFilter() {
     router.push(`?lat=${location?.lat}&lng=${location?.lng}&radius=${radius}`);
@@ -42,7 +53,12 @@ export function ServiceTypeFilters(props: ServiceTypeFiltersProps) {
         }}
         className="shrink-0"
       />
-      <Select onValueChange={(radius) => setRadius(radius)} value={radius}>
+      <Select
+        onValueChange={(radius) => setRadius(radius)}
+        value={radius}
+        defaultValue={radius}
+        key={selectRenderKey.current}
+      >
         <SelectTrigger variant={radius ? "success" : "primary"} className="min-w-[144px] shadow-sm">
           <div className="flex w-full flex-grow items-center">
             <SelectValue placeholder="Select radius" />
