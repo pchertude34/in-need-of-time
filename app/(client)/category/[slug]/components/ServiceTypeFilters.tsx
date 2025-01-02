@@ -74,7 +74,7 @@ export function ServiceTypeFilters(props: ServiceTypeFiltersProps) {
           </SelectGroup>
         </SelectContent>
       </Select>
-      <Button variant="primary" rounded="xl" onClick={handleFilter}>
+      <Button variant="primary" rounded="xl" onClick={handleFilter} disabled={!location || !radius}>
         Filter
         <FunnelIcon className="ml-2 h-5 w-5" />
       </Button>
