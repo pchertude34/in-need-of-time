@@ -12,11 +12,12 @@ import type { Location } from "@/lib/types";
 
 type ServiceTypeFiltersProps = {
   className?: string;
+  initialLocation?: Location;
 };
 
 export function ServiceTypeFilters(props: ServiceTypeFiltersProps) {
-  const { className } = props;
-  const [location, setLocation] = useState<Location | null>(null);
+  const { className, initialLocation } = props;
+  const [location, setLocation] = useState<Location | null>(initialLocation || null);
   const [radius, setRadius] = useState<string | undefined>();
   const router = useRouter();
 
@@ -24,14 +25,22 @@ export function ServiceTypeFilters(props: ServiceTypeFiltersProps) {
     router.push(`?lat=${location?.lat}&lng=${location?.lng}&radius=${radius}`);
   }
 
+  function handleFilterReset() {
+    setLocation(null);
+    setRadius(undefined);
+    // Remove any query params
+    router.push("?");
+  }
+
   return (
     <div className={cn("flex items-center space-x-2", className)}>
       <LocationInput
+        location={location}
         variant="default"
         onLocationChange={(location) => {
           setLocation(location);
         }}
-        className=" shrink-0"
+        className="shrink-0"
       />
       <Select onValueChange={(radius) => setRadius(radius)} value={radius}>
         <SelectTrigger variant={radius ? "success" : "primary"} className="min-w-[144px] shadow-sm">
@@ -52,6 +61,9 @@ export function ServiceTypeFilters(props: ServiceTypeFiltersProps) {
       <Button variant="primary" rounded="xl" onClick={handleFilter}>
         Filter
         <FunnelIcon className="ml-2 h-5 w-5" />
+      </Button>
+      <Button variant="light" rounded="xl" onClick={handleFilterReset}>
+        Reset
       </Button>
     </div>
   );

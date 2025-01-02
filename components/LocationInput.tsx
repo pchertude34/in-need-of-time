@@ -18,14 +18,13 @@ const USING_LOCATION_PLACEHOLER = "Using your location";
 const CALCULATING_LOCATION_PLACEHOLDER = "Calculating your location...";
 
 type LocationInputProps = {
+  location: Location | null;
   onLocationChange: (location: Location | null) => void;
   variant?: "transparent" | "default";
   className?: string;
 };
 export function LocationInput(props: LocationInputProps) {
-  const { variant = "transparent", onLocationChange, className } = props;
-
-  const [location, setLocation] = useState<Location | null>(null);
+  const { location, variant = "transparent", onLocationChange, className } = props;
   const [isCalculatingLocation, setIsCalculatingLocation] = useState(false);
 
   const addressInputRef = useRef<HTMLInputElement>(null);
@@ -38,16 +37,18 @@ export function LocationInput(props: LocationInputProps) {
       const latitude = place?.geometry?.location?.lat();
       const longitude = place?.geometry?.location?.lng();
       if (latitude && longitude) {
-        setLocation({ lat: latitude, lng: longitude });
+        onLocationChange({ lat: latitude, lng: longitude });
       }
     },
   });
 
-  // Call the onLocationChange prop function in this use effect when the location changes
-  // since location can change in multiple places.
+  // Handle clearing the input when the location is cleared
+  // Remove any text in the input when the location changes to some falsey value
   useEffect(() => {
-    onLocationChange(location);
-  }, [location, onLocationChange]);
+    if (!location && addressInputRef.current?.value) {
+      addressInputRef.current.value = "";
+    }
+  }, [location]);
 
   /**
    * Use native browser functionality to calculate the user's current coordinates.
@@ -58,7 +59,7 @@ export function LocationInput(props: LocationInputProps) {
     navigator.geolocation.getCurrentPosition(
       (position) => {
         const { coords } = position;
-        setLocation({ lat: coords.latitude, lng: coords.longitude });
+        onLocationChange({ lat: coords.latitude, lng: coords.longitude });
         setIsCalculatingLocation(false);
 
         // Update the input value to show that we are using the user's location
@@ -83,7 +84,7 @@ export function LocationInput(props: LocationInputProps) {
    */
   function handleKeyDown() {
     if (location) {
-      setLocation(null);
+      onLocationChange(null);
 
       if (addressInputRef.current) {
         addressInputRef.current.value = "";

@@ -20,24 +20,13 @@ export default async function CategoryPage(props: CategoryPageProps) {
   const { slug } = props.params;
   const { lat, lng, radius } = props.searchParams || {};
 
-  const shouldSearch = lat && lng && radius;
+  const location = lat && lng ? { lat: parseFloat(lat), lng: parseFloat(lng) } : undefined;
 
   const category = await queryServiceCategoryBySlug(props.params.slug);
-  // const serviceTypes = await queryServiceTypesByCategory({ slug: props.params.slug });
   const serviceTypes = await queryAndFilterServiceTypesByCategory({
     categorySlug: slug,
     filter: { lat, lng, radius: convertMilesToMeters(radius || 0) },
   });
-
-  // if (shouldSearch) {
-  //   const p = await queryServiceTypesAndProviderCountByLocation({
-  //     slug,
-  //     lat: parseFloat(lat),
-  //     lng: parseFloat(lng),
-  //     radius: convertMilesToMeters(radius || 0),
-  //   });
-  //   console.log("p :>> ", p);
-  // }
 
   return (
     <div>
@@ -49,7 +38,7 @@ export default async function CategoryPage(props: CategoryPageProps) {
       <main className="container max-w-[1080px] space-y-5 py-8">
         <p className="text-slate-900">{category.description}</p>
         <div className="flex justify-end">
-          <ServiceTypeFilters className="ml-auto" />
+          <ServiceTypeFilters className="ml-auto" initialLocation={location} />
         </div>
         <div className="grid flex-wrap gap-4 lg:grid-cols-2">
           {serviceTypes.map((serviceType) => (

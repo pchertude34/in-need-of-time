@@ -48,6 +48,7 @@ export function ServiceSearchBar(props: ServiceSearchBarProps) {
     <div className={cn(searchBarVariant({ orientation, className }))}>
       {/* Location input */}
       <LocationInput
+        location={location}
         className="grow-0"
         onLocationChange={(location) => {
           setLocation(location);
