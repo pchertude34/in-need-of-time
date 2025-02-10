@@ -40,9 +40,10 @@ export default async function CategoryPage(props: CategoryPageProps) {
         <div className="flex justify-end">
           <ServiceTypeFilters className="ml-auto" initialLocation={location} initialRadius={radius} />
         </div>
-        <div className="grid flex-wrap gap-4 lg:grid-cols-2">
+        <div className="space-y-2">
           {serviceTypes.map((serviceType) => (
             <CategoryDetailsCard
+              key={`service-type-${serviceType.name}`}
               label={serviceType.name}
               description={serviceType.description}
               count={serviceType.providerCount}
