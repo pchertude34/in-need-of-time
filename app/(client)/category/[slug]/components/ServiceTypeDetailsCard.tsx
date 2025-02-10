@@ -2,24 +2,35 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { ArrowRightIcon } from "@heroicons/react/24/outline";
-import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { Button } from "@/components/ui/button";
+import { ArrowRightIcon } from "@heroicons/react/24/outline";
 import { ChevronDownIcon } from "@heroicons/react/24/solid";
+import { cn } from "@/lib/utils";
+import type { Location } from "@/lib/types";
 
-type CategoryDetailsCardProps = {
+type ServiceTypeDetailsCardProps = {
+  slug: string;
   label: string;
-  description: string;
+  location?: Location;
+  radius?: string;
+  description?: string;
   count?: number;
   className?: string;
 };
 
-export function CategoryDetailsCard(props: CategoryDetailsCardProps) {
-  const { label, description, count = 0, className } = props;
+export function ServiceTypeDetailsCard(props: ServiceTypeDetailsCardProps) {
+  const { slug, label, location, radius, description, count = 0, className } = props;
   const [isHovering, setIsHovering] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
+
+  const searchLink = `/search?lat=${location?.lat}&lng=${location?.lng}&type=${slug}&radius=${radius}`;
+
+  function handleServiceTypeClicked(e: React.MouseEvent<HTMLAnchorElement>) {
+    // e.preventDefault();
+    // console.log("Service type clicked");
+  }
 
   return (
     <Collapsible
@@ -32,7 +43,8 @@ export function CategoryDetailsCard(props: CategoryDetailsCardProps) {
     >
       <div className="flex w-full items-start justify-between">
         <Link
-          href={"/"}
+          onClick={handleServiceTypeClicked}
+          href={searchLink}
           className="w-full"
           onMouseOver={() => setIsHovering(true)}
           onMouseOut={() => setIsHovering(false)}

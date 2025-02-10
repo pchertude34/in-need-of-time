@@ -1,9 +1,10 @@
 import React from "react";
-import { CategoryDetailsCard } from "./components/CategoryDetailsCard";
+import { ServiceTypeDetailsCard } from "./components/ServiceTypeDetailsCard";
 import { queryAndFilterServiceTypesByCategory } from "@/lib/queries/getServiceTypes";
 import { queryServiceCategoryBySlug } from "@/lib/queries/getServiceCategories";
 import { ServiceTypeFilters } from "./components/ServiceTypeFilters";
 import { convertMilesToMeters } from "@/lib/utils";
+import type { Location } from "@/lib/types";
 
 type CategoryPageProps = {
   params: {
@@ -20,7 +21,7 @@ export default async function CategoryPage(props: CategoryPageProps) {
   const { slug } = props.params;
   const { lat, lng, radius } = props.searchParams || {};
 
-  const location = lat && lng ? { lat: parseFloat(lat), lng: parseFloat(lng) } : undefined;
+  const location = lat && lng ? { lat: parseFloat(lat), lng: parseFloat(lng) } : (undefined as Location | undefined);
 
   const category = await queryServiceCategoryBySlug(props.params.slug);
   const serviceTypes = await queryAndFilterServiceTypesByCategory({
@@ -42,8 +43,11 @@ export default async function CategoryPage(props: CategoryPageProps) {
         </div>
         <div className="space-y-2">
           {serviceTypes.map((serviceType) => (
-            <CategoryDetailsCard
-              key={`service-type-${serviceType.name}`}
+            <ServiceTypeDetailsCard
+              key={`service-type-${serviceType.slug}`}
+              location={location}
+              radius={radius}
+              slug={serviceType.slug}
               label={serviceType.name}
               description={serviceType.description}
               count={serviceType.providerCount}
