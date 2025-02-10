@@ -67,7 +67,7 @@ export function ServiceTypeDetailsCard(props: ServiceTypeDetailsCardProps) {
           </Badge>
         )}
       </div>
-      {description?.length > 0 && (
+      {description && (
         <CollapsibleTrigger asChild>
           <Button variant="text-primary" size="text-sm">
             {isExpanded ? "Hide" : "Show"} description
