@@ -42,6 +42,8 @@ export function ServiceSearchBar(props: ServiceSearchBarProps) {
   const router = useRouter();
   const [location, setLocation] = useState<Location | null>(defaultLocation || null);
   const [serviceType, setServiceType] = useState<ServiceType | null>(
+    // Make sure the default service type is actually in the list of service types.
+    // It's possible a user passes in any string via the URL params
     defaultServiceType ? serviceTypes?.find((type) => type.slug === defaultServiceType) || null : null,
   );
   const [radius, setRadius] = useState<string | undefined>(defaultRadius);
