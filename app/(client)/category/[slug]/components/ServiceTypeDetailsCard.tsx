@@ -25,7 +25,7 @@ export function ServiceTypeDetailsCard(props: ServiceTypeDetailsCardProps) {
   const [isHovering, setIsHovering] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
 
-  const searchLink = `/search?lat=${location?.lat}&lng=${location?.lng}&type=${slug}&radius=${radius}`;
+  const searchLink = `/search?type=${slug}${location ? `&lat=${location.lat}&lng=${location.lng}` : ""}${radius ? `&radius=${radius}` : ""}`;
 
   function handleServiceTypeClicked(e: React.MouseEvent<HTMLAnchorElement>) {
     // e.preventDefault();
