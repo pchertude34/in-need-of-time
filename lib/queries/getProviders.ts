@@ -27,8 +27,6 @@ export function searchProviders(params: SearchProvidersParamsType): Promise<Prov
       }
     }`;
 
-  console.log("query :>> ", query);
-
   // filter out provider service types that don't match the queried service type
   // In the future when we want to support queries with multiple service types, we can use the following:
   // serviceTypes[(@->slug.current in ${serviceTypeSlugs})]->{name, desctiption, 'slug': slug.current}
