@@ -27,17 +27,13 @@ export function ServiceTypeDetailsCard(props: ServiceTypeDetailsCardProps) {
 
   const searchLink = `/search?type=${slug}${location ? `&lat=${location.lat}&lng=${location.lng}` : ""}${radius ? `&radius=${radius}` : ""}`;
 
-  function handleServiceTypeClicked(e: React.MouseEvent<HTMLAnchorElement>) {
-    // e.preventDefault();
-    // console.log("Service type clicked");
-  }
+  function handleServiceTypeClicked(e: React.MouseEvent<HTMLAnchorElement>) {}
 
   return (
     <Collapsible
       className={
         "focus-ring-primary rounded-lg border-2 border-slate-200 bg-slate-50 transition hover:border-primary-500 hover:bg-primary-50 focus:border-primary-500 focus:bg-primary-50 data-[state=open]:animate-in data-[state=closed]:animate-out data-[side=bottom]:slide-in-from-top-2 data-[side=top]:slide-in-from-bottom-2 sm:p-6"
       }
-      // className="relative data-[state=open]:animate-in data-[state=closed]:animate-out"
       open={isExpanded}
       onOpenChange={setIsExpanded}
     >

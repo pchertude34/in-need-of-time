@@ -11,6 +11,7 @@ import { CheckCircleIcon } from "@heroicons/react/24/solid";
 
 type TypeaheadProps<T> = {
   items?: T[];
+  defaultItem?: T;
   onFilter: (item: T, query: string) => boolean;
   getDisplay: (item: T) => string;
   getKey: (item: T) => string;
@@ -20,7 +21,7 @@ type TypeaheadProps<T> = {
 };
 
 export function Typeahead<T>(props: TypeaheadProps<T>) {
-  const { items = [], onFilter, onItemSelected, getDisplay, getKey, placeholder, className } = props;
+  const { items = [], defaultItem, onFilter, onItemSelected, getDisplay, getKey, placeholder, className } = props;
   const [filteredItems, setFilteredItems] = useState(items);
 
   const stateReducer = useCallback((state: UseComboboxState<T>, actionAndChanges: UseComboboxStateChangeOptions<T>) => {
@@ -54,6 +55,9 @@ export function Typeahead<T>(props: TypeaheadProps<T>) {
       itemToString(item) {
         return item ? getDisplay(item) : "";
       },
+      initialSelectedItem: defaultItem,
+      defaultSelectedItem: defaultItem,
+      initialInputValue: defaultItem ? getDisplay(defaultItem) : "",
       stateReducer,
     });
 

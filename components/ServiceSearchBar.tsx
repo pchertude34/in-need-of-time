@@ -29,16 +29,22 @@ const searchBarVariant = cva("p-1 border border-slate-300", {
 });
 
 type ServiceSearchBarProps = {
+  defaultServiceType?: string;
+  defaultLocation?: Location;
+  defaultRadius?: string;
   serviceTypes?: ServiceType[];
   className?: string;
 } & VariantProps<typeof searchBarVariant>;
 
 export function ServiceSearchBar(props: ServiceSearchBarProps) {
-  const { serviceTypes, orientation, className } = props;
+  const { serviceTypes, orientation, defaultLocation, defaultServiceType, defaultRadius, className } = props;
+
   const router = useRouter();
-  const [location, setLocation] = useState<Location | null>(null);
-  const [serviceType, setServiceType] = useState<ServiceType | null>(null);
-  const [radius, setRadius] = useState<string | undefined>();
+  const [location, setLocation] = useState<Location | null>(defaultLocation || null);
+  const [serviceType, setServiceType] = useState<ServiceType | null>(
+    defaultServiceType ? serviceTypes?.find((type) => type.slug === defaultServiceType) || null : null,
+  );
+  const [radius, setRadius] = useState<string | undefined>(defaultRadius);
 
   function handleSearch() {
     router.push(`/search?lat=${location?.lat}&lng=${location?.lng}&type=${serviceType?.slug}&radius=${radius}`);
@@ -58,6 +64,7 @@ export function ServiceSearchBar(props: ServiceSearchBarProps) {
       {/* Provider type selector */}
       <Typeahead
         items={serviceTypes}
+        defaultItem={serviceTypes?.find((type) => type.slug === defaultServiceType)}
         onFilter={(item, query) => item.name?.toLowerCase().includes(query.toLowerCase())}
         onItemSelected={(selectedItem) => setServiceType(selectedItem)}
         getDisplay={(item) => item.name}

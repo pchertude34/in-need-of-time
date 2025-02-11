@@ -96,6 +96,9 @@ export default async function SearchPage(props: SearchPageProps) {
             </ScrollArea>
           )}
           <ServiceSearchBar
+            defaultLocation={userLocation}
+            defaultServiceType={type}
+            defaultRadius={radius}
             serviceTypes={serviceTypes}
             className={cn("z-10 ml-4 bg-white shadow-xl", {
               "mx-auto": providers === undefined,
