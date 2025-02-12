@@ -38,9 +38,8 @@ export default async function CategoryPage(props: CategoryPageProps) {
       {/* Main Content */}
       <main className="container max-w-[1080px] space-y-5 py-8">
         <p className="text-slate-900">{category.description}</p>
-        <div className="flex justify-end">
-          <ServiceTypeFilters className="ml-auto" initialLocation={location} initialRadius={radius} />
-        </div>
+
+        <ServiceTypeFilters initialLocation={location} initialRadius={radius} />
         <div className="space-y-2">
           {serviceTypes.map((serviceType) => (
             <ServiceTypeDetailsCard

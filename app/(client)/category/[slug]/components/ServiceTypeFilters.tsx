@@ -44,43 +44,49 @@ export function ServiceTypeFilters(props: ServiceTypeFiltersProps) {
   }
 
   return (
-    <div className={cn("flex items-center space-x-2", className)}>
-      <LocationInput
-        location={location}
-        variant="default"
-        onLocationChange={(location) => {
-          setLocation(location);
-        }}
-        className="shrink-0"
-      />
-      <Select
-        onValueChange={(radius) => setRadius(radius)}
-        value={radius}
-        defaultValue={radius}
-        key={selectRenderKey.current}
-      >
-        <SelectTrigger variant={radius ? "success" : "primary"} className="min-w-[144px] shadow-sm">
-          <div className="flex w-full flex-grow items-center">
-            <SelectValue placeholder="Select radius" />
-            {radius && <CheckCircleIcon className="ml-auto mr-1 h-5 w-5 text-success-400" />}
-          </div>
-        </SelectTrigger>
-        <SelectContent>
-          <SelectGroup>
-            <SelectItem value="10">10 miles</SelectItem>
-            <SelectItem value="20">20 miles</SelectItem>
-            <SelectItem value="50">50 miles</SelectItem>
-            <SelectItem value="100">100 miles</SelectItem>
-          </SelectGroup>
-        </SelectContent>
-      </Select>
-      <Button variant="primary" rounded="xl" onClick={handleFilter} disabled={!location || !radius}>
-        Filter
-        <FunnelIcon className="ml-2 h-5 w-5" />
-      </Button>
-      <Button variant="light" rounded="xl" onClick={handleFilterReset}>
-        Reset
-      </Button>
+    <div className={cn("flex flex-wrap items-end justify-end gap-2 sm:flex-nowrap", className)}>
+      <div className="w-full min-w-[144px] sm:max-w-[300px]">
+        <LocationInput
+          location={location}
+          variant="default"
+          onLocationChange={(location) => {
+            setLocation(location);
+          }}
+          className=""
+        />
+      </div>
+      <div className="w-full min-w-[150px] grow-0 sm:max-w-[150px] md:max-w-[250px]">
+        <Select
+          onValueChange={(radius) => setRadius(radius)}
+          value={radius}
+          defaultValue={radius}
+          key={selectRenderKey.current}
+        >
+          <SelectTrigger variant={radius ? "success" : "primary"} className="shadow-sm">
+            <div className="flex w-full shrink items-center">
+              <SelectValue placeholder="Select radius" />
+              {radius && <CheckCircleIcon className="ml-auto mr-1 h-5 w-5 text-success-400" />}
+            </div>
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              <SelectItem value="10">10 miles</SelectItem>
+              <SelectItem value="20">20 miles</SelectItem>
+              <SelectItem value="50">50 miles</SelectItem>
+              <SelectItem value="100">100 miles</SelectItem>
+            </SelectGroup>
+          </SelectContent>
+        </Select>
+      </div>
+      <div className="flex gap-2">
+        <Button variant="primary" rounded="xl" onClick={handleFilter} disabled={!location || !radius}>
+          <span className="mr-2">Filter</span>
+          <FunnelIcon className="h-5 w-5" />
+        </Button>
+        <Button variant="light" rounded="xl" onClick={handleFilterReset}>
+          Reset
+        </Button>
+      </div>
     </div>
   );
 }
