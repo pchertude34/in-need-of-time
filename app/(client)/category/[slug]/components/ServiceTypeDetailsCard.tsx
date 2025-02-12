@@ -32,7 +32,7 @@ export function ServiceTypeDetailsCard(props: ServiceTypeDetailsCardProps) {
   return (
     <Collapsible
       className={
-        "focus-ring-primary rounded-lg border-2 border-slate-200 bg-slate-50 transition hover:border-primary-500 hover:bg-primary-50 focus:border-primary-500 focus:bg-primary-50 data-[state=open]:animate-in data-[state=closed]:animate-out data-[side=bottom]:slide-in-from-top-2 data-[side=top]:slide-in-from-bottom-2 sm:p-6"
+        "focus-ring-primary rounded-lg border-2 border-slate-200 bg-slate-50 p-4 transition hover:border-primary-500 hover:bg-primary-50 focus:border-primary-500 focus:bg-primary-50 data-[state=open]:animate-in data-[state=closed]:animate-out data-[side=bottom]:slide-in-from-top-2 data-[side=top]:slide-in-from-bottom-2 sm:p-6"
       }
       open={isExpanded}
       onOpenChange={setIsExpanded}
