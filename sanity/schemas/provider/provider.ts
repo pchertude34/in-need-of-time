@@ -1,6 +1,7 @@
 import { defineField, defineType } from "sanity";
 import baseProviderFields from "./baseProvider";
 import PlaceInput from "@/sanity/components/PlaceInput/PlaceInput";
+import AgentInput from "@/sanity/components/AgentInput/AgentInput";
 import { groq } from "next-sanity";
 import { client } from "@/sanity/lib/client";
 
@@ -35,6 +36,15 @@ const providerSchema = defineType({
       name: "title",
       title: "Provider Name",
       type: "string",
+    }),
+    defineField({
+      name: "Agent",
+      title: "Agent",
+      type: "object",
+      fields: [{ name: "name", title: "Name", type: "string" }],
+      components: {
+        input: AgentInput,
+      },
     }),
     defineField({
       name: "place",

@@ -20,6 +20,8 @@ export const NEXT_PUBLIC_GOOGLE_MAPS_ID = assertValue(
   "Missing environment variable: NEXT_PUBLIC_GOOGLE_MAPS_ID",
 );
 
+// export const OPENAI_API_KEY = assertValue(process.env.OPENAI_API_KEY, "Missing environment variable: OPENAI_API_KEY");
+
 export const useCdn = false;
 
 function assertValue<T>(v: T | undefined, errorMessage: string): T {
