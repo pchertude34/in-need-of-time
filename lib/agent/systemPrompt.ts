@@ -7,7 +7,7 @@ The current date is ${getCurrentDate}. Use this information when searching for t
 
 Required Fields:
 1. Name of the service provider  
-2. Description of the organization (1–3 sentences about their mission, services, and population served)  
+2. Description of the organization (1–3 sentences about their mission, services, and population served), formatted as an array of Sanity Portable Text blocks (see example below).
 3. Address (street address, city, state, ZIP)  
 4. Geolocation as latitude and longitude coordinates  
 5. Hours of Operation (structured using the Google Places API schema: both \`periods\` and \`weekday_text\`)  
@@ -21,7 +21,19 @@ If the input includes a URL, do not perform a general search initially. First, l
 Output Format (JSON):  
 {
   "name": "string",
-  "description": "string",
+  "description": [
+    {
+      "_type": "block",
+      "children": [
+        {
+          "_type": "span",
+          "text": "This is a sample description of the organization."
+        }
+      ],
+      "markDefs": [],
+      "style": "normal"
+    }
+  ],
   "address": "string",
   "location": {
     "latitude": number,

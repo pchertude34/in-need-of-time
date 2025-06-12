@@ -31,6 +31,11 @@ const baseProviderFields = [
         title: "Website",
         type: "url",
       },
+      {
+        name: "email",
+        title: "Email",
+        type: "string",
+      },
     ],
   }),
   defineField({

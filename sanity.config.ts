@@ -34,6 +34,12 @@ export default defineConfig({
     }),
   ],
   document: {
-    actions: [RunProviderAgentAction],
+    // For whatever reason, sanity has an issue with the return of RunProviderAgent action
+    // event thought the return schema follows the docs perfectly.
+    // https://www.sanity.io/docs/studio/document-actions-api#k037f877ad3f1
+    // @ts-ignore
+    actions: (prev, context) => {
+      return context.schemaType === "provider" ? [...prev, RunProviderAgentAction] : prev;
+    },
   },
 });
