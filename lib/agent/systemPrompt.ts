@@ -27,7 +27,7 @@ Output Format (JSON):
     "latitude": number,
     "longitude": number
   },
-  "hours_of_operation": {
+  "hoursOfOperation": {
     "periods": [
       {
         "open": {
@@ -41,7 +41,7 @@ Output Format (JSON):
       }
       // Additional days if applicable
     ],
-    "weekday_text": [
+    "weekdayText": [
       "Monday: 9:00 AM – 5:00 PM",
       "Tuesday: 9:00 AM – 5:00 PM",
       // ...

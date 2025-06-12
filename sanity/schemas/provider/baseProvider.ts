@@ -39,6 +39,7 @@ const baseProviderFields = [
     type: "array",
     of: [{ type: "block" }],
   }),
+
   defineField({
     name: "internalContact",
     title: "Internal Contact",

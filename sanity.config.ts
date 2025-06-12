@@ -16,6 +16,7 @@ import {
   NEXT_PUBLIC_GOOGLE_API_KEY,
 } from "./env";
 import { schema } from "./sanity/schema";
+import { RunProviderAgentAction } from "./sanity/documentActions/RunProviderAgentAction";
 
 export default defineConfig({
   basePath: "/studio",
@@ -32,4 +33,7 @@ export default defineConfig({
       apiKey: NEXT_PUBLIC_GOOGLE_API_KEY,
     }),
   ],
+  document: {
+    actions: [RunProviderAgentAction],
+  },
 });

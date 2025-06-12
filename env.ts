@@ -20,6 +20,21 @@ export const NEXT_PUBLIC_GOOGLE_MAPS_ID = assertValue(
   "Missing environment variable: NEXT_PUBLIC_GOOGLE_MAPS_ID",
 );
 
+// export const GOOGLE_CLIENT_ID = assertValue(
+//   process.env.GOOGLE_CLIENT_ID,
+//   "Missing environment variable: GOOGLE_CLIENT_ID",
+// );
+
+// export const GOOGLE_CLIENT_SECRET = assertValue(
+//   process.env.GOOGLE_CLIENT_SECRET,
+//   "Missing environment variable: GOOGLE_CLIENT_SECRET",
+// );
+
+// export const NEXTAUTH_SECRET = assertValue(
+//   process.env.NEXTAUTH_SECRET,
+//   "Missing environment variable: NEXTAUTH_SECRET",
+// );
+
 // export const OPENAI_API_KEY = assertValue(process.env.OPENAI_API_KEY, "Missing environment variable: OPENAI_API_KEY");
 
 export const useCdn = false;
