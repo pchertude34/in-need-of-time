@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDocumentOperation, type DocumentActionProps } from "sanity";
 import { Button, TextArea, Stack, Flex, Label, Text } from "@sanity/ui";
 import { PlayIcon } from "@sanity/icons";
@@ -18,6 +18,10 @@ export function RunProviderAgentAction(props: DocumentActionProps) {
   const [success, setSuccess] = useState<boolean>(false);
 
   const { patch } = useDocumentOperation(id, type);
+
+  useEffect(() => {
+    console.log("mounting");
+  }, []);
 
   async function handleRunAgent() {
     try {
