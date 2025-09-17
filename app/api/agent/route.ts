@@ -10,8 +10,11 @@ export async function POST(request: Request) {
       tools: [getUrlContentToolDefinition],
     });
 
+    console.log("response :>> ", response.content);
+
     return Response.json(JSON.parse(response?.content || "{}"));
   } catch (error: any) {
+    console.log("error :>> ", error);
     const errorMessage = error || "Internal server error";
     return new Response(errorMessage, {
       status: 500,
