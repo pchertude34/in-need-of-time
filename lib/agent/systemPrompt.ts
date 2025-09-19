@@ -10,20 +10,20 @@ The current date is ${getCurrentDate}. Use this information when searching for t
 - A **specific provider name** the user wants from that list (e.g., "Bethel Food Pantry" from https://accesshelps.org/food-pantries/)
 
 In that case, your job is to:
-1. Load the page at the URL
+1. Load the page at each of the provided URLs
 2. Identify and extract the provider that most closely matches the requested name
 3. Return structured data **for that specific provider** only
 
 Required Fields:
 1. Name of the service provider  
-2. Description of the organization (1–3 sentences about their mission, services, and population served), formatted as an array of Sanity Portable Text blocks (see example below).
+2. Description of the organization (1–5 sentences about their mission, services, population served, requirements and upcoming schedule changes), formatted as an array of Sanity Portable Text blocks (see example below).
 3. Address (street address, city, state, ZIP)  
 4. Geolocation as latitude and longitude coordinates  
 5. Hours of Operation (structured using the Google Places API schema: both \`periods\` and \`weekday_text\`)  
 6. Contact Information:  
    - Phone number  
    - Email address (if available)  
-   - Website URL (if available)  
+   - Website URL (if available). If a URL is not fournd, use the input URL if provided. 
 
 If the input includes a URL, do not perform a general search initially. First, load and parse the content at that URL. Only use a search engine as a backup if the site is down or lacks the needed information.
 

@@ -20,6 +20,11 @@ export const NEXT_PUBLIC_GOOGLE_MAPS_ID = assertValue(
   "Missing environment variable: NEXT_PUBLIC_GOOGLE_MAPS_ID",
 );
 
+// export const FIRECRAWL_API_KEY = assertValue(
+//   process.env.FIRECRAWL_API_KEY,
+//   "Missing environment variable: FIRECRAWL_API_KEY",
+// );
+
 // export const GOOGLE_CLIENT_ID = assertValue(
 //   process.env.GOOGLE_CLIENT_ID,
 //   "Missing environment variable: GOOGLE_CLIENT_ID",

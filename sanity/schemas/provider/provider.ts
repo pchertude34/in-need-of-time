@@ -42,22 +42,8 @@ const providerSchema = defineType({
       title: "Agent Request",
       description:
         "Request to be sent to the AI Agent to generate the provider's information. Make sure to verify the information before publishing.",
-      type: "object",
-      fields: [
-        {
-          name: "url",
-          type: "string",
-          title: "URL",
-          description: "The URL of the website to scape provider info from",
-        },
-        {
-          name: "instructions",
-          type: "text",
-          title: "Additional Instructions",
-          description: "Any additional instructions to send to the AI agent.",
-          rows: 3,
-        },
-      ],
+      type: "text",
+      rows: 3,
     }),
     defineField({
       name: "place",
