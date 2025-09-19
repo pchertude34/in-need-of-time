@@ -1,64 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useDocumentOperation, type DocumentActionProps } from "sanity";
 import { Button, TextArea, Stack, Flex, Label, Text } from "@sanity/ui";
 import { PlayIcon } from "@sanity/icons";
 import { nanoid } from "nanoid";
-import { z } from "zod";
-import FirecrawlApp from "@mendable/firecrawl-js";
 import type { ProviderAgentResponse } from "@/lib/types";
 import type { Provider } from "@/sanity.types";
-
-const app = new FirecrawlApp({
-  apiKey: "fc-de60073bc9ff46fbaf4982fc716c806d",
-});
-
-const schema = z.object({
-  name: z.string(),
-  description: z.array(
-    z.object({
-      _type: z.literal("block"),
-      children: z.array(
-        z.object({
-          _type: z.literal("span"),
-          text: z.string(),
-        }),
-      ),
-      markDefs: z.array(z.any()),
-      style: z.string(),
-    }),
-  ),
-  address: z.string().optional(),
-  location: z
-    .object({
-      latitude: z.number(),
-      longitude: z.number(),
-    })
-    .optional(),
-  hoursOfOperation: z
-    .object({
-      periods: z.array(
-        z.object({
-          open: z.object({
-            day: z.number(),
-            time: z.string(),
-          }),
-          close: z.object({
-            day: z.number(),
-            time: z.string(),
-          }),
-        }),
-      ),
-      weekdayText: z.array(z.string()),
-    })
-    .optional(),
-  contact: z
-    .object({
-      phone: z.string().optional(),
-      email: z.string().optional(),
-      website: z.string().optional(),
-    })
-    .optional(),
-});
 
 export function RunProviderAgentAction(props: DocumentActionProps) {
   const { id, type, draft, published } = props;
@@ -73,10 +19,6 @@ export function RunProviderAgentAction(props: DocumentActionProps) {
   const [success, setSuccess] = useState<boolean>(false);
 
   const { patch } = useDocumentOperation(id, type);
-
-  useEffect(() => {
-    console.log("mounting");
-  }, []);
 
   async function handleRunAgent() {
     try {
@@ -133,6 +75,7 @@ export function RunProviderAgentAction(props: DocumentActionProps) {
             <TextArea
               value={agentInstructions}
               onChange={(e) => setAgentInstructions(e.currentTarget.value)}
+              rows={5}
             ></TextArea>
             {error && (
               <Text size={1} style={{ color: "red" }}>
