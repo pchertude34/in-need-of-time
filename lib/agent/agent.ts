@@ -15,7 +15,7 @@ export async function runAgent(args: RunAgentArgs) {
 
   // Continue to run the agent until we get a response
   while (true) {
-    console.log("messages :>> ", messages);
+    // console.log("messages :>> ", messages);
     const response = await runLLM({ messages, tools });
     messages.push(response);
 
@@ -27,7 +27,7 @@ export async function runAgent(args: RunAgentArgs) {
     // If a tool call was made, run the tool
     if (response.tool_calls) {
       const toolCall = response.tool_calls[0];
-      console.log("response.tool_calls :>> ", response.tool_calls);
+      // console.log("response.tool_calls :>> ", response.tool_calls);
       try {
         const toolResposne = await runTool(toolCall, userMessage);
         // The agent requires us to respond with a tool response and a tool_call_id that matches the tool call id

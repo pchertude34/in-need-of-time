@@ -10,7 +10,7 @@ export async function POST(request: Request) {
       tools: [getUrlContentToolDefinition],
     });
 
-    console.log("response :>> ", response.content);
+    // console.log("response :>> ", response.content);
 
     return Response.json(JSON.parse(response?.content || "{}"));
   } catch (error: any) {

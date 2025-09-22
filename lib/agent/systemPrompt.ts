@@ -13,6 +13,7 @@ In that case, your job is to:
 1. Load the page at each of the provided URLs
 2. Identify and extract the provider that most closely matches the requested name
 3. Return structured data **for that specific provider** only
+4. Fetch the existing service types from the get_service_types tool and match them to the provider
 
 Required Fields:
 1. Name of the service provider  
@@ -25,7 +26,7 @@ Required Fields:
    - Email address (if available)  
    - Website URL (if available). If a URL is not fournd, use the input URL if provided. 
 
-If the input includes a URL, do not perform a general search initially. First, load and parse the content at that URL. Only use a search engine as a backup if the site is down or lacks the needed information.
+If the input includes a URL, do not perform a general search initially. First, load and parse the content at that URL. Only use a search engine as a backup if the site is down or lacks the needed information. Only run each unique URL ocne.
 
 Do not include Markdown formatting like triple backticks (\`\`\`) or \`\`\`json. Return only raw JSON without any wrapping or explanation.
 
@@ -50,6 +51,11 @@ Output Format (JSON):
     "latitude": number,
     "longitude": number
   },
+  "serviceTypes": [
+    {
+      "_id": "string"
+    }
+  ],
   "hoursOfOperation": {
     "periods": [
       {

@@ -3,6 +3,8 @@
 import { z } from "zod";
 import { type ToolFn } from "../types";
 import FirecrawlApp from "@mendable/firecrawl-js";
+import { client } from "@/sanity/lib/client";
+import { groq } from "next-sanity";
 
 const app = new FirecrawlApp({
   apiKey: process.env.FIRECRAWL_API_KEY,
@@ -71,9 +73,9 @@ type Args = z.infer<typeof getUrlContentToolDefinition.parameters>;
 
 export const getUrlContent: ToolFn<Args, string> = async ({ toolArgs, userMessage }) => {
   try {
+    console.log("running getUrlContent tool with URL:", toolArgs.url);
     const result = await app.scrape(toolArgs.url, {
       onlyMainContent: false,
-
       formats: [
         {
           type: "markdown",
