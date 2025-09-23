@@ -40,6 +40,12 @@ export function RunProviderAgentAction(props: DocumentActionProps) {
             description: agentResponse.description.map((chunk) => ({ ...chunk, _key: nanoid() })) || doc?.description,
             address: agentResponse.address || doc?.address,
             location: agentResponse.location || doc?.location,
+            serviceTypes:
+              agentResponse.serviceTypes?.map((serviceType) => ({
+                _type: "reference",
+                _ref: serviceType._id,
+                _key: nanoid(),
+              })) || doc?.serviceTypes,
             publicContact: agentResponse.contact || doc?.publicContact,
             hoursOfOperation:
               agentResponse.hoursOfOperation.periods.map((period) => ({ ...period, _key: nanoid() })) ||

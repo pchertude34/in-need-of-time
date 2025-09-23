@@ -7,7 +7,7 @@ export async function POST(request: Request) {
   try {
     const response = await runAgent({
       userMessage: userMessage,
-      tools: [getUrlContentToolDefinition],
+      // tools: [getUrlContentToolDefinition, ],
     });
 
     // console.log("response :>> ", response.content);

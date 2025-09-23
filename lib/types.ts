@@ -44,6 +44,7 @@ export type ProviderAgentResponse = {
   address: string;
   location: Location;
   contact: PublicContact;
+  serviceTypes: { _id: string }[];
   hoursOfOperation: {
     periods: {
       open: {
