@@ -3,6 +3,7 @@ import { useDocumentOperation, type DocumentActionProps } from "sanity";
 import { Button, TextArea, Stack, Flex, Label, Text } from "@sanity/ui";
 import { PlayIcon } from "@sanity/icons";
 import { nanoid } from "nanoid";
+import { NEXT_PUBLIC_LOCAL_API_KEY } from "@/env";
 import type { ProviderAgentResponse } from "@/lib/types";
 import type { Provider } from "@/sanity.types";
 
@@ -29,6 +30,9 @@ export function RunProviderAgentAction(props: DocumentActionProps) {
 
       const agentResponse: ProviderAgentResponse = await fetch("/api/agent", {
         method: "POST",
+        headers: {
+          "x-api-key": NEXT_PUBLIC_LOCAL_API_KEY,
+        },
         body: JSON.stringify({ userMessage: agentInstructions }),
       }).then((res) => res.json());
 
