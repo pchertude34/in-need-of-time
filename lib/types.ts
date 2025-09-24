@@ -23,6 +23,7 @@ export type ServiceType = {
 export type PublicContact = {
   phone: string;
   website: string;
+  email?: string;
 };
 
 export type Provider = {
@@ -36,4 +37,25 @@ export type Provider = {
   description: PortableTextBlock[];
   publicContact?: PublicContact;
   serviceTypes: ServiceType[];
+};
+
+export type ProviderAgentResponse = {
+  description: PortableTextBlock[];
+  address: string;
+  location: Location;
+  contact: PublicContact;
+  serviceTypes: { _id: string }[];
+  hoursOfOperation: {
+    periods: {
+      open: {
+        day: number; // 0 = Sunday, 6 = Saturday
+        time: string; // Format: HH:mm (24-hour format)
+      };
+      close: {
+        day: number; // 0 = Sunday, 6 = Saturday
+        time: string; // Format: HH:mm (24-hour format)
+      };
+    }[];
+    weekdayText: string[];
+  };
 };

@@ -37,6 +37,14 @@ const providerSchema = defineType({
       type: "string",
     }),
     defineField({
+      name: "agentRequest",
+      title: "Agent Request",
+      description:
+        "Request to be sent to the AI Agent to generate the provider's information. Make sure to verify the information before publishing.",
+      type: "text",
+      rows: 3,
+    }),
+    defineField({
       name: "place",
       title: "Place",
       type: "object",
@@ -68,6 +76,47 @@ const providerSchema = defineType({
 
           return true;
         }),
+    }),
+    defineField({
+      name: "address",
+      title: "Address",
+      type: "string",
+    }),
+    defineField({
+      name: "location",
+      title: "Location",
+      type: "geopoint",
+      description: "The location of the provider on the map.",
+    }),
+    defineField({
+      name: "hoursOfOperation",
+      title: "Hours of Operation",
+      type: "array",
+      of: [
+        {
+          type: "object",
+          fields: [
+            {
+              name: "open",
+              title: "Open",
+              type: "object",
+              fields: [
+                { name: "day", title: "Day", type: "number", description: "0 = Sunday, 6 = Saturday" },
+                { name: "time", title: "Time", type: "string", description: "Format: HH:mm (24-hour format)" },
+              ],
+            },
+            {
+              name: "close",
+              title: "Close",
+              type: "object",
+              fields: [
+                { name: "day", title: "Day", type: "number", description: "0 = Sunday, 6 = Saturday" },
+                { name: "time", title: "Time", type: "string", description: "Format: HH:mm (24-hour format)" },
+              ],
+            },
+          ],
+        },
+      ],
     }),
     ...baseProviderFields,
   ],

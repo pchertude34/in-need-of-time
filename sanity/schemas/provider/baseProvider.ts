@@ -31,6 +31,11 @@ const baseProviderFields = [
         title: "Website",
         type: "url",
       },
+      {
+        name: "email",
+        title: "Email",
+        type: "string",
+      },
     ],
   }),
   defineField({
@@ -39,6 +44,7 @@ const baseProviderFields = [
     type: "array",
     of: [{ type: "block" }],
   }),
+
   defineField({
     name: "internalContact",
     title: "Internal Contact",
