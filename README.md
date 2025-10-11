@@ -2,6 +2,12 @@ This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next
 
 ## Getting Started
 
+### Installing nvm
+
+This project currently uses node `v22`. The node version is managed by the `.nvmrc` and [nvm](https://github.com/nvm-sh/nvm?tab=readme-ov-file) to help keep contributers insync. It's highly encouraged to install nvm prior to working in this project to avoid any package.lock versioning issues. [Follow the install instructions here to install nvm](https://github.com/nvm-sh/nvm?tab=readme-ov-file#installing-and-updating)
+
+Once nvm is properly installed, run `nvm use` in your terminal to switch to the current nvm version.
+
 First, run the development server:
 
 ```bash
