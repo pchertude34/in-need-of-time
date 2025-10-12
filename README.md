@@ -40,4 +40,4 @@ We use [sanity.io](https://www.sanity.io/) for a content management system. This
 
 ## Deploy on Vercel
 
-We use [Vercel](https://vercel.com/) for deployment. Any time a commit is made to main a deployment is triggered to update the production build. The project over view is available [here](https://vercel.com/paytonchertudeguidedprojecs-projects/in-need-of-time)
+We use [Vercel](https://vercel.com/) for deployment. Any time a commit is made to main a deployment is triggered to update the production build. The project overview is available [here](https://vercel.com/paytonchertudeguidedprojecs-projects/in-need-of-time).
