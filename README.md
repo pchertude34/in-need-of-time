@@ -8,6 +8,23 @@ This project currently uses node `v22`. The node version is managed by the `.nvm
 
 Once nvm is properly installed, run `nvm use` in your terminal to switch to the current nvm version.
 
+### Setting up `.env.local`
+
+NextJS utilizes a git ignored `.env.local` file to manage secrets locally. This file must be configured with the following variables for the application to run locally
+
+```
+NEXT_PUBLIC_GOOGLE_API_KEY="AIzaSyBxozaTWLbdWDCw78MnTDe140n8qomsMr0"
+NEXT_PUBLIC_SANITY_PROJECT_ID="v3oqxhus"
+NEXT_PUBLIC_SANITY_DATASET="development"
+NEXT_PUBLIC_GOOGLE_MAPS_ID="6ab61aa807a92941"
+NEXT_PUBLIC_LOCAL_API_KEY="p78Gr71fGzpCKRzh"
+TOKEN_SECRET="super_secret_token"
+OPENAI_API_KEY=[your-openai-api-key]
+FIRECRAWL_API_KEY=[your-firecrawl-api-key]
+```
+
+(replace values in brackets with your respective api keys)
+
 ### Running locally
 
 1. Make sure all dependencies are up to date by running `npm install`
