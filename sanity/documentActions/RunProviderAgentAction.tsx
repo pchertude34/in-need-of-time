@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useDocumentOperation, type DocumentActionProps } from "sanity";
+import { useDocumentOperation, useCurrentUser, type DocumentActionProps } from "sanity";
 import { Button, TextArea, Stack, Flex, Label, Text } from "@sanity/ui";
 import { PlayIcon } from "@sanity/icons";
 import { nanoid } from "nanoid";
@@ -19,6 +19,7 @@ export function RunProviderAgentAction(props: DocumentActionProps) {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<boolean>(false);
 
+  const user = useCurrentUser();
   const { patch } = useDocumentOperation(id, type);
 
   async function handleRunAgent() {
@@ -33,7 +34,7 @@ export function RunProviderAgentAction(props: DocumentActionProps) {
         headers: {
           "x-api-key": NEXT_PUBLIC_LOCAL_API_KEY,
         },
-        body: JSON.stringify({ userMessage: agentInstructions }),
+        body: JSON.stringify({ userMessage: agentInstructions, userId: user?.id }),
       }).then((res) => res.json());
 
       patch.execute([

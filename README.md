@@ -21,9 +21,33 @@ NEXT_PUBLIC_LOCAL_API_KEY="p78Gr71fGzpCKRzh"
 TOKEN_SECRET="super_secret_token"
 OPENAI_API_KEY=[your-openai-api-key]
 FIRECRAWL_API_KEY=[your-firecrawl-api-key]
+# For local neon database
+PARENT_BRANCH_ID="br-autumn-block-afev6757"
+NEON_PROJECT_ID="holy-rain-30341906"
+NEON_API_KEY=[your-neon-api-key]
+# Connection string for local neon database
+DATABASE_URL=postgres://neon:npg@localhost:5432/neondb
 ```
 
 (replace values in brackets with your respective api keys)
+
+### Installing Docker and running local database
+
+In time of need uses a database to audit AI agent calls and potentially other analytic tracking in the future. In order to run the application locally with these capabilities, you first need to install [Docker Desktop](https://www.docker.com/products/docker-desktop/). Once that's installed, run the following command to start the database locally:
+
+```
+npm run db:start
+```
+
+This will create a new ephemeral branch off of the main database, copying the existing data. Your database branch will persist for as long as your local container is running.
+
+There are a few more helpful database related commands:
+
+- `npm run db:stop` - Kill your local database
+- `npm run db:reset` - Refresh your local database, creating a new branch from main and resetting the data
+- `npm run db:push` - Run schema updates against your local database
+- `npm run db:studio` - Start the local database viewer, available at [https://local.drizzle.studio](https://local.drizzle.studio)
+- `npm run db:migrate` - Run any unran database migrations against your local database
 
 ### Running locally
 

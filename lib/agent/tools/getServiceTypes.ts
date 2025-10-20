@@ -25,7 +25,6 @@ type Args = z.infer<typeof getServiceTypesToolDefinition.parameters>;
 
 export const getServiceTypes: ToolFn<Args, string> = async ({ toolArgs, userMessage }) => {
   try {
-    console.log("running getServiceTypes tool");
     const serviceTypes: GROQResponse[] = await client.fetch(query);
     return JSON.stringify(serviceTypes);
   } catch (err) {

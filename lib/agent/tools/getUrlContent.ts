@@ -1,10 +1,8 @@
 // getUrlContent.ts
 
 import { z } from "zod";
-import { type ToolFn } from "../types";
 import FirecrawlApp from "@mendable/firecrawl-js";
-import { client } from "@/sanity/lib/client";
-import { groq } from "next-sanity";
+import { type ToolFn } from "../types";
 
 const app = new FirecrawlApp({
   apiKey: process.env.FIRECRAWL_API_KEY,
