@@ -8,7 +8,7 @@ import { DATABASE_URL } from "@/server.env";
 // config({ path: ".env.local" }); // or .env.local
 const isLocal = process.env.NODE_ENV === "development";
 
-let db: any;
+let db: ReturnType<typeof drizzlePg> | ReturnType<typeof drizzle>;
 
 // We need to use different clients for local and production Neon databases
 // since the local neon database is acts more like a standard Postgres database
