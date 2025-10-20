@@ -14,10 +14,10 @@ let db: ReturnType<typeof drizzlePg> | ReturnType<typeof drizzle>;
 // since the local neon database is acts more like a standard Postgres database
 // so it requires the postgres connector.
 if (isLocal) {
-  const queryClient = postgres(DATABASE_URL!);
+  const queryClient = postgres(DATABASE_URL);
   db = drizzlePg(queryClient);
 } else {
-  const sql = neon(DATABASE_URL!);
+  const sql = neon(DATABASE_URL);
   db = drizzle({ client: sql });
 }
 
