@@ -8,9 +8,15 @@ type RunAgentArgs = {
   userMessage: string;
 };
 
+type RunAgentResult = {
+  response: string | null;
+  messages: AIMessage[];
+  error?: string;
+};
+
 const tools = [getUrlContentToolDefinition, getServiceTypesToolDefinition];
 
-export async function runAgent(args: RunAgentArgs) {
+export async function runAgent(args: RunAgentArgs): Promise<RunAgentResult> {
   const { userMessage } = args;
 
   // Add the initial user message to the messages array
@@ -23,21 +29,24 @@ export async function runAgent(args: RunAgentArgs) {
 
     // The agent responded with a message. Exit the loop and return the message.
     if (response.content) {
-      return response;
+      return { response: response.content, messages };
     }
 
     // If a tool call was made, run the tool
     if (response.tool_calls) {
       const toolCall = response.tool_calls[0];
       try {
-        const toolResposne = await runTool(toolCall, userMessage);
+        const toolResponse = await runTool(toolCall, userMessage);
         // The agent requires us to respond with a tool response and a tool_call_id that matches the tool call id
         // from the first response from the agent (after the user message).
 
-        messages.push({ role: "tool", content: toolResposne, tool_call_id: toolCall.id });
+        messages.push({ role: "tool", content: toolResponse, tool_call_id: toolCall.id });
       } catch (error: any) {
-        console.log("error :>> ", error);
-        throw error;
+        return {
+          response: null,
+          messages,
+          error: error.message || "Agent execution failed",
+        };
       }
     }
   }

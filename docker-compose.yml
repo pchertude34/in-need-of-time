@@ -1,0 +1,24 @@
+services:
+  neon-local:
+    image: neondatabase/neon_local:latest
+    ports:
+      - "5432:5432"
+
+    # Requires the following variables in .env.local:
+    # NEON_PROJECT_ID
+    # NEON_API_KEY
+    # PARENT_BRANCH_ID
+    env_file: ".env.local"
+    environment:
+      # We may want to create individual branches for each developer later
+      # to preserve database states between restarts
+      # BRANCH_NAME: "local-${USER:-dev}"
+
+      # Remove each ephemeral branch from neon on stop to avoid clutter and surpassing branch limits
+      DELETE_BRANCH: true
+    volumes:
+      - neon_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+volumes:
+  neon_data:
