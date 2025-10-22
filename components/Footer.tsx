@@ -7,7 +7,7 @@ export function Footer() {
     <div className="container flex flex-col gap-8 px-6 py-8 md:flex-row md:p-16">
       <div className="flex flex-1 flex-col space-y-4 text-sm text-slate-900">
         <span className="w-24">
-          <Link href="/" passHref>
+          <Link href="/">
             <Image src="/logo.svg" alt="In Time of Need" height={68} width={96} className="h-auto" />
           </Link>
         </span>
