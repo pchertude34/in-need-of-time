@@ -18,8 +18,8 @@ export function useGooglePlaceSearch(params: UseGooglePlaceSearchParams) {
   const { refElem, componentRestrictions = DEFAULT_COMPONENT_RESTRICTIONS, fields, types, onPlaceChange } = params;
   const [place, setPlace] = useState<google.maps.places.PlaceResult>();
   const { isLoadingMaps, googleMapsApi, mapsError } = useLoadGoogleMaps();
-  const autocomplete = useRef<google.maps.places.Autocomplete>();
-  const autocompleteListener = useRef<google.maps.MapsEventListener>();
+  const autocomplete = useRef<google.maps.places.Autocomplete>(null!);
+  const autocompleteListener = useRef<google.maps.MapsEventListener>(null!);
 
   useEffect(() => {
     // We want to make sure autocomplete isn't initialized already, otherwise
