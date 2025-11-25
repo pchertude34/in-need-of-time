@@ -16,18 +16,14 @@ import { getProvider } from "@/lib/queries/getProviders";
 import { formatPhoneNumberForHref, generateGoogleLink } from "@/lib/utils";
 import { ProviderDetailsMap } from "./components/ProviderDetailsMap";
 
-type ProviderPageProps = {
-  params: {
-    slug: string;
-  };
-};
+type ProviderPageProps = { params: Promise<{ slug: string }> };
 
 export default async function ProviderPage(props: ProviderPageProps) {
-  const { slug } = props.params;
+  const { slug } = await props.params;
 
   const provider = await getProvider({ id: slug });
 
-  const shouldRenderContactInfo = provider.publicContact?.phone || provider.publicContact?.website;
+  const shouldRenderContactInfo = provider?.publicContact?.phone || provider.publicContact?.website;
 
   return (
     <>

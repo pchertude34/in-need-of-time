@@ -34,9 +34,7 @@ export function searchProviders(params: SearchProvidersParamsType): Promise<Prov
   return client.fetch(query);
 }
 
-type GetProviderParams = {
-  id: string;
-};
+type GetProviderParams = { id: string };
 
 export function getProvider(params: GetProviderParams): Promise<Provider> {
   const { id } = params;
