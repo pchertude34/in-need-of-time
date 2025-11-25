@@ -5,7 +5,7 @@
 import { visionTool } from "@sanity/vision";
 import { defineConfig } from "sanity";
 import { structureTool } from "sanity/structure";
-import { googleMapsInput } from "@sanity/google-maps-input";
+// import { googleMapsInput } from "@sanity/google-maps-input";
 import { defaultDocumentNodeResolver, structure } from "./structure";
 
 // Go to https://www.sanity.io/docs/api-versioning to learn how API versioning works
@@ -29,9 +29,9 @@ export default defineConfig({
     // Vision is a tool that lets you query your content with GROQ in the studio
     // https://www.sanity.io/docs/the-vision-plugin
     visionTool({ defaultApiVersion: NEXT_PUBLIC_SANITY_API_VERSION }),
-    googleMapsInput({
-      apiKey: NEXT_PUBLIC_GOOGLE_API_KEY,
-    }),
+    // googleMapsInput({
+    //   apiKey: NEXT_PUBLIC_GOOGLE_API_KEY,
+    // }),
   ],
   document: {
     // For whatever reason, sanity has an issue with the return of RunProviderAgent action
