@@ -7,23 +7,17 @@ import { convertMilesToMeters } from "@/lib/utils";
 import type { Location } from "@/lib/types";
 
 type CategoryPageProps = {
-  params: {
-    slug: string;
-  };
-  searchParams?: {
-    lat?: string;
-    lng?: string;
-    radius?: string;
-  };
+  params: Promise<{ slug: string }>;
+  searchParams: Promise<{ lat?: string; lng?: string; radius?: string }>;
 };
 
 export default async function CategoryPage(props: CategoryPageProps) {
-  const { slug } = props.params;
-  const { lat, lng, radius } = props.searchParams || {};
+  const { slug } = await props.params;
+  const { lat, lng, radius } = (await props.searchParams) || {};
 
   const location = lat && lng ? { lat: parseFloat(lat), lng: parseFloat(lng) } : (undefined as Location | undefined);
 
-  const category = await queryServiceCategoryBySlug(props.params.slug);
+  const category = await queryServiceCategoryBySlug(slug);
   const serviceTypes = await queryAndFilterServiceTypesByCategory({
     categorySlug: slug,
     filter: { lat, lng, radius: convertMilesToMeters(radius || 0) },

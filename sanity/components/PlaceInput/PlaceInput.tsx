@@ -31,8 +31,8 @@ export default function CustomStringInput(props: ObjectInputProps) {
 
   const [searchType, setSearchType] = useState<typeof ESTABLISHMENT | typeof ADDRESS>(ESTABLISHMENT);
   const placeInputRef = useRef<HTMLInputElement>(null);
-  const autocompleteRef = useRef<google.maps.places.Autocomplete>();
-  const autocompleteListener = useRef<google.maps.MapsEventListener>();
+  const autocompleteRef = useRef<google.maps.places.Autocomplete>(null!);
+  const autocompleteListener = useRef<google.maps.MapsEventListener>(null!);
   const { isLoadingMaps, mapsError } = useLoadGoogleMaps();
 
   // Handler for saving values on place change

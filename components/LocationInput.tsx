@@ -27,7 +27,7 @@ export function LocationInput(props: LocationInputProps) {
   const { location, variant = "transparent", onLocationChange, className } = props;
   const [isCalculatingLocation, setIsCalculatingLocation] = useState(false);
 
-  const addressInputRef = useRef<HTMLInputElement>(null);
+  const addressInputRef = useRef<HTMLInputElement>(null!);
 
   useGooglePlaceSearch({
     refElem: addressInputRef,

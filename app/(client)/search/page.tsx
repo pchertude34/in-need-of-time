@@ -15,17 +15,18 @@ import type { Location, Provider } from "@/lib/types";
 import { EmptySearchResults } from "./components/EmptySearchResults";
 
 type SearchPageProps = {
-  searchParams?: {
+  searchParams: Promise<{
     lat?: string;
     lng?: string;
     radius?: string;
     type?: string;
-  };
+  }>;
 };
 
 export default async function SearchPage(props: SearchPageProps) {
   const { searchParams } = props;
-  const { lat, lng, radius, type } = searchParams || {};
+
+  const { lat, lng, radius, type } = await searchParams;
   let userLocation: Location | undefined;
 
   const shouldSearch = lat && lng && radius && type;
