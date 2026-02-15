@@ -64,4 +64,19 @@ We use [sanity.io](https://www.sanity.io/) for a content management system. This
 
 ## Deploy on Vercel
 
-We use [Vercel](https://vercel.com/) for deployment. Any time a commit is made to main a deployment is triggered to update the production build. The project overview is available [here](https://vercel.com/paytonchertudeguidedprojecs-projects/in-need-of-time).
+The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+
+Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+
+
+## Project Description
+Using AI agents to webscrape and filter information to further expand our database.
+
+
+## Team Members
+- Shrey Bosamia (bosamish@oregonstate.edu)
+- Bailey Bounnam (bounnamb@oregonstate.edu)
+- Sungsoo Kim (kims9@oregonstate.edu)
+- Adam Nguyen (nguyadam@oregonstate.edu)
+- Sierra Sverdrup (sverdrus@oregonstate.edu)
+
