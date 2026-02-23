@@ -1,4 +1,4 @@
-import { at, defineMigration, delete_, set } from "sanity/migrate";
+import { at, defineMigration, delete_, set, unset } from "sanity/migrate";
 import { ServiceType } from "@/sanity.types";
 
 const serviceTypesToKeep = ["Food Delivery", "Food Pantry", "Food boxes", "Hot Meals"];
@@ -19,7 +19,6 @@ export default defineMigration({
   title: "clean non-food and shelter service types from providers",
   documentTypes: ["provider"],
   migrate: {
-    // @ts-ignore
     async document(doc, context) {
       if (!doc.serviceTypes) {
         console.log(`-> Deleting provider ${doc._id} (no service types)`);
@@ -48,7 +47,8 @@ export default defineMigration({
       }
 
       console.log(`-> Keeping provider ${doc._id}`);
-      return;
+      // Return a non-mutation to indicate no changes needed
+      return [] as any;
     },
   },
 });

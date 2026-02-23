@@ -15,7 +15,7 @@ export default defineMigration({
       }
 
       console.log(`-> Keeping service type: ${doc.name} (referenced by ${referenceCount} providers)`);
-      return;
+      return [] as any; // No changes needed
     },
   },
 });
