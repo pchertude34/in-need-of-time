@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { convertMilesToMeters } from "@/lib/utils";
+import { convertMilesToMeters } from "@in-need-of-time/shared/utils";
 
 type MapCircleProps = {
   googleMapApi: typeof window.google.maps;

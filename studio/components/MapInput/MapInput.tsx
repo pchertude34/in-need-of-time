@@ -1,11 +1,10 @@
 import React, { useState, useCallback } from "react";
 import { ObjectInputProps, set } from "sanity";
 import { TextInput, Text, Stack, Label, Flex, Checkbox } from "@sanity/ui";
-import { GoogleMapsProxy } from "@/hooks/useLoadGoogleMaps";
-import { GoogleMap } from "@/components/maps/GoogleMap";
-import { MapMarker } from "@/components/maps/MapMarker";
+import { GoogleMapsProxy } from "@in-need-of-time/shared/hooks";
+import { GoogleMap, MapMarker } from "@in-need-of-time/shared/components";
 import { MapCircle } from "./MapCircle";
-import type { Location } from "@/lib/types";
+import type { Location } from "@in-need-of-time/types";
 
 // Default to Portland, OR
 const DEFUALT_LOCATION = { lat: 45.5152, lng: -122.6784 };

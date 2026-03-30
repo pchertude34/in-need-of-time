@@ -1,8 +1,8 @@
 import { defineField, defineType } from "sanity";
 import baseProviderFields from "./baseProvider";
-import PlaceInput from "@/studio/components/PlaceInput/PlaceInput";
+import PlaceInput from "../../components/PlaceInput/PlaceInput";
 import { groq } from "next-sanity";
-import { client } from "@/sanity/lib/client";
+import { client } from "../../lib/client";
 
 function isUniquePlace(placeId: string, context: any) {
   const { document } = context;

@@ -1,8 +1,8 @@
 import React, { useCallback, useState, useEffect, useRef } from "react";
 import { set, ObjectInputProps } from "sanity";
 import { Badge, Flex, Stack, Text, TextInput, Label, Inline, Radio } from "@sanity/ui";
-import { useLoadGoogleMaps } from "@/hooks/useLoadGoogleMaps";
-import { buildPlaceAddress } from "@/lib/utils";
+import { useLoadGoogleMaps } from "@in-need-of-time/shared/hooks";
+import { buildPlaceAddress } from "@in-need-of-time/shared/utils";
 
 const ESTABLISHMENT = "establishment";
 const ADDRESS = "address";

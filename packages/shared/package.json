@@ -1,0 +1,20 @@
+{
+  "name": "@in-need-of-time/shared",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    "./hooks": "./src/hooks/index.ts",
+    "./components": "./src/components/index.ts",
+    "./utils": "./src/utils/index.ts",
+    "./sanity": "./src/sanity/index.ts"
+  },
+  "peerDependencies": {
+    "react": "^19.0.0"
+  },
+  "scripts": {
+    "type-check": "tsc --noEmit"
+  }
+}

@@ -3,8 +3,8 @@ import { useDocumentOperation, useCurrentUser, type DocumentActionProps } from "
 import { Button, TextArea, Stack, Flex, Label, Text } from "@sanity/ui";
 import { PlayIcon } from "@sanity/icons";
 import { nanoid } from "nanoid";
-import { NEXT_PUBLIC_LOCAL_API_KEY } from "@/env";
-import type { ProviderAgentResponse } from "@/lib/types";
+import { NEXT_PUBLIC_LOCAL_API_KEY } from "../env";
+import type { ProviderAgentResponse } from "@in-need-of-time/types";
 import type { Provider } from "@/sanity.types";
 
 export function RunProviderAgentAction(props: DocumentActionProps) {

@@ -1,15 +1,20 @@
 {
   "compilerOptions": {
-    "target": "ESNext",
-    "module": "ESNext",
-    "lib": ["DOM", "ESNext"],
+    "target": "ES2017",
+    "module": "preserve",
+    "lib": ["DOM", "dom.iterable", "esnext"],
     "allowJs": true,
     "jsx": "react-jsx",
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "noEmit": true
+    "noEmit": true,
+    "paths": {
+      "@/*": ["./*"]
+    }
   },
-  "extends": "../tsconfig.json"
+  "include": ["**/*.ts", "**/*.tsx"],
+  "exclude": ["node_modules"]
+  // "extends": "../tsconfig.json"
 }
