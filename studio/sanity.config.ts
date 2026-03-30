@@ -15,8 +15,8 @@ import {
   NEXT_PUBLIC_SANITY_PROJECT_ID,
   NEXT_PUBLIC_GOOGLE_API_KEY,
 } from "./env";
-import { schema } from "./sanity/schema";
-import { RunProviderAgentAction } from "./sanity/documentActions/RunProviderAgentAction";
+import { schema } from "./schema";
+import { RunProviderAgentAction } from "./documentActions/RunProviderAgentAction";
 
 export default defineConfig({
   basePath: "/studio",

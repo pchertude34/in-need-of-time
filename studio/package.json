@@ -1,0 +1,35 @@
+{
+  "name": "studio",
+  "version": "1.0.0",
+  "private": true,
+  "main": "index.js",
+  "scripts": {
+    "prebuild": "npm run extract-types",
+    "build": "sanity build",
+    "deploy": "sanity deploy",
+    "dev": "sanity dev",
+    "extract-types": "sanity schema extract --enforce-required-fields",
+    "start": "sanity start",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@sanity/google-maps-input": "^4.2.1",
+    "@sanity/icons": "^3.7.4",
+    "@sanity/image-url": "^1.0.2",
+    "@sanity/ui": "^3.1.11",
+    "@sanity/vision": "^4.18.0",
+    "next-sanity": "^12.0.16",
+    "sanity": "^5.7.0",
+    "sanity-plugin-documents-pane": "^3.0.2",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1",
+    "styled-components": "^6.1.19"
+  },
+  "devDependencies": {
+    "@types/react": "^19.1.11",
+    "typescript": "^5.9.2"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": ""
+}

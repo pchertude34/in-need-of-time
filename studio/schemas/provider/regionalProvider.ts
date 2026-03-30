@@ -1,6 +1,6 @@
 import { defineType, defineField } from "sanity";
 import baseProviderFields from "./baseProvider";
-import MapInput from "../../../studio/components/MapInput/MapInput";
+import MapInput from "../../components/MapInput/MapInput";
 
 export default defineType({
   name: "regionalProvider",
