@@ -1,6 +1,6 @@
-import { client } from "@/sanity/lib/client";
+import { client } from "@/lib/sanity/client";
 import { groq } from "next-sanity";
-import type { ServiceType } from "../types";
+import type { ServiceType } from "@in-need-of-time/types";
 
 export function queryAllServiceTypes(): Promise<ServiceType[]> {
   const query = groq`*[_type == "serviceType"] | order(lower(name) asc) {
