@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Inter as FontSans } from "next/font/google";
-import { cn } from "@/lib/utils";
+import { cn } from "-need-of-time/shared/utils";
 import { Providers } from "@/components/Providers";
 import Header from "@/components/Header";
 import { Footer } from "@/components/Footer";

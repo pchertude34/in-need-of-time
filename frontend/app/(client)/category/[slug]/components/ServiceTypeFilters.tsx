@@ -6,7 +6,7 @@ import { LocationInput } from "@/components/LocationInput";
 import { Select, SelectTrigger, SelectContent, SelectItem, SelectGroup, SelectValue } from "@/components/ui/select";
 import { CheckCircleIcon } from "@heroicons/react/24/solid";
 import { FunnelIcon } from "@heroicons/react/24/outline";
-import { cn } from "@/lib/utils";
+import { cn } from "-need-of-time/shared/utils";
 import { Button } from "@/components/ui/button";
 import type { Location } from "@/lib/types";
 

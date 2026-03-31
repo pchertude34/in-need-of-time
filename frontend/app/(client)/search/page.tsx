@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { MobileResultsDrawer } from "./components/MobileResultsDrawer";
 import { queryAllServiceTypes } from "@/lib/queries/getServiceTypes";
 import { searchProviders } from "@/lib/queries/getProviders";
-import { cn, convertMilesToMeters } from "@/lib/utils";
+import { cn, convertMilesToMeters } from "@in-need-of-time/shared/utils";
 import type { Location, Provider } from "@/lib/types";
 import { EmptySearchResults } from "./components/EmptySearchResults";
 
