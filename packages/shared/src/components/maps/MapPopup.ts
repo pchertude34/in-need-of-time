@@ -1,6 +1,11 @@
 import React from "react";
 import { createRoot } from "react-dom/client";
 
+const OverlayViewBase =
+  typeof window !== "undefined" && window.google?.maps?.OverlayView
+    ? window.google.maps.OverlayView
+    : (class {} as typeof google.maps.OverlayView);
+
 /**
  * Extend the google.maps.OverlayView class to create a custom popup for the map.
  * This class will create the container div for the popup and align it to the correct
@@ -9,13 +14,18 @@ import { createRoot } from "react-dom/client";
  * Due to the need for google maps to be loaded prior to this class being instantiated,
  * most of the time this will probably need to be dynamically imported with an async import.
  */
-export class MapPopup extends google.maps.OverlayView {
+export class MapPopup extends OverlayViewBase {
   position: google.maps.LatLng;
   containerDiv: HTMLDivElement;
   reactRoot: any;
 
   constructor(position: google.maps.LatLng, content: React.ReactNode) {
     super();
+
+    if (typeof window === "undefined" || !window.google?.maps?.OverlayView) {
+      throw new Error("Google Maps API is not loaded. Create MapPopup only after maps initialization.");
+    }
+
     this.position = position;
 
     this.containerDiv = document.createElement("div");
@@ -25,7 +35,9 @@ export class MapPopup extends google.maps.OverlayView {
     this.reactRoot.render(content);
 
     // Optionally stop clicks, etc., from bubbling up to the map.
-    MapPopup.preventMapHitsAndGesturesFrom(this.containerDiv);
+    if ("preventMapHitsAndGesturesFrom" in MapPopup) {
+      MapPopup.preventMapHitsAndGesturesFrom(this.containerDiv);
+    }
   }
 
   /** Called when the popup is added to the map. */
