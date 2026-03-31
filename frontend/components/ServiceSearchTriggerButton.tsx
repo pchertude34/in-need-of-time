@@ -1,7 +1,7 @@
 import React from "react";
 import { ArrowRightIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import { InputGroup, InputRightElement, InputLeftElement } from "./ui/input-group";
-import { cn } from "@/lib/utils";
+import { cn } from "@in-need-of-time/shared/utils";
 
 type ServiceSearchTriggerButtonProps = {
   className?: string;

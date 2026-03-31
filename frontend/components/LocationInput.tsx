@@ -9,7 +9,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import { useGooglePlaceSearch } from "@in-need-of-time/shared/hooks";
-import { cn } from "@/lib/utils";
+import { cn } from "@in-need-of-time/shared/utils";
 import type { Location } from "@/lib/types";
 import { toast } from "sonner";
 import { NEXT_PUBLIC_GOOGLE_API_KEY } from "@/env";
