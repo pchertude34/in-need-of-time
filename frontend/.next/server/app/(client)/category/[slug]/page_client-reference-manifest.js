@@ -1,0 +1,491 @@
+globalThis.__RSC_MANIFEST = globalThis.__RSC_MANIFEST || {};
+globalThis.__RSC_MANIFEST["/(client)/category/[slug]/page"] = {
+  moduleLoading: { prefix: "", crossOrigin: null },
+  clientModules: {
+    "[project]/in-need-of-time/node_modules/next/dist/esm/client/components/layout-router.js <module evaluation>": {
+      id: 394257,
+      name: "*",
+      chunks: ["/_next/static/chunks/235559a09eeedc1b.js", "/_next/static/chunks/48e11f91825c2d84.js"],
+      async: false,
+    },
+    "[project]/in-need-of-time/node_modules/next/dist/esm/client/components/layout-router.js": {
+      id: 394257,
+      name: "*",
+      chunks: ["/_next/static/chunks/235559a09eeedc1b.js", "/_next/static/chunks/48e11f91825c2d84.js"],
+      async: false,
+    },
+    "[project]/in-need-of-time/node_modules/next/dist/esm/client/components/render-from-template-context.js <module evaluation>":
+      {
+        id: 109208,
+        name: "*",
+        chunks: ["/_next/static/chunks/235559a09eeedc1b.js", "/_next/static/chunks/48e11f91825c2d84.js"],
+        async: false,
+      },
+    "[project]/in-need-of-time/node_modules/next/dist/esm/client/components/render-from-template-context.js": {
+      id: 109208,
+      name: "*",
+      chunks: ["/_next/static/chunks/235559a09eeedc1b.js", "/_next/static/chunks/48e11f91825c2d84.js"],
+      async: false,
+    },
+    "[project]/in-need-of-time/node_modules/next/dist/esm/client/components/client-page.js <module evaluation>": {
+      id: 754821,
+      name: "*",
+      chunks: ["/_next/static/chunks/235559a09eeedc1b.js", "/_next/static/chunks/48e11f91825c2d84.js"],
+      async: false,
+    },
+    "[project]/in-need-of-time/node_modules/next/dist/esm/client/components/client-page.js": {
+      id: 754821,
+      name: "*",
+      chunks: ["/_next/static/chunks/235559a09eeedc1b.js", "/_next/static/chunks/48e11f91825c2d84.js"],
+      async: false,
+    },
+    "[project]/in-need-of-time/node_modules/next/dist/esm/client/components/client-segment.js <module evaluation>": {
+      id: 100684,
+      name: "*",
+      chunks: ["/_next/static/chunks/235559a09eeedc1b.js", "/_next/static/chunks/48e11f91825c2d84.js"],
+      async: false,
+    },
+    "[project]/in-need-of-time/node_modules/next/dist/esm/client/components/client-segment.js": {
+      id: 100684,
+      name: "*",
+      chunks: ["/_next/static/chunks/235559a09eeedc1b.js", "/_next/static/chunks/48e11f91825c2d84.js"],
+      async: false,
+    },
+    "[project]/in-need-of-time/node_modules/next/dist/esm/client/components/http-access-fallback/error-boundary.js <module evaluation>":
+      {
+        id: 136087,
+        name: "*",
+        chunks: ["/_next/static/chunks/235559a09eeedc1b.js", "/_next/static/chunks/48e11f91825c2d84.js"],
+        async: false,
+      },
+    "[project]/in-need-of-time/node_modules/next/dist/esm/client/components/http-access-fallback/error-boundary.js": {
+      id: 136087,
+      name: "*",
+      chunks: ["/_next/static/chunks/235559a09eeedc1b.js", "/_next/static/chunks/48e11f91825c2d84.js"],
+      async: false,
+    },
+    "[project]/in-need-of-time/node_modules/next/dist/esm/lib/metadata/generate/icon-mark.js <module evaluation>": {
+      id: 995011,
+      name: "*",
+      chunks: ["/_next/static/chunks/235559a09eeedc1b.js", "/_next/static/chunks/48e11f91825c2d84.js"],
+      async: false,
+    },
+    "[project]/in-need-of-time/node_modules/next/dist/esm/lib/metadata/generate/icon-mark.js": {
+      id: 995011,
+      name: "*",
+      chunks: ["/_next/static/chunks/235559a09eeedc1b.js", "/_next/static/chunks/48e11f91825c2d84.js"],
+      async: false,
+    },
+    "[project]/in-need-of-time/node_modules/next/dist/esm/lib/framework/boundary-components.js <module evaluation>": {
+      id: 370184,
+      name: "*",
+      chunks: ["/_next/static/chunks/235559a09eeedc1b.js", "/_next/static/chunks/48e11f91825c2d84.js"],
+      async: false,
+    },
+    "[project]/in-need-of-time/node_modules/next/dist/esm/lib/framework/boundary-components.js": {
+      id: 370184,
+      name: "*",
+      chunks: ["/_next/static/chunks/235559a09eeedc1b.js", "/_next/static/chunks/48e11f91825c2d84.js"],
+      async: false,
+    },
+    "[project]/in-need-of-time/node_modules/next/dist/client/components/builtin/global-error.js <module evaluation>": {
+      id: 778292,
+      name: "*",
+      chunks: [],
+      async: false,
+    },
+    "[project]/in-need-of-time/node_modules/next/dist/client/components/builtin/global-error.js": {
+      id: 778292,
+      name: "*",
+      chunks: [],
+      async: false,
+    },
+    "[project]/in-need-of-time/frontend/components/Providers.tsx <module evaluation>": {
+      id: 306866,
+      name: "*",
+      chunks: [
+        "/_next/static/chunks/dc0c41f5851a531c.js",
+        "/_next/static/chunks/e70e12a5c532041a.js",
+        "/_next/static/chunks/91b604ff4e3352c0.js",
+        "/_next/static/chunks/0b6c6b9949d0fd18.js",
+        "/_next/static/chunks/802f7995f49856b0.js",
+      ],
+      async: false,
+    },
+    "[project]/in-need-of-time/frontend/components/Providers.tsx": {
+      id: 306866,
+      name: "*",
+      chunks: [
+        "/_next/static/chunks/dc0c41f5851a531c.js",
+        "/_next/static/chunks/e70e12a5c532041a.js",
+        "/_next/static/chunks/91b604ff4e3352c0.js",
+        "/_next/static/chunks/0b6c6b9949d0fd18.js",
+        "/_next/static/chunks/802f7995f49856b0.js",
+      ],
+      async: false,
+    },
+    "[project]/in-need-of-time/frontend/components/Header.tsx <module evaluation>": {
+      id: 929051,
+      name: "*",
+      chunks: [
+        "/_next/static/chunks/dc0c41f5851a531c.js",
+        "/_next/static/chunks/e70e12a5c532041a.js",
+        "/_next/static/chunks/91b604ff4e3352c0.js",
+        "/_next/static/chunks/0b6c6b9949d0fd18.js",
+        "/_next/static/chunks/802f7995f49856b0.js",
+      ],
+      async: false,
+    },
+    "[project]/in-need-of-time/frontend/components/Header.tsx": {
+      id: 929051,
+      name: "*",
+      chunks: [
+        "/_next/static/chunks/dc0c41f5851a531c.js",
+        "/_next/static/chunks/e70e12a5c532041a.js",
+        "/_next/static/chunks/91b604ff4e3352c0.js",
+        "/_next/static/chunks/0b6c6b9949d0fd18.js",
+        "/_next/static/chunks/802f7995f49856b0.js",
+      ],
+      async: false,
+    },
+    "[project]/in-need-of-time/frontend/components/ui/tooltip.tsx <module evaluation>": {
+      id: 451983,
+      name: "*",
+      chunks: [
+        "/_next/static/chunks/dc0c41f5851a531c.js",
+        "/_next/static/chunks/e70e12a5c532041a.js",
+        "/_next/static/chunks/91b604ff4e3352c0.js",
+        "/_next/static/chunks/0b6c6b9949d0fd18.js",
+        "/_next/static/chunks/802f7995f49856b0.js",
+      ],
+      async: false,
+    },
+    "[project]/in-need-of-time/frontend/components/ui/tooltip.tsx": {
+      id: 451983,
+      name: "*",
+      chunks: [
+        "/_next/static/chunks/dc0c41f5851a531c.js",
+        "/_next/static/chunks/e70e12a5c532041a.js",
+        "/_next/static/chunks/91b604ff4e3352c0.js",
+        "/_next/static/chunks/0b6c6b9949d0fd18.js",
+        "/_next/static/chunks/802f7995f49856b0.js",
+      ],
+      async: false,
+    },
+    "[project]/in-need-of-time/frontend/components/ui/sonner.tsx <module evaluation>": {
+      id: 230400,
+      name: "*",
+      chunks: [
+        "/_next/static/chunks/dc0c41f5851a531c.js",
+        "/_next/static/chunks/e70e12a5c532041a.js",
+        "/_next/static/chunks/91b604ff4e3352c0.js",
+        "/_next/static/chunks/0b6c6b9949d0fd18.js",
+        "/_next/static/chunks/802f7995f49856b0.js",
+      ],
+      async: false,
+    },
+    "[project]/in-need-of-time/frontend/components/ui/sonner.tsx": {
+      id: 230400,
+      name: "*",
+      chunks: [
+        "/_next/static/chunks/dc0c41f5851a531c.js",
+        "/_next/static/chunks/e70e12a5c532041a.js",
+        "/_next/static/chunks/91b604ff4e3352c0.js",
+        "/_next/static/chunks/0b6c6b9949d0fd18.js",
+        "/_next/static/chunks/802f7995f49856b0.js",
+      ],
+      async: false,
+    },
+    "[project]/in-need-of-time/frontend/app/(client)/category/[slug]/components/ServiceTypeDetailsCard.tsx <module evaluation>":
+      {
+        id: 869773,
+        name: "*",
+        chunks: [
+          "/_next/static/chunks/dc0c41f5851a531c.js",
+          "/_next/static/chunks/e70e12a5c532041a.js",
+          "/_next/static/chunks/91b604ff4e3352c0.js",
+          "/_next/static/chunks/0b6c6b9949d0fd18.js",
+          "/_next/static/chunks/802f7995f49856b0.js",
+          "/_next/static/chunks/16fac74097a522ae.js",
+          "/_next/static/chunks/91231cb2d7c04fd9.js",
+        ],
+        async: false,
+      },
+    "[project]/in-need-of-time/frontend/app/(client)/category/[slug]/components/ServiceTypeDetailsCard.tsx": {
+      id: 869773,
+      name: "*",
+      chunks: [
+        "/_next/static/chunks/dc0c41f5851a531c.js",
+        "/_next/static/chunks/e70e12a5c532041a.js",
+        "/_next/static/chunks/91b604ff4e3352c0.js",
+        "/_next/static/chunks/0b6c6b9949d0fd18.js",
+        "/_next/static/chunks/802f7995f49856b0.js",
+        "/_next/static/chunks/16fac74097a522ae.js",
+        "/_next/static/chunks/91231cb2d7c04fd9.js",
+      ],
+      async: false,
+    },
+    "[project]/in-need-of-time/frontend/app/(client)/category/[slug]/components/ServiceTypeFilters.tsx <module evaluation>":
+      {
+        id: 204778,
+        name: "*",
+        chunks: [
+          "/_next/static/chunks/dc0c41f5851a531c.js",
+          "/_next/static/chunks/e70e12a5c532041a.js",
+          "/_next/static/chunks/91b604ff4e3352c0.js",
+          "/_next/static/chunks/0b6c6b9949d0fd18.js",
+          "/_next/static/chunks/802f7995f49856b0.js",
+          "/_next/static/chunks/16fac74097a522ae.js",
+          "/_next/static/chunks/91231cb2d7c04fd9.js",
+        ],
+        async: false,
+      },
+    "[project]/in-need-of-time/frontend/app/(client)/category/[slug]/components/ServiceTypeFilters.tsx": {
+      id: 204778,
+      name: "*",
+      chunks: [
+        "/_next/static/chunks/dc0c41f5851a531c.js",
+        "/_next/static/chunks/e70e12a5c532041a.js",
+        "/_next/static/chunks/91b604ff4e3352c0.js",
+        "/_next/static/chunks/0b6c6b9949d0fd18.js",
+        "/_next/static/chunks/802f7995f49856b0.js",
+        "/_next/static/chunks/16fac74097a522ae.js",
+        "/_next/static/chunks/91231cb2d7c04fd9.js",
+      ],
+      async: false,
+    },
+  },
+  ssrModuleMapping: {
+    394257: {
+      "*": {
+        id: 725132,
+        name: "*",
+        chunks: [
+          "server/chunks/ssr/[root-of-the-server]__f8ceea8b._.js",
+          "server/chunks/ssr/433da_next_dist_esm_b862cbc7._.js",
+        ],
+        async: false,
+      },
+    },
+    109208: {
+      "*": {
+        id: 7240,
+        name: "*",
+        chunks: [
+          "server/chunks/ssr/[root-of-the-server]__f8ceea8b._.js",
+          "server/chunks/ssr/433da_next_dist_esm_b862cbc7._.js",
+        ],
+        async: false,
+      },
+    },
+    754821: {
+      "*": {
+        id: 764678,
+        name: "*",
+        chunks: [
+          "server/chunks/ssr/[root-of-the-server]__f8ceea8b._.js",
+          "server/chunks/ssr/433da_next_dist_esm_b862cbc7._.js",
+        ],
+        async: false,
+      },
+    },
+    100684: {
+      "*": {
+        id: 983603,
+        name: "*",
+        chunks: [
+          "server/chunks/ssr/[root-of-the-server]__f8ceea8b._.js",
+          "server/chunks/ssr/433da_next_dist_esm_b862cbc7._.js",
+        ],
+        async: false,
+      },
+    },
+    136087: {
+      "*": {
+        id: 537620,
+        name: "*",
+        chunks: [
+          "server/chunks/ssr/[root-of-the-server]__f8ceea8b._.js",
+          "server/chunks/ssr/433da_next_dist_esm_b862cbc7._.js",
+        ],
+        async: false,
+      },
+    },
+    995011: {
+      "*": {
+        id: 210022,
+        name: "*",
+        chunks: [
+          "server/chunks/ssr/[root-of-the-server]__f8ceea8b._.js",
+          "server/chunks/ssr/433da_next_dist_esm_b862cbc7._.js",
+        ],
+        async: false,
+      },
+    },
+    370184: {
+      "*": {
+        id: 974483,
+        name: "*",
+        chunks: [
+          "server/chunks/ssr/[root-of-the-server]__f8ceea8b._.js",
+          "server/chunks/ssr/433da_next_dist_esm_b862cbc7._.js",
+        ],
+        async: false,
+      },
+    },
+    778292: {
+      "*": { id: 721470, name: "*", chunks: ["server/chunks/ssr/[root-of-the-server]__9489a4b1._.js"], async: false },
+    },
+    306866: {
+      "*": {
+        id: 37068,
+        name: "*",
+        chunks: [
+          "server/chunks/ssr/[root-of-the-server]__8dd5f6a9._.js",
+          "server/chunks/ssr/433da_@floating-ui_react-dom_dist_floating-ui_react-dom_mjs_fa147924._.js",
+          "server/chunks/ssr/433da_34fabf84._.js",
+          "server/chunks/ssr/in-need-of-time_1aaf7819._.js",
+          "server/chunks/ssr/in-need-of-time_5a04fa21._.js",
+          "server/chunks/ssr/433da_a8e53714._.js",
+          "server/chunks/ssr/in-need-of-time_frontend_components_8dfba2fe._.js",
+        ],
+        async: false,
+      },
+    },
+    929051: {
+      "*": {
+        id: 307515,
+        name: "*",
+        chunks: [
+          "server/chunks/ssr/[root-of-the-server]__8dd5f6a9._.js",
+          "server/chunks/ssr/433da_@floating-ui_react-dom_dist_floating-ui_react-dom_mjs_fa147924._.js",
+          "server/chunks/ssr/433da_34fabf84._.js",
+          "server/chunks/ssr/in-need-of-time_1aaf7819._.js",
+          "server/chunks/ssr/in-need-of-time_5a04fa21._.js",
+          "server/chunks/ssr/433da_a8e53714._.js",
+          "server/chunks/ssr/in-need-of-time_frontend_components_8dfba2fe._.js",
+        ],
+        async: false,
+      },
+    },
+    451983: {
+      "*": {
+        id: 929698,
+        name: "*",
+        chunks: [
+          "server/chunks/ssr/[root-of-the-server]__8dd5f6a9._.js",
+          "server/chunks/ssr/433da_@floating-ui_react-dom_dist_floating-ui_react-dom_mjs_fa147924._.js",
+          "server/chunks/ssr/433da_34fabf84._.js",
+          "server/chunks/ssr/in-need-of-time_1aaf7819._.js",
+          "server/chunks/ssr/in-need-of-time_5a04fa21._.js",
+          "server/chunks/ssr/433da_a8e53714._.js",
+          "server/chunks/ssr/in-need-of-time_frontend_components_8dfba2fe._.js",
+        ],
+        async: false,
+      },
+    },
+    230400: {
+      "*": {
+        id: 898087,
+        name: "*",
+        chunks: [
+          "server/chunks/ssr/[root-of-the-server]__8dd5f6a9._.js",
+          "server/chunks/ssr/433da_@floating-ui_react-dom_dist_floating-ui_react-dom_mjs_fa147924._.js",
+          "server/chunks/ssr/433da_34fabf84._.js",
+          "server/chunks/ssr/in-need-of-time_1aaf7819._.js",
+          "server/chunks/ssr/in-need-of-time_5a04fa21._.js",
+          "server/chunks/ssr/433da_a8e53714._.js",
+          "server/chunks/ssr/in-need-of-time_frontend_components_8dfba2fe._.js",
+        ],
+        async: false,
+      },
+    },
+    869773: {
+      "*": {
+        id: 131708,
+        name: "*",
+        chunks: [
+          "server/chunks/ssr/[root-of-the-server]__8dd5f6a9._.js",
+          "server/chunks/ssr/433da_@floating-ui_react-dom_dist_floating-ui_react-dom_mjs_fa147924._.js",
+          "server/chunks/ssr/433da_34fabf84._.js",
+          "server/chunks/ssr/in-need-of-time_1aaf7819._.js",
+          "server/chunks/ssr/in-need-of-time_5a04fa21._.js",
+          "server/chunks/ssr/433da_a8e53714._.js",
+          "server/chunks/ssr/in-need-of-time_frontend_components_8dfba2fe._.js",
+          "server/chunks/ssr/in-need-of-time_frontend_app_(client)_category_[slug]_components_41b8ff39._.js",
+          "server/chunks/ssr/in-need-of-time_f5ac7d27._.js",
+        ],
+        async: false,
+      },
+    },
+    204778: {
+      "*": {
+        id: 421789,
+        name: "*",
+        chunks: [
+          "server/chunks/ssr/[root-of-the-server]__8dd5f6a9._.js",
+          "server/chunks/ssr/433da_@floating-ui_react-dom_dist_floating-ui_react-dom_mjs_fa147924._.js",
+          "server/chunks/ssr/433da_34fabf84._.js",
+          "server/chunks/ssr/in-need-of-time_1aaf7819._.js",
+          "server/chunks/ssr/in-need-of-time_5a04fa21._.js",
+          "server/chunks/ssr/433da_a8e53714._.js",
+          "server/chunks/ssr/in-need-of-time_frontend_components_8dfba2fe._.js",
+          "server/chunks/ssr/in-need-of-time_frontend_app_(client)_category_[slug]_components_41b8ff39._.js",
+          "server/chunks/ssr/in-need-of-time_f5ac7d27._.js",
+        ],
+        async: false,
+      },
+    },
+  },
+  edgeSSRModuleMapping: {},
+  rscModuleMapping: {
+    394257: { "*": { id: 574055, name: "*", chunks: [], async: false } },
+    109208: { "*": { id: 140723, name: "*", chunks: [], async: false } },
+    754821: { "*": { id: 170838, name: "*", chunks: [], async: false } },
+    100684: { "*": { id: 483571, name: "*", chunks: [], async: false } },
+    136087: { "*": { id: 294335, name: "*", chunks: [], async: false } },
+    995011: { "*": { id: 653936, name: "*", chunks: [], async: false } },
+    370184: { "*": { id: 65838, name: "*", chunks: [], async: false } },
+    778292: { "*": { id: 869684, name: "*", chunks: [], async: false } },
+    306866: { "*": { id: 693172, name: "*", chunks: [], async: false } },
+    929051: { "*": { id: 198471, name: "*", chunks: [], async: false } },
+    451983: { "*": { id: 774649, name: "*", chunks: [], async: false } },
+    230400: { "*": { id: 763195, name: "*", chunks: [], async: false } },
+    869773: { "*": { id: 933447, name: "*", chunks: [], async: false } },
+    204778: { "*": { id: 423886, name: "*", chunks: [], async: false } },
+  },
+  edgeRscModuleMapping: {},
+  entryCSSFiles: {
+    "[project]/in-need-of-time/frontend/app/favicon.ico": [],
+    "[project]/in-need-of-time/node_modules/next/dist/client/components/builtin/global-error": [],
+    "[project]/in-need-of-time/frontend/app/(client)/layout": [
+      { path: "static/chunks/ab9ecd50872b5af9.css", inlined: false },
+    ],
+    "[project]/in-need-of-time/frontend/app/(client)/category/[slug]/page": [
+      { path: "static/chunks/ab9ecd50872b5af9.css", inlined: false },
+    ],
+  },
+  entryJSFiles: {
+    "[project]/in-need-of-time/frontend/app/favicon.ico": [
+      "static/chunks/235559a09eeedc1b.js",
+      "static/chunks/48e11f91825c2d84.js",
+    ],
+    "[project]/in-need-of-time/node_modules/next/dist/client/components/builtin/global-error": [],
+    "[project]/in-need-of-time/frontend/app/(client)/layout": [
+      "static/chunks/dc0c41f5851a531c.js",
+      "static/chunks/e70e12a5c532041a.js",
+      "static/chunks/91b604ff4e3352c0.js",
+      "static/chunks/0b6c6b9949d0fd18.js",
+      "static/chunks/802f7995f49856b0.js",
+    ],
+    "[project]/in-need-of-time/frontend/app/(client)/category/[slug]/page": [
+      "static/chunks/dc0c41f5851a531c.js",
+      "static/chunks/e70e12a5c532041a.js",
+      "static/chunks/91b604ff4e3352c0.js",
+      "static/chunks/0b6c6b9949d0fd18.js",
+      "static/chunks/802f7995f49856b0.js",
+      "static/chunks/16fac74097a522ae.js",
+      "static/chunks/91231cb2d7c04fd9.js",
+    ],
+  },
+};

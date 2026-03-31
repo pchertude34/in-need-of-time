@@ -1,0 +1,187 @@
+"use client";
+
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import Image from "next/image";
+import {
+  Bars3Icon,
+  XMarkIcon,
+  ArrowRightIcon,
+  HomeIcon,
+  MagnifyingGlassIcon,
+  BookOpenIcon,
+} from "@heroicons/react/24/outline";
+import { Drawer, DrawerClose, DrawerContent, DrawerTitle, DrawerTrigger } from "@/components/ui/drawer";
+import {
+  NavigationMenu,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  navigationMenuTriggerStyle,
+} from "@/components/ui/navigation-menu";
+import { Button } from "@/components/ui/button";
+
+export const navigation = [{ name: "Home", href: "/" }];
+
+export default function Header() {
+  const pathname = usePathname();
+
+  return (
+    <Drawer shouldScaleBackground={false} direction="top">
+      <>
+        <div className="relative z-20 mx-auto max-w-7xl bg-white px-4 py-5 sm:px-6 lg:p-5">
+          <div className="flex items-center">
+            <div className="flex-1 flex-shrink-0">
+              <span className="hidden w-[66px] lg:block">
+                <Link href="/">
+                  <Image src="/logo.svg" alt="Logo" height={45} width={66} className=" h-12 w-auto" />
+                </Link>
+              </span>
+              <span className="block w-[59px] lg:hidden">
+                <Link href="/">
+                  <Image src="/logo.svg" alt="Logo" height={40} width={59} className="block h-10 w-auto lg:hidden" />
+                </Link>
+              </span>
+            </div>
+            <div className="hidden flex-1 lg:flex">
+              <NavigationMenu>
+                <NavigationMenuList>
+                  <NavigationMenuItem>
+                    {/* @next-codemod-error This Link previously used the now removed `legacyBehavior` prop, and has a child that might not be an anchor. The codemod bailed out of lifting the child props to the Link. Check that the child component does not render an anchor, and potentially move the props manually to Link. */}
+                    <NavigationMenuLink
+                      asChild
+                      data-active={pathname === "/" ? true : null}
+                      className={navigationMenuTriggerStyle()}
+                    >
+                      <Link href="/">
+                        <HomeIcon className="mr-2 h-4 w-4" />
+                        Home
+                      </Link>
+                    </NavigationMenuLink>
+                  </NavigationMenuItem>
+                  <NavigationMenuItem>
+                    {/* @next-codemod-error This Link previously used the now removed `legacyBehavior` prop, and has a child that might not be an anchor. The codemod bailed out of lifting the child props to the Link. Check that the child component does not render an anchor, and potentially move the props manually to Link. */}
+                    <NavigationMenuLink
+                      asChild
+                      data-active={pathname === "/search" ? true : null}
+                      className={navigationMenuTriggerStyle()}
+                    >
+                      <Link href="/search">
+                        <MagnifyingGlassIcon className="mr-2 h-4 w-4" />
+                        Search
+                      </Link>
+                    </NavigationMenuLink>
+                  </NavigationMenuItem>
+                  {/* <NavigationMenuItem>
+                      <Link href="/providers" legacyBehavior passHref>
+                        <NavigationMenuLink
+                          data-active={pathname === "/providers" ? true : null}
+                          className={navigationMenuTriggerStyle()}
+                        >
+                          Providers
+                        </NavigationMenuLink>
+                      </Link>
+                    </NavigationMenuItem> */}
+                  <NavigationMenuItem>
+                    {/* @next-codemod-error This Link previously used the now removed `legacyBehavior` prop, and has a child that might not be an anchor. The codemod bailed out of lifting the child props to the Link. Check that the child component does not render an anchor, and potentially move the props manually to Link. */}
+                    <NavigationMenuLink
+                      asChild
+                      data-active={pathname === "/about" ? true : null}
+                      className={navigationMenuTriggerStyle()}
+                    >
+                      <Link href="/about">
+                        <BookOpenIcon className="mr-2 h-4 w-4" />
+                        About
+                      </Link>
+                    </NavigationMenuLink>
+                  </NavigationMenuItem>
+                </NavigationMenuList>
+              </NavigationMenu>
+            </div>
+            <div className="hidden flex-1 items-center justify-end lg:flex">
+              <Button variant="primary" asChild>
+                <Link href="/search">
+                  Find a Provider <ArrowRightIcon className="ml-2 h-3 w-3" />
+                </Link>
+              </Button>
+            </div>
+            <div className="-mr-2 flex items-center lg:hidden">
+              {/* Mobile menu button */}
+              <DrawerTrigger asChild>
+                <Button variant="text-dark" size="text">
+                  <span className="sr-only">Open main menu</span>
+                  <Bars3Icon className="block h-6 w-6" aria-hidden="true" />
+                </Button>
+              </DrawerTrigger>
+            </div>
+          </div>
+        </div>
+
+        {/* Mobile Menu */}
+        <DrawerContent variant="top" className="focus-ring-none" aria-describedby={undefined}>
+          <DrawerTitle className="sr-only">Main Menu</DrawerTitle>
+          <div className="px-4 pb-5">
+            <div className="flex items-center justify-between py-5">
+              <Link href="/">
+                <Image src="/logo.svg" alt="Logo" height={40} width={59} className="h-10 w-auto" />
+              </Link>
+              <DrawerClose asChild>
+                <Button variant="text-dark" size="text">
+                  <XMarkIcon className="h-6 w-6" />
+                </Button>
+              </DrawerClose>
+            </div>
+            <NavigationMenu orientation="vertical" className="max-w-full flex-col items-stretch">
+              <NavigationMenuList className="flex-col items-stretch">
+                <NavigationMenuItem>
+                  {/* @next-codemod-error This Link previously used the now removed `legacyBehavior` prop, and has a child that might not be an anchor. The codemod bailed out of lifting the child props to the Link. Check that the child component does not render an anchor, and potentially move the props manually to Link. */}
+                  <NavigationMenuLink
+                    asChild
+                    data-active={pathname === "/" ? true : null}
+                    className={`${navigationMenuTriggerStyle()} w-max-w w-full`}
+                  >
+                    <Link href="/">
+                      <HomeIcon className="mr-2 h-4 w-4" />
+                      Home
+                    </Link>
+                  </NavigationMenuLink>
+                </NavigationMenuItem>
+                <NavigationMenuItem>
+                  {/* @next-codemod-error This Link previously used the now removed `legacyBehavior` prop, and has a child that might not be an anchor. The codemod bailed out of lifting the child props to the Link. Check that the child component does not render an anchor, and potentially move the props manually to Link. */}
+                  <NavigationMenuLink
+                    asChild
+                    data-active={pathname === "/search" ? true : null}
+                    className={`${navigationMenuTriggerStyle()} w-max-w w-full`}
+                  >
+                    <Link href="/search">
+                      <MagnifyingGlassIcon className="mr-2 h-4 w-4" />
+                      Search
+                    </Link>
+                  </NavigationMenuLink>
+                </NavigationMenuItem>
+                <NavigationMenuItem>
+                  {/* @next-codemod-error This Link previously used the now removed `legacyBehavior` prop, and has a child that might not be an anchor. The codemod bailed out of lifting the child props to the Link. Check that the child component does not render an anchor, and potentially move the props manually to Link. */}
+                  <NavigationMenuLink
+                    asChild
+                    data-active={pathname === "/about" ? true : null}
+                    className={`${navigationMenuTriggerStyle()} w-max-w w-full`}
+                  >
+                    <Link href="/about">
+                      <BookOpenIcon className="mr-2 h-4 w-4" />
+                      About
+                    </Link>
+                  </NavigationMenuLink>
+                </NavigationMenuItem>
+              </NavigationMenuList>
+            </NavigationMenu>
+            <Button variant="primary" asChild className="mt-6 w-full">
+              <Link href="/search">
+                Find a Provider <ArrowRightIcon className="ml-2 h-3 w-3" />
+              </Link>
+            </Button>
+          </div>
+        </DrawerContent>
+      </>
+    </Drawer>
+  );
+}
