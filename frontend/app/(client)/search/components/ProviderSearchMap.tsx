@@ -1,10 +1,10 @@
 "use client";
 
 import React from "react";
-import { GoogleMapsProxy } from "@/hooks/useLoadGoogleMaps";
+import { GoogleMapsProxy } from "@in-need-of-time/shared/hooks";
 import { GoogleMap } from "@/components/maps/GoogleMap";
 import { MapMarker } from "@/components/maps/MapMarker";
-import { Location, Provider } from "@/lib/types";
+import { Location, Provider } from "@in-need-of-time/types";
 import { ProviderMapMarker } from "./ProviderMapMarker";
 
 const DEFUALT_LOCATION = { lat: 45.5152, lng: -122.6784 };

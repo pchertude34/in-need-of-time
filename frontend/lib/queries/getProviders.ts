@@ -1,6 +1,6 @@
-import { client } from "@/sanity/lib/client";
+import { client } from "@/lib/sanity/client";
 import { groq } from "next-sanity";
-import type { Provider } from "../types";
+import type { Provider } from "@in-need-of-time/types";
 
 type SearchProvidersParamsType = {
   lat?: string | number;
@@ -22,7 +22,7 @@ export function searchProviders(params: SearchProvidersParamsType): Promise<Prov
       publicContact,
       serviceTypes[(@->slug.current == "${serviceTypeSlug}")]->{
         name, 
-        desctiption, 
+        description, 
         'slug': slug.current
       }
     }`;
