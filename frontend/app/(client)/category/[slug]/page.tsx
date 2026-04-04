@@ -3,8 +3,8 @@ import { ServiceTypeDetailsCard } from "./components/ServiceTypeDetailsCard";
 import { queryAndFilterServiceTypesByCategory } from "@/lib/queries/getServiceTypes";
 import { queryServiceCategoryBySlug } from "@/lib/queries/getServiceCategories";
 import { ServiceTypeFilters } from "./components/ServiceTypeFilters";
-import { convertMilesToMeters } from "@/lib/utils";
-import type { Location } from "@/lib/types";
+import { convertMilesToMeters } from "@in-need-of-time/shared/utils";
+import type { Location } from "@in-need-of-time/types";
 
 type CategoryPageProps = {
   params: Promise<{ slug: string }>;
