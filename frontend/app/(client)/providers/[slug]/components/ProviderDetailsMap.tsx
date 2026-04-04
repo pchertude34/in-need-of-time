@@ -1,10 +1,11 @@
 "use client";
 
 import React from "react";
-import { GoogleMapsProxy } from "@/hooks/useLoadGoogleMaps";
+import { GoogleMapsProxy } from "@in-need-of-time/shared/hooks";
 import { GoogleMap } from "@/components/maps/GoogleMap";
 import { MapMarker } from "@/components/maps/MapMarker";
-import type { Location } from "@/lib/types";
+import { NEXT_PUBLIC_GOOGLE_API_KEY } from "@/env";
+import type { Location } from "@in-need-of-time/types";
 
 type ProviderDetailsMapProps = {
   className?: string;
@@ -14,7 +15,7 @@ type ProviderDetailsMapProps = {
 export function ProviderDetailsMap(props: ProviderDetailsMapProps) {
   const { providerLocation, className } = props;
   return (
-    <GoogleMapsProxy>
+    <GoogleMapsProxy apiKey={NEXT_PUBLIC_GOOGLE_API_KEY}>
       {(googleMapsApi) => (
         <GoogleMap
           googleMapsApi={googleMapsApi}
