@@ -6,6 +6,7 @@ import { GoogleMap } from "@/components/maps/GoogleMap";
 import { MapMarker } from "@/components/maps/MapMarker";
 import { Location, Provider } from "@in-need-of-time/types";
 import { ProviderMapMarker } from "./ProviderMapMarker";
+import { NEXT_PUBLIC_GOOGLE_API_KEY } from "@/env";
 
 const DEFUALT_LOCATION = { lat: 45.5152, lng: -122.6784 };
 
@@ -21,7 +22,7 @@ export function ProviderSearchMap(props: MapProps) {
   const { providerList = [], center = DEFUALT_LOCATION, mapSettings, className, children } = props;
 
   return (
-    <GoogleMapsProxy>
+    <GoogleMapsProxy apiKey={NEXT_PUBLIC_GOOGLE_API_KEY}>
       {(googleMapsApi) => (
         <GoogleMap
           googleMapsApi={googleMapsApi}
