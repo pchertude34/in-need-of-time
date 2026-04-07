@@ -1,10 +1,10 @@
 "use client";
 
 import React, { useEffect, useRef } from "react";
-import { AdvancedMapMarker } from "@/components/maps/AdvancedMapMarker";
+import { AdvancedMapMarker } from "@in-need-of-time/components";
 import { ProviderMapPopup } from "./ProviderMapPopup";
-import type { Provider } from "@/lib/types";
-import type { MapPopup as MapPopupType } from "@/components/maps/MapPopup";
+import type { Provider } from "@in-need-of-time/types";
+import type { MapPopup as MapPopupType } from "@in-need-of-time/components";
 
 type ProvierMapMarkerProps = {
   googleMapsApi: typeof window.google.maps;
@@ -23,7 +23,7 @@ export function ProviderMapMarker(props: ProvierMapMarkerProps) {
       // on compilation. This will ensure google maps is available before trying to create
       // a class that extends it.
       // An unfortunate circumstance of loading google maps from a script tag.
-      const { MapPopup } = await import("@/components/maps/MapPopup");
+      const { MapPopup } = await import("@in-need-of-time/components");
 
       if (!popupRef.current) {
         const popup = new MapPopup(

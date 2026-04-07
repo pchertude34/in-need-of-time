@@ -1,4 +1,4 @@
-import { buildPlaceAddress } from "../utils";
+import { buildPlaceAddress } from "@in-need-of-time/utils";
 
 type GetPlaceArgs = {
   placeId?: string;

@@ -2,8 +2,7 @@
 
 import React from "react";
 import { GoogleMapsProxy } from "@in-need-of-time/hooks";
-import { GoogleMap } from "@/components/maps/GoogleMap";
-import { MapMarker } from "@/components/maps/MapMarker";
+import { GoogleMap } from "@in-need-of-time/components";
 import { Location, Provider } from "@in-need-of-time/types";
 import { ProviderMapMarker } from "./ProviderMapMarker";
 import { NEXT_PUBLIC_GOOGLE_API_KEY } from "@/env";
@@ -25,6 +24,7 @@ export function ProviderSearchMap(props: MapProps) {
     <GoogleMapsProxy apiKey={NEXT_PUBLIC_GOOGLE_API_KEY}>
       {(googleMapsApi) => (
         <GoogleMap
+          mapId="search-map"
           googleMapsApi={googleMapsApi}
           center={center}
           className={className}

@@ -12,7 +12,7 @@ import { Select, SelectTrigger, SelectContent, SelectGroup, SelectItem, SelectVa
 import { cn } from "@in-need-of-time/utils";
 import { CheckCircleIcon } from "@heroicons/react/24/solid";
 import { LocationInput } from "./LocationInput";
-import type { Location, ServiceType } from "@/lib/types";
+import type { Location, ServiceType } from "@in-need-of-time/types";
 
 const DEFAULT_ORIENTATION = "horizontal";
 

@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@in-need-of-time/components": "file:../packages/components",
     "@in-need-of-time/db": "file:../packages/db",
     "@in-need-of-time/hooks": "file:../packages/hooks",
     "@in-need-of-time/utils": "file:../packages/utils",
