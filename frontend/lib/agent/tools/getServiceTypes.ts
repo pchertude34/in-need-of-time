@@ -1,5 +1,5 @@
 import { type ToolFn } from "../types";
-import { client } from "@/sanity/lib/client";
+import { client } from "@/lib/sanity/client";
 import { groq } from "next-sanity";
 import { z } from "zod";
 
