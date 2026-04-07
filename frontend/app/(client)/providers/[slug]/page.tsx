@@ -13,7 +13,7 @@ import { InformationCircleIcon } from "@heroicons/react/24/outline";
 import { Button } from "@/components/ui/button";
 import { Footer } from "@/components/Footer";
 import { getProvider } from "@/lib/queries/getProviders";
-import { formatPhoneNumberForHref, generateGoogleLink } from "@in-need-of-time/shared/utils";
+import { formatPhoneNumberForHref, generateGoogleLink } from "@in-need-of-time/utils";
 import { ProviderDetailsMap } from "./components/ProviderDetailsMap";
 
 type ProviderPageProps = { params: Promise<{ slug: string }> };

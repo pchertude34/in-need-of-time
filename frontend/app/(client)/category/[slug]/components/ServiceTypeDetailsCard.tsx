@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { ArrowRightIcon } from "@heroicons/react/24/outline";
 import { ChevronDownIcon } from "@heroicons/react/24/solid";
-import { cn } from "@in-need-of-time/shared/utils";
+import { cn } from "@in-need-of-time/utils";
 import type { Location } from "@in-need-of-time/types";
 
 type ServiceTypeDetailsCardProps = {

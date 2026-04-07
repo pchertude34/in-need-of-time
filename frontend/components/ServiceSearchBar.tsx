@@ -9,7 +9,7 @@ import { Separator } from "./ui/separator";
 import { InputGroup, InputLeftElement } from "./ui/input-group";
 import { Typeahead } from "./Typeahead";
 import { Select, SelectTrigger, SelectContent, SelectGroup, SelectItem, SelectValue } from "./ui/select";
-import { cn } from "@in-need-of-time/shared/utils";
+import { cn } from "@in-need-of-time/utils";
 import { CheckCircleIcon } from "@heroicons/react/24/solid";
 import { LocationInput } from "./LocationInput";
 import type { Location, ServiceType } from "@/lib/types";

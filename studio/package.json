@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@in-need-of-time/shared": "file:../packages/shared",
+    "@in-need-of-time/utils": "file:../packages/utils",
     "@sanity/google-maps-input": "^4.2.1",
     "@sanity/icons": "^3.7.4",
     "@sanity/image-url": "^1.0.2",

@@ -1,5 +1,5 @@
 import React from "react";
-import { cn } from "@in-need-of-time/shared/utils";
+import { cn } from "@in-need-of-time/utils";
 
 type InputGroupProps = {
   children: React.ReactElement | React.ReactElement[];

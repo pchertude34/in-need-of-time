@@ -7,7 +7,7 @@ import { CheckIcon, ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/24/o
 import { inputVariants } from "./input";
 import { VariantProps } from "class-variance-authority";
 
-import { cn } from "@in-need-of-time/shared/utils";
+import { cn } from "@in-need-of-time/utils";
 
 const Select = SelectPrimitive.Root;
 

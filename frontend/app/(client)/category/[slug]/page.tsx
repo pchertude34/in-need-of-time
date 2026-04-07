@@ -3,7 +3,7 @@ import { ServiceTypeDetailsCard } from "./components/ServiceTypeDetailsCard";
 import { queryAndFilterServiceTypesByCategory } from "@/lib/queries/getServiceTypes";
 import { queryServiceCategoryBySlug } from "@/lib/queries/getServiceCategories";
 import { ServiceTypeFilters } from "./components/ServiceTypeFilters";
-import { convertMilesToMeters } from "@in-need-of-time/shared/utils";
+import { convertMilesToMeters } from "@in-need-of-time/utils";
 import type { Location } from "@in-need-of-time/types";
 
 type CategoryPageProps = {

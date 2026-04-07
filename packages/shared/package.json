@@ -8,7 +8,6 @@
   "exports": {
     "./hooks": "./src/hooks/index.ts",
     "./components": "./src/components/index.ts",
-    "./utils": "./src/utils/index.ts",
     "./sanity": "./src/sanity/index.ts"
   },
   "peerDependencies": {

@@ -6,7 +6,7 @@ import { ChevronDownIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outlin
 import { Input } from "./ui/input";
 import { InputGroup, InputLeftElement, InputRightElement } from "./ui/input-group";
 import { Button } from "./ui/button";
-import { cn } from "@in-need-of-time/shared/utils";
+import { cn } from "@in-need-of-time/utils";
 import { CheckCircleIcon } from "@heroicons/react/24/solid";
 
 type TypeaheadProps<T> = {
