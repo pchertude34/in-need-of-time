@@ -6,6 +6,8 @@ import { GoogleMap, MapMarker } from "@in-need-of-time/shared/components";
 import { MapCircle } from "./MapCircle";
 import type { Location } from "@in-need-of-time/types";
 
+import { SANITY_STUDIO_GOOGLE_API_KEY } from "../../env";
+
 // Default to Portland, OR
 const DEFUALT_LOCATION = { lat: 45.5152, lng: -122.6784 };
 
@@ -67,11 +69,12 @@ export default function MapInput(props: ObjectInputProps) {
           </Text>
         </Stack>
       </Flex>
-      <GoogleMapsProxy>
+      <GoogleMapsProxy apiKey={SANITY_STUDIO_GOOGLE_API_KEY}>
         {(googleMapsApi) => (
           <>
             {!isNational && (
               <GoogleMap
+                mapId="map-input-map"
                 googleMapsApi={googleMapsApi}
                 center={DEFUALT_LOCATION}
                 onMapClick={handleMapClick}

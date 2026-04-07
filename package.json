@@ -16,6 +16,7 @@
     "format:check": "prettier --check .",
     "format": "prettier --write .",
     "ai": "npx tsx ./agent/index.ts",
+    "studio:dev": "npm run -w @in-need-of-time/studio dev",
     "db:start": "docker-compose up -d",
     "db:stop": "docker-compose down",
     "db:reset": "docker-compose down && docker volume rm $(docker volume ls -q --filter name=neon_data) && docker-compose up -d",

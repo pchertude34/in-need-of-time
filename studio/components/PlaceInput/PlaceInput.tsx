@@ -3,6 +3,7 @@ import { set, ObjectInputProps } from "sanity";
 import { Badge, Flex, Stack, Text, TextInput, Label, Inline, Radio } from "@sanity/ui";
 import { useLoadGoogleMaps } from "@in-need-of-time/shared/hooks";
 import { buildPlaceAddress } from "@in-need-of-time/shared/utils";
+import { SANITY_STUDIO_GOOGLE_API_KEY } from "../../env";
 
 const ESTABLISHMENT = "establishment";
 const ADDRESS = "address";
@@ -33,7 +34,7 @@ export default function CustomStringInput(props: ObjectInputProps) {
   const placeInputRef = useRef<HTMLInputElement>(null);
   const autocompleteRef = useRef<google.maps.places.Autocomplete>(null!);
   const autocompleteListener = useRef<google.maps.MapsEventListener>(null!);
-  const { isLoadingMaps, mapsError } = useLoadGoogleMaps();
+  const { isLoadingMaps, mapsError } = useLoadGoogleMaps({ apiKey: SANITY_STUDIO_GOOGLE_API_KEY });
 
   // Handler for saving values on place change
   const handlePlaceChange = useCallback(
