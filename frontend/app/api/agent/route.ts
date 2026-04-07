@@ -1,6 +1,5 @@
 import { runAgent } from "@/lib/agent/agent";
-import { db } from "@/db/db";
-import { agentAuditLogTable } from "@/db/schema";
+import { db, agentAuditLogTable } from "@in-need-of-time/db";
 import { eq } from "drizzle-orm";
 
 export async function POST(request: Request) {

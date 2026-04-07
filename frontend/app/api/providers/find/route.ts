@@ -1,4 +1,4 @@
-import { client } from "@/sanity/lib/client";
+import { client } from "@/lib/sanity/client";
 import { groq } from "next-sanity";
 
 type GROQResponse = {

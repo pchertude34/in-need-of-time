@@ -1,0 +1,28 @@
+{
+  "name": "@in-need-of-time/db",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./db": "./src/db.ts",
+    "./schema": "./src/schema.ts"
+  },
+  "dependencies": {
+    "@neondatabase/serverless": "^1.0.2",
+    "drizzle-orm": "^0.44.5",
+    "postgres": "^3.4.7"
+  },
+  "devDependencies": {
+    "dotenv": "^16.6.1",
+    "drizzle-kit": "^0.31.5"
+  },
+  "scripts": {
+    "type-check": "tsc --noEmit",
+    "db:push": "drizzle-kit push --config ./drizzle.config.ts",
+    "db:studio": "NODE_ENV=development drizzle-kit studio --config ./drizzle.config.ts",
+    "db:migrate": "drizzle-kit generate --config ./drizzle.config.ts && drizzle-kit push --config ./drizzle.config.ts"
+  }
+}
