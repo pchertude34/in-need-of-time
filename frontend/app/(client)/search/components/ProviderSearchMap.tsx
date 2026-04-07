@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { GoogleMapsProxy } from "@in-need-of-time/shared/hooks";
+import { GoogleMapsProxy } from "@in-need-of-time/hooks";
 import { GoogleMap } from "@/components/maps/GoogleMap";
 import { MapMarker } from "@/components/maps/MapMarker";
 import { Location, Provider } from "@in-need-of-time/types";

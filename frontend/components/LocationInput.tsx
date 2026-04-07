@@ -8,7 +8,7 @@ import { InputGroup, InputLeftElement, InputRightElement } from "./ui/input-grou
 import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
-import { useGooglePlaceSearch } from "@in-need-of-time/shared/hooks";
+import { useGooglePlaceSearch } from "@in-need-of-time/hooks";
 import { cn } from "@in-need-of-time/utils";
 import type { Location } from "@in-need-of-time/types";
 import { toast } from "sonner";

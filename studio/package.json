@@ -12,6 +12,7 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
+    "@in-need-of-time/hooks": "file:../packages/hooks",
     "@in-need-of-time/shared": "file:../packages/shared",
     "@in-need-of-time/utils": "file:../packages/utils",
     "@sanity/google-maps-input": "^4.2.1",
