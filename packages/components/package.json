@@ -1,16 +1,19 @@
 {
-  "name": "@in-need-of-time/shared",
+  "name": "@in-need-of-time/components",
   "version": "0.1.0",
   "private": true,
   "type": "module",
   "main": "./src/index.ts",
   "types": "./src/index.ts",
   "exports": {
-    "./components": "./src/components/index.ts",
-    "./sanity": "./src/sanity/index.ts"
+    ".": "./src/index.ts"
   },
   "peerDependencies": {
-    "react": "^19.0.0"
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "dependencies": {
+    "@in-need-of-time/types": "file:../types"
   },
   "scripts": {
     "type-check": "tsc --noEmit"

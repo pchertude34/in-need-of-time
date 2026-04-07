@@ -1,43 +1,29 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import type { Location } from "@/lib/types";
+import type { Location } from "@in-need-of-time/types";
 
-const DEFAULT_GLYPH_OPTIONS = {
-  glyphColor: "#ffffff",
-  background: "#285562",
-  borderColor: "#142E38",
-};
-
-type AdvancedMapMarkerProps = {
+type MapMarkerProps = {
   googleMapsApi: typeof window.google.maps;
   googleMap: google.maps.Map;
   position: Location;
-  glyphOptions?: google.maps.marker.PinElementOptions;
   onMove?: (event: google.maps.MapMouseEvent) => void;
   onClick?: (event: google.maps.MapMouseEvent) => void;
 };
 
-export function AdvancedMapMarker(props: AdvancedMapMarkerProps) {
-  const { googleMapsApi, googleMap, position, glyphOptions, onClick, onMove } = props;
+export function MapMarker(props: MapMarkerProps) {
+  const { googleMapsApi, googleMap, position, onClick, onMove } = props;
 
-  const markerRef = useRef<google.maps.marker.AdvancedMarkerElement | undefined>(undefined);
+  const markerRef = useRef<google.maps.Marker | undefined>(undefined);
   const markerMoveHandlerRef = useRef<google.maps.MapsEventListener | undefined>(undefined);
   const markerClickHandlerRef = useRef<google.maps.MapsEventListener | undefined>(undefined);
 
   useEffect(() => {
     if (!markerRef.current) {
-      const pin = new googleMapsApi.marker.PinElement({
-        ...DEFAULT_GLYPH_OPTIONS,
-        ...glyphOptions,
-      });
-
-      const marker = new googleMapsApi.marker.AdvancedMarkerElement({
+      const marker = new googleMapsApi.Marker({
         position: getPosition(),
-        gmpClickable: onClick ? true : false,
-        gmpDraggable: onMove ? true : false,
         map: googleMap,
-        content: pin.element,
+        draggable: onMove ? true : false,
       });
 
       markerRef.current = marker;
@@ -47,11 +33,17 @@ export function AdvancedMapMarker(props: AdvancedMapMarkerProps) {
 
     return () => {
       if (markerRef.current) {
-        markerRef.current.map = null;
+        markerRef.current.setMap(null);
         markerRef.current = undefined;
       }
     };
   }, []);
+
+  useEffect(() => {
+    if (markerRef.current) {
+      markerRef.current.setPosition(position);
+    }
+  }, [position]);
 
   function getPosition() {
     return new googleMapsApi.LatLng(position.lat, position.lng);

@@ -34,18 +34,15 @@ export class MapPopup extends OverlayViewBase {
     this.reactRoot = createRoot(this.containerDiv);
     this.reactRoot.render(content);
 
-    // Optionally stop clicks, etc., from bubbling up to the map.
     if ("preventMapHitsAndGesturesFrom" in MapPopup) {
       MapPopup.preventMapHitsAndGesturesFrom(this.containerDiv);
     }
   }
 
-  /** Called when the popup is added to the map. */
   onAdd() {
     this.getPanes()!.floatPane.appendChild(this.containerDiv);
   }
 
-  /** Called when the popup is removed from the map. */
   onRemove() {
     if (this.containerDiv.parentElement) {
       this.containerDiv.parentElement.removeChild(this.containerDiv);
@@ -74,11 +71,8 @@ export class MapPopup extends OverlayViewBase {
     }
   }
 
-  /** Called each frame when the popup needs to draw itself. */
   draw() {
     const divPosition = this.getProjection().fromLatLngToDivPixel(this.position)!;
-
-    // Hide the popup when it is far out of view.
     const display = Math.abs(divPosition.x) < 4000 && Math.abs(divPosition.y) < 4000 ? "block" : "none";
 
     if (display === "block") {

@@ -1,5 +1,5 @@
 "use client";
-import { Location } from "@/lib/types";
+import type { Location } from "@in-need-of-time/types";
 import React, { useState, useEffect, useCallback, useRef } from "react";
 
 const DEFUALT_LOCATION = { lat: 45.5152, lng: -122.6784 };
@@ -33,29 +33,22 @@ export function GoogleMap(props: GoogleMapProps) {
     mapId,
   } = props;
   const [map, setMap] = useState<google.maps.Map | undefined>();
-  // const mapRef = useRef<google.maps.Map | undefined>();
   const mapElementRef = useRef<HTMLDivElement | null>(null);
-  // Ref for the click hander so we can remove it when the map unmounts
-  // or the click handler changes
   const mapClickHandlerRef = useRef<google.maps.MapsEventListener | undefined>(undefined);
 
-  // Set the click handler on the map
   useEffect(() => {
     if (!map) return;
 
-    // Remove existing click handlers to avoid multiple click handlers on the map
     if (mapClickHandlerRef.current) {
       mapClickHandlerRef.current.remove();
     }
 
-    // Add the new click handler to the map
     if (onMapClick) {
       const clickHandler = googleMapsApi.event.addListener(map, "click", onMapClick);
       mapClickHandlerRef.current = clickHandler;
     }
   }, [onMapClick, map]);
 
-  // Clean up the map click handler when the map unmounts
   useEffect(() => {
     return () => {
       if (mapClickHandlerRef.current) {
@@ -64,7 +57,6 @@ export function GoogleMap(props: GoogleMapProps) {
     };
   }, []);
 
-  // Recenter the map when the center prop changes
   useEffect(() => {
     if (map && center) {
       map.setCenter(new googleMapsApi.LatLng(center.lat, center.lng));
@@ -75,7 +67,6 @@ export function GoogleMap(props: GoogleMapProps) {
     return new googleMapsApi.LatLng(center.lat, center.lng);
   }
 
-  // Build the map and place it on the element parameter
   function constructMap(element: HTMLDivElement) {
     const map = new googleMapsApi.Map(element, {
       mapId,
@@ -87,9 +78,6 @@ export function GoogleMap(props: GoogleMapProps) {
     return map;
   }
 
-  // Custom ref setting function to call on the map container.
-  // This will construct the map when the element is rendered and prevets
-  // any additional map placements on the same element.
   const setMapElement = useCallback((element: HTMLDivElement | null) => {
     if (element && element !== mapElementRef.current) {
       const newMap = constructMap(element);

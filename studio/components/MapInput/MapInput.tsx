@@ -2,7 +2,7 @@ import React, { useState, useCallback } from "react";
 import { ObjectInputProps, set } from "sanity";
 import { TextInput, Text, Stack, Label, Flex, Checkbox } from "@sanity/ui";
 import { GoogleMapsProxy } from "@in-need-of-time/hooks";
-import { GoogleMap, MapMarker } from "@in-need-of-time/shared/components";
+import { GoogleMap, MapMarker } from "@in-need-of-time/components";
 import { MapCircle } from "./MapCircle";
 import type { Location } from "@in-need-of-time/types";
 
