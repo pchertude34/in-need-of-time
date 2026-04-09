@@ -12,7 +12,28 @@
  * ---------------------------------------------------------------------------------
  */
 
+export declare const internalGroqTypeReferenceTo: unique symbol;
+
 // Source: schema.json
+export type PublicContact = {
+  phone?: string;
+  website?: string;
+  email?: string;
+};
+
+export type InternalContact = {
+  contactName?: string;
+  contactEmail?: string;
+  contactPhone?: string;
+};
+
+export type SanityImageAssetReference = {
+  _ref: string;
+  _type: "reference";
+  _weak?: boolean;
+  [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
+};
+
 export type ServiceCategory = {
   _id: string;
   _type: "serviceCategory";
@@ -23,17 +44,41 @@ export type ServiceCategory = {
   slug?: Slug;
   description?: string;
   icon?: {
-    asset?: {
-      _ref: string;
-      _type: "reference";
-      _weak?: boolean;
-      [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
-    };
+    asset?: SanityImageAssetReference;
     media?: unknown;
     hotspot?: SanityImageHotspot;
     crop?: SanityImageCrop;
     _type: "image";
   };
+};
+
+export type SanityImageCrop = {
+  _type: "sanity.imageCrop";
+  top: number;
+  bottom: number;
+  left: number;
+  right: number;
+};
+
+export type SanityImageHotspot = {
+  _type: "sanity.imageHotspot";
+  x: number;
+  y: number;
+  height: number;
+  width: number;
+};
+
+export type Slug = {
+  _type: "slug";
+  current: string;
+  source?: string;
+};
+
+export type ServiceCategoryReference = {
+  _ref: string;
+  _type: "reference";
+  _weak?: boolean;
+  [internalGroqTypeReferenceTo]?: "serviceCategory";
 };
 
 export type ServiceType = {
@@ -45,13 +90,18 @@ export type ServiceType = {
   name?: string;
   slug?: Slug;
   description?: string;
-  serviceCategory?: Array<{
-    _ref: string;
-    _type: "reference";
-    _weak?: boolean;
-    _key: string;
-    [internalGroqTypeReferenceTo]?: "serviceCategory";
-  }>;
+  serviceCategory?: Array<
+    {
+      _key: string;
+    } & ServiceCategoryReference
+  >;
+};
+
+export type ServiceTypeReference = {
+  _ref: string;
+  _type: "reference";
+  _weak?: boolean;
+  [internalGroqTypeReferenceTo]?: "serviceType";
 };
 
 export type RegionalProvider = {
@@ -66,18 +116,12 @@ export type RegionalProvider = {
     distanceRadius?: number;
     isNational?: boolean;
   };
-  serviceTypes?: Array<{
-    _ref: string;
-    _type: "reference";
-    _weak?: boolean;
-    _key: string;
-    [internalGroqTypeReferenceTo]?: "serviceType";
-  }>;
-  publicContact?: {
-    phone?: string;
-    website?: string;
-    email?: string;
-  };
+  serviceTypes: Array<
+    {
+      _key: string;
+    } & ServiceTypeReference
+  >;
+  publicContact?: PublicContact;
   description?: Array<{
     children?: Array<{
       marks?: Array<string>;
@@ -96,11 +140,14 @@ export type RegionalProvider = {
     _type: "block";
     _key: string;
   }>;
-  internalContact?: {
-    contactName?: string;
-    contactEmail?: string;
-    contactPhone?: string;
-  };
+  internalContact?: InternalContact;
+};
+
+export type Geopoint = {
+  _type: "geopoint";
+  lat?: number;
+  lng?: number;
+  alt?: number;
 };
 
 export type Provider = {
@@ -131,18 +178,12 @@ export type Provider = {
     };
     _key: string;
   }>;
-  serviceTypes?: Array<{
-    _ref: string;
-    _type: "reference";
-    _weak?: boolean;
-    _key: string;
-    [internalGroqTypeReferenceTo]?: "serviceType";
-  }>;
-  publicContact?: {
-    phone?: string;
-    website?: string;
-    email?: string;
-  };
+  serviceTypes: Array<
+    {
+      _key: string;
+    } & ServiceTypeReference
+  >;
+  publicContact?: PublicContact;
   description?: Array<{
     children?: Array<{
       marks?: Array<string>;
@@ -161,11 +202,15 @@ export type Provider = {
     _type: "block";
     _key: string;
   }>;
-  internalContact?: {
-    contactName?: string;
-    contactEmail?: string;
-    contactPhone?: string;
-  };
+  internalContact?: InternalContact;
+};
+
+export type GeopointRadius = {
+  _type: "geopointRadius";
+  lat: number;
+  lng: number;
+  alt?: number;
+  radius: number;
 };
 
 export type SanityImagePaletteSwatch = {
@@ -189,25 +234,21 @@ export type SanityImagePalette = {
 
 export type SanityImageDimensions = {
   _type: "sanity.imageDimensions";
-  height?: number;
-  width?: number;
-  aspectRatio?: number;
+  height: number;
+  width: number;
+  aspectRatio: number;
 };
 
-export type SanityImageHotspot = {
-  _type: "sanity.imageHotspot";
-  x?: number;
-  y?: number;
-  height?: number;
-  width?: number;
-};
-
-export type SanityImageCrop = {
-  _type: "sanity.imageCrop";
-  top?: number;
-  bottom?: number;
-  left?: number;
-  right?: number;
+export type SanityImageMetadata = {
+  _type: "sanity.imageMetadata";
+  location?: Geopoint;
+  dimensions?: SanityImageDimensions;
+  palette?: SanityImagePalette;
+  lqip?: string;
+  blurHash?: string;
+  thumbHash?: string;
+  hasAlpha?: boolean;
+  isOpaque?: boolean;
 };
 
 export type SanityFileAsset = {
@@ -221,15 +262,22 @@ export type SanityFileAsset = {
   title?: string;
   description?: string;
   altText?: string;
-  sha1hash?: string;
-  extension?: string;
-  mimeType?: string;
-  size?: number;
-  assetId?: string;
+  sha1hash: string;
+  extension: string;
+  mimeType: string;
+  size: number;
+  assetId: string;
   uploadId?: string;
-  path?: string;
-  url?: string;
+  path: string;
+  url: string;
   source?: SanityAssetSourceData;
+};
+
+export type SanityAssetSourceData = {
+  _type: "sanity.assetSourceData";
+  name?: string;
+  id?: string;
+  url?: string;
 };
 
 export type SanityImageAsset = {
@@ -243,75 +291,37 @@ export type SanityImageAsset = {
   title?: string;
   description?: string;
   altText?: string;
-  sha1hash?: string;
-  extension?: string;
-  mimeType?: string;
-  size?: number;
-  assetId?: string;
+  sha1hash: string;
+  extension: string;
+  mimeType: string;
+  size: number;
+  assetId: string;
   uploadId?: string;
-  path?: string;
-  url?: string;
+  path: string;
+  url: string;
   metadata?: SanityImageMetadata;
   source?: SanityAssetSourceData;
 };
 
-export type SanityImageMetadata = {
-  _type: "sanity.imageMetadata";
-  location?: Geopoint;
-  dimensions?: SanityImageDimensions;
-  palette?: SanityImagePalette;
-  lqip?: string;
-  blurHash?: string;
-  hasAlpha?: boolean;
-  isOpaque?: boolean;
-};
-
-export type Geopoint = {
-  _type: "geopoint";
-  lat?: number;
-  lng?: number;
-  alt?: number;
-};
-
-export type Slug = {
-  _type: "slug";
-  current?: string;
-  source?: string;
-};
-
-export type SanityAssetSourceData = {
-  _type: "sanity.assetSourceData";
-  name?: string;
-  id?: string;
-  url?: string;
-};
-
 export type AllSanitySchemaTypes =
+  | PublicContact
+  | InternalContact
+  | SanityImageAssetReference
   | ServiceCategory
+  | SanityImageCrop
+  | SanityImageHotspot
+  | Slug
+  | ServiceCategoryReference
   | ServiceType
+  | ServiceTypeReference
   | RegionalProvider
+  | Geopoint
   | Provider
+  | GeopointRadius
   | SanityImagePaletteSwatch
   | SanityImagePalette
   | SanityImageDimensions
-  | SanityImageHotspot
-  | SanityImageCrop
-  | SanityFileAsset
-  | SanityImageAsset
   | SanityImageMetadata
-  | Geopoint
-  | Slug
-  | SanityAssetSourceData;
-export declare const internalGroqTypeReferenceTo: unique symbol;
-// Source: ./sanity/schemas/provider/provider.ts
-// Variable: query
-// Query: !defined(*[    _type == "provider" &&    !(_id in [$draft, $published]) &&    place.placeId == $placeId  ][0]._id)
-export type QueryResult = false | true;
-
-// Query TypeMap
-import "@sanity/client";
-declare module "@sanity/client" {
-  interface SanityQueries {
-    '!defined(*[\n    _type == "provider" &&\n    !(_id in [$draft, $published]) &&\n    place.placeId == $placeId\n  ][0]._id)': QueryResult;
-  }
-}
+  | SanityFileAsset
+  | SanityAssetSourceData
+  | SanityImageAsset;

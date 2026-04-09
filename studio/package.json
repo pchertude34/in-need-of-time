@@ -3,11 +3,13 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "prebuild": "npm run extract-types",
+    "prebuild": "npm run generate-types",
     "build": "sanity build",
     "deploy": "sanity deploy",
     "dev": "sanity dev",
     "extract-types": "sanity schema extract --enforce-required-fields",
+    "typegen": "sanity typegen generate",
+    "generate-types": "npm run extract-types && npm run typegen",
     "start": "sanity start",
     "type-check": "tsc --noEmit"
   },
