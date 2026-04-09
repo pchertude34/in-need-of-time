@@ -6,7 +6,7 @@ import { GoogleMap, MapMarker } from "@in-need-of-time/components";
 import { MapCircle } from "./MapCircle";
 import type { Location } from "@in-need-of-time/types";
 
-import { SANITY_STUDIO_GOOGLE_API_KEY } from "../../env";
+import { SANITY_STUDIO_GOOGLE_API_KEY } from "../../../env";
 
 // Default to Portland, OR
 const DEFUALT_LOCATION = { lat: 45.5152, lng: -122.6784 };

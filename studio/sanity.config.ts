@@ -6,7 +6,7 @@ import { visionTool } from "@sanity/vision";
 import { defineConfig } from "sanity";
 import { structureTool } from "sanity/structure";
 import { googleMapsInput } from "@sanity/google-maps-input";
-import { defaultDocumentNodeResolver, structure } from "./structure";
+import { defaultDocumentNodeResolver, structure } from "./src/structure";
 
 // Go to https://www.sanity.io/docs/api-versioning to learn how API versioning works
 import {
@@ -16,7 +16,7 @@ import {
   SANITY_STUDIO_GOOGLE_API_KEY,
 } from "./env";
 import { schema } from "./schema";
-import { RunProviderAgentAction } from "./documentActions/RunProviderAgentAction";
+import { RunProviderAgentAction } from "./src/documentActions/RunProviderAgentAction";
 
 export default defineConfig({
   basePath: "/studio",

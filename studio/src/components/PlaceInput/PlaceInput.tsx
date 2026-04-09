@@ -3,7 +3,7 @@ import { set, ObjectInputProps } from "sanity";
 import { Badge, Flex, Stack, Text, TextInput, Label, Inline, Radio } from "@sanity/ui";
 import { useLoadGoogleMaps } from "@in-need-of-time/hooks";
 import { buildPlaceAddress } from "@in-need-of-time/utils";
-import { SANITY_STUDIO_GOOGLE_API_KEY } from "../../env";
+import { SANITY_STUDIO_GOOGLE_API_KEY } from "../../../env";
 
 const ESTABLISHMENT = "establishment";
 const ADDRESS = "address";
