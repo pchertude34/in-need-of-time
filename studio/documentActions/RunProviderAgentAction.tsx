@@ -5,7 +5,7 @@ import { PlayIcon } from "@sanity/icons";
 import { nanoid } from "nanoid";
 import { SANITY_STUDIO_LOCAL_API_KEY } from "../env";
 import type { ProviderAgentResponse } from "@in-need-of-time/types";
-import type { Provider } from "@/sanity.types";
+import type { Provider } from "@in-need-of-time/types/sanity";
 
 export function RunProviderAgentAction(props: DocumentActionProps) {
   const { id, type, draft, published } = props;

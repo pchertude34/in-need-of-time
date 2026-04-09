@@ -1,5 +1,5 @@
 import { at, defineMigration, delete_, set, unset } from "sanity/migrate";
-import { ServiceType } from "@/sanity.types";
+import type { ServiceType } from "@in-need-of-time/types/sanity";
 
 const serviceTypesToKeep = ["Food Delivery", "Food Pantry", "Food boxes", "Hot Meals"];
 
