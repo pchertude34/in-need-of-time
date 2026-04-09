@@ -1,20 +1,14 @@
 {
+  "extends": "../tsconfig.json",
   "compilerOptions": {
-    "target": "ES2017",
     "module": "preserve",
     "lib": ["DOM", "dom.iterable", "esnext"],
-    "allowJs": true,
     "jsx": "react-jsx",
-    "strict": true,
-    "esModuleInterop": true,
-    "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "noEmit": true,
     "paths": {
       "@/*": ["./*"]
     }
   },
   "include": ["**/*.ts", "**/*.tsx"],
   "exclude": ["node_modules"]
-  // "extends": "../tsconfig.json"
 }
