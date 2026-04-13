@@ -8,28 +8,18 @@ This project currently uses node `v22`. The node version is managed by the `.nvm
 
 Once nvm is properly installed, run `nvm use` in your terminal to switch to the current nvm version.
 
-### Setting up `.env.local`
+### Setting up environment variables
 
-NextJS utilizes a git ignored `.env.local` file to manage secrets locally. This file must be configured with the following variables for the application to run locally
+This repo uses a root `.env.local` file for local secrets. Use `.env.example` as the source of truth for required variables:
 
-```
-NEXT_PUBLIC_GOOGLE_API_KEY=[your-google-api-key]
-NEXT_PUBLIC_SANITY_PROJECT_ID="v3oqxhus"
-NEXT_PUBLIC_SANITY_DATASET="development"
-NEXT_PUBLIC_GOOGLE_MAPS_ID="6ab61aa807a92941"
-NEXT_PUBLIC_LOCAL_API_KEY="p78Gr71fGzpCKRzh"
-TOKEN_SECRET="super_secret_token"
-OPENAI_API_KEY=[your-openai-api-key]
-FIRECRAWL_API_KEY=[your-firecrawl-api-key]
-# For local neon database
-PARENT_BRANCH_ID="br-autumn-block-afev6757"
-NEON_PROJECT_ID="holy-rain-30341906"
-NEON_API_KEY=[your-neon-api-key]
-# Connection string for local neon database
-DATABASE_URL=postgres://neon:npg@localhost:5432/neondb
-```
+1. Copy `.env.example` to `.env.local`
+2. Fill in your local values
 
-(replace values in brackets with your respective api keys)
+The variables are grouped by package/app domain:
+
+- Root app (`frontend`): `NEXT_PUBLIC_*`, `OPENAI_API_KEY`, `FIRECRAWL_API_KEY`
+- Database package (`packages/db`): `DATABASE_URL`
+- Studio (`studio`): `SANITY_STUDIO_*`
 
 ### Installing Docker and running local database
 

@@ -2,10 +2,9 @@ import { drizzle } from "drizzle-orm/neon-http";
 import { drizzle as drizzlePg } from "drizzle-orm/postgres-js";
 import { neon } from "@neondatabase/serverless";
 import postgres from "postgres";
+import { DATABASE_URL, IS_DEVELOPMENT } from "./env";
 
-const DATABASE_URL = assertValue(process.env.DATABASE_URL, "Missing environment variable: DATABASE_URL");
-
-const isLocal = process.env.NODE_ENV === "development";
+const isLocal = IS_DEVELOPMENT;
 
 let db: ReturnType<typeof drizzlePg> | ReturnType<typeof drizzle>;
 
@@ -18,11 +17,3 @@ if (isLocal) {
 }
 
 export { db };
-
-function assertValue<T>(v: T | undefined, errorMessage: string): T {
-  if (v === undefined) {
-    throw new Error(errorMessage);
-  }
-
-  return v;
-}

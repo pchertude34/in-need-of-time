@@ -3,9 +3,10 @@
 import { z } from "zod";
 import FirecrawlApp from "@mendable/firecrawl-js";
 import { type ToolFn } from "../types";
+import { FIRECRAWL_API_KEY } from "@/env.server";
 
 const app = new FirecrawlApp({
-  apiKey: process.env.FIRECRAWL_API_KEY,
+  apiKey: FIRECRAWL_API_KEY,
 });
 
 export const getUrlContentToolDefinition = {

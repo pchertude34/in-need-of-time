@@ -1,12 +1,13 @@
 import { runAgent } from "@/lib/agent/agent";
 import { db, agentAuditLogTable } from "@in-need-of-time/db";
 import { eq } from "drizzle-orm";
+import { AGENT_API_KEY } from "@/env.server";
 
 export async function POST(request: Request) {
   const { userMessage, userId } = await request.json();
   const token = request.headers.get("x-api-key");
 
-  if (token !== process.env.NEXT_PUBLIC_LOCAL_API_KEY) {
+  if (token !== AGENT_API_KEY) {
     return new Response("Unauthorized", { status: 401 });
   }
 

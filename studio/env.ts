@@ -1,4 +1,4 @@
-export const SANITY_API_VERSION = process.env.SANITY_API_VERSION || "2024-03-09";
+export const SANITY_STUDIO_API_VERSION = process.env.SANITY_STUDIO_API_VERSION || "2024-03-09";
 
 export const SANITY_STUDIO_DATASET = assertValue(
   process.env.SANITY_STUDIO_DATASET,
