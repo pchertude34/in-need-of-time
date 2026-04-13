@@ -16,6 +16,7 @@
     "format:check": "prettier --check .",
     "format": "prettier --write .",
     "ai": "npx tsx ./agent/index.ts",
+    "studio": "dotenv -e ./.env.local -- npm run -w @in-need-of-time/studio dev",
     "studio:dev": "npm run -w @in-need-of-time/studio dev",
     "db:start": "docker-compose up -d",
     "db:stop": "docker-compose down",
