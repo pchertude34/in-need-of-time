@@ -78,7 +78,7 @@ export function Typeahead<T>(props: TypeaheadProps<T>) {
           {...getInputProps()}
         />
         <InputRightElement>
-          {selectedItem && <CheckCircleIcon className="mr-1 h-5 w-5 text-success-400" />}
+          {selectedItem && <CheckCircleIcon className="text-success-400 mr-1 h-5 w-5" />}
           <Button variant="text-dark" size="text" {...getToggleButtonProps()} aria-label="toggle menu">
             <ChevronDownIcon className="h-4 w-4" />
           </Button>

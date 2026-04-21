@@ -65,7 +65,7 @@ export function ServiceTypeFilters(props: ServiceTypeFiltersProps) {
           <SelectTrigger variant={radius ? "success" : "primary"} className="shadow-sm">
             <div className="flex w-full shrink items-center">
               <SelectValue placeholder="Select radius" />
-              {radius && <CheckCircleIcon className="ml-auto mr-1 h-5 w-5 text-success-400" />}
+              {radius && <CheckCircleIcon className="text-success-400 ml-auto mr-1 h-5 w-5" />}
             </div>
           </SelectTrigger>
           <SelectContent>

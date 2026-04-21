@@ -18,8 +18,8 @@ export default async function Home() {
       <main className="container">
         {/* Hero Section */}
         <div>
-          <div className="before mt-3 overflow-hidden rounded-3xl bg-hero-image bg-cover bg-center">
-            <div className="h-[410px] w-full bg-primary-500/40 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-black/30 to-black/50 sm:h-[486px]">
+          <div className="before bg-hero-image mt-3 overflow-hidden rounded-3xl bg-cover bg-center">
+            <div className="bg-primary-500/40 h-[410px] w-full bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-black/30 to-black/50 sm:h-[486px]">
               <div className="p flex flex-col items-center justify-center pt-16 sm:pt-24 md:px-10 md:pt-32 lg:px-20 xl:px-60">
                 <div className="px-3 md:px-0">
                   <h1 className="text-center text-3xl font-bold leading-snug tracking-tight text-white sm:text-4xl md:text-5xl">
@@ -79,8 +79,8 @@ export default async function Home() {
           </div>
         </div>
         {/* Call to action */}
-        <div className="my-16 overflow-hidden rounded-3xl  bg-cta-image bg-[45%] md:my-32 ">
-          <div className="flex h-[550px] w-full items-end justify-center bg-gradient-to-t from-primary-500/95 from-45% to-primary-500/10 to-100% p-6 md:h-[400px] md:items-center md:justify-start md:bg-gradient-to-r md:from-primary-500/85">
+        <div className="bg-cta-image my-16 overflow-hidden  rounded-3xl bg-[45%] md:my-32 ">
+          <div className="from-primary-500/95 to-primary-500/10 md:from-primary-500/85 flex h-[550px] w-full items-end justify-center bg-gradient-to-t from-45% to-100% p-6 md:h-[400px] md:items-center md:justify-start md:bg-gradient-to-r">
             <div className="max-w-[311px] md:ml-8 md:max-w-[346px]">
               <p className="text-4xl font-bold text-slate-900">
                 Discover <span className="text-white">800+</span> service providers

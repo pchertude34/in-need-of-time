@@ -116,7 +116,7 @@ export function LocationInput(props: LocationInputProps) {
         variant={location ? "success" : "primary"}
       />
       <InputRightElement>
-        {location && <CheckCircleIcon className="mr-1 h-5 w-5 text-success-400" />}
+        {location && <CheckCircleIcon className="text-success-400 mr-1 h-5 w-5" />}
         <Tooltip>
           <TooltipTrigger asChild>
             <Button variant="text-primary" size="text" onClick={calculateLocation}>

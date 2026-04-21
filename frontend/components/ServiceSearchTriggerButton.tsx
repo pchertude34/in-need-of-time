@@ -18,7 +18,7 @@ export function ServiceSearchTriggerButton(props: ServiceSearchTriggerButtonProp
         Find a Provider
       </button>
       <InputRightElement>
-        <span className="hover:bg-priamry-600 ml-auto rounded-full bg-primary-500 p-3 focus:bg-primary-700">
+        <span className="hover:bg-priamry-600 bg-primary-500 focus:bg-primary-700 ml-auto rounded-full p-3">
           <ArrowRightIcon className="  h-5 w-5 text-white" />
         </span>
       </InputRightElement>

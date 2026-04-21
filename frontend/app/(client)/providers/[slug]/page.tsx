@@ -71,7 +71,7 @@ export default async function ProviderPage(props: ProviderPageProps) {
 
         <div className="flex flex-wrap gap-6 md:flex-nowrap">
           <div className="space-y-8">
-            <article className="prose text-slate-900 prose-p:leading-snug">
+            <article className="prose prose-p:leading-snug text-slate-900">
               {provider.description && <PortableText value={provider.description} />}
             </article>
             {shouldRenderContactInfo && (

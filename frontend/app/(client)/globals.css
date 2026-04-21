@@ -4,11 +4,11 @@
 
 @layer utilities {
   .focus-ring-primary {
-    @apply focus:outline-none focus:ring-2 focus:ring-primary-200 focus:ring-offset-2 focus:ring-offset-slate-100;
+    @apply focus:ring-primary-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-100;
   }
 
   .focus-ring-success {
-    @apply focus:outline-none focus:ring-2 focus:ring-success-100 focus:ring-opacity-80 focus:ring-offset-2 focus:ring-offset-slate-100;
+    @apply focus:ring-success-100 focus:outline-none focus:ring-2 focus:ring-opacity-80 focus:ring-offset-2 focus:ring-offset-slate-100;
   }
 
   .focus-ring-white {

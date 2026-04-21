@@ -26,7 +26,7 @@ export default async function CategoryPage(props: CategoryPageProps) {
   return (
     <div>
       {/* Banner */}
-      <div className="w-full bg-gradient-to-r from-primary-500 to-primary-800 py-10">
+      <div className="from-primary-500 to-primary-800 w-full bg-gradient-to-r py-10">
         <h1 className="text-center text-5xl font-bold leading-relaxed text-white">{category.title}</h1>
       </div>
       {/* Main Content */}

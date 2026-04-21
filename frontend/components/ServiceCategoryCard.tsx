@@ -24,7 +24,7 @@ export function ServiceCategoryCard(props: ServiceCategoryCardProps) {
       onMouseOver={() => setIsHovering(true)}
       onMouseOut={() => setIsHovering(false)}
       className={cn(
-        "focus-ring-primary flex w-full rounded-lg border-2 border-slate-200 bg-slate-50 p-3 transition-colors hover:border-primary-500 hover:bg-primary-50 focus:border-primary-500 focus:bg-primary-50 sm:block sm:max-w-[260px] sm:p-6",
+        "focus-ring-primary hover:border-primary-500 hover:bg-primary-50 focus:border-primary-500 focus:bg-primary-50 flex w-full rounded-lg border-2 border-slate-200 bg-slate-50 p-3 transition-colors sm:block sm:max-w-[260px] sm:p-6",
         className,
       )}
     >
@@ -41,7 +41,7 @@ export function ServiceCategoryCard(props: ServiceCategoryCardProps) {
               "translate-x-0 opacity-100": isHovering,
             })}
           >
-            <ArrowRightIcon className="h-5 w-5 text-secondary-500" />
+            <ArrowRightIcon className="text-secondary-500 h-5 w-5" />
           </div>
         </div>
 

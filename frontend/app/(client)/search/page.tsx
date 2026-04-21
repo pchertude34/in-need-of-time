@@ -65,7 +65,7 @@ export default async function SearchPage(props: SearchPageProps) {
           {providers && (
             <ScrollArea className="z-10 flex max-h-full w-[403px] flex-shrink-0 flex-col rounded-2xl bg-white shadow-xl">
               <div className="max-w-full space-y-4 p-6">
-                <span className="font-bold text-secondary-500">{providers.length} results found</span>
+                <span className="text-secondary-500 font-bold">{providers.length} results found</span>
                 {providers.length > 0 ? (
                   <>
                     <Tabs defaultValue="locations">
@@ -136,7 +136,7 @@ export default async function SearchPage(props: SearchPageProps) {
           {providers && (
             <MobileResultsDrawer>
               <div className="mx-auto my-3 box-border h-4 w-[100px] rounded-full bg-slate-400 dark:bg-slate-800" />
-              <span className="mb-3 ml-4 font-bold text-secondary-500">{providers.length} results found</span>
+              <span className="text-secondary-500 mb-3 ml-4 font-bold">{providers.length} results found</span>
               <div className="mx-auto  flex w-full flex-col space-y-4 overflow-auto p-4">
                 {providers.length > 0 ? (
                   <>
