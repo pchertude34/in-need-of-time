@@ -1,0 +1,29 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "incremental": true,
+    "jsx": "react-jsx",
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "paths": {
+      "@in-need-of-time/db": ["../packages/db/src/index.ts"],
+      "@in-need-of-time/db/db": ["../packages/db/src/db.ts"],
+      "@in-need-of-time/db/schema": ["../packages/db/src/schema.ts"],
+      "@/*": ["./*"]
+    }
+  },
+  "include": [
+    "next-env.d.ts",
+    ".next/types/**/*.ts",
+    ".next/dev/types/**/*.ts",
+    "**/*.mts",
+    "**/*.ts",
+    "**/*.tsx",
+    "../server.env.ts"
+  ],
+  "exclude": ["node_modules"]
+}

@@ -1,0 +1,38 @@
+{
+  "name": "@in-need-of-time/frontend",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@in-need-of-time/components": "file:../packages/components",
+    "@in-need-of-time/db": "file:../packages/db",
+    "@in-need-of-time/hooks": "file:../packages/hooks",
+    "@in-need-of-time/types": "file:../packages/types",
+    "@in-need-of-time/utils": "file:../packages/utils",
+    "@heroicons/react": "^2.1.3",
+    "@neondatabase/serverless": "^1.0.2",
+    "@portabletext/react": "^3.1.0",
+    "drizzle-orm": "^0.44.5",
+    "next": "^16.0.7",
+    "next-sanity": "12.0.16",
+    "postgres": "^3.4.7",
+    "react": "^19.2.1",
+    "react-dom": "^19.2.1",
+    "sanity": "5.7.0",
+    "vaul": "^1.1.2"
+  },
+  "devDependencies": {
+    "@portabletext/types": "^2.0.13",
+    "@types/node": "^24.10.1",
+    "@types/react": "19.2.2",
+    "@types/react-dom": "19.2.2",
+    "eslint": "^9",
+    "eslint-config-next": "16.0.0",
+    "typescript": "^5"
+  }
+}

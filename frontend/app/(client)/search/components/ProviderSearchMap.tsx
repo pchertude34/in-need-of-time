@@ -1,0 +1,58 @@
+"use client";
+
+import React from "react";
+import { GoogleMapsProxy } from "@in-need-of-time/hooks";
+import { GoogleMap } from "@in-need-of-time/components";
+import { Location, Provider } from "@in-need-of-time/types";
+import { ProviderMapMarker } from "./ProviderMapMarker";
+import { NEXT_PUBLIC_GOOGLE_API_KEY } from "@/env";
+
+const DEFUALT_LOCATION = { lat: 45.5152, lng: -122.6784 };
+
+type MapProps = {
+  className?: string;
+  center?: Location;
+  providerList?: Provider[];
+  mapSettings?: google.maps.MapOptions;
+  children?: React.ReactNode;
+};
+
+export function ProviderSearchMap(props: MapProps) {
+  const { providerList = [], center = DEFUALT_LOCATION, mapSettings, className, children } = props;
+
+  return (
+    <GoogleMapsProxy apiKey={NEXT_PUBLIC_GOOGLE_API_KEY}>
+      {(googleMapsApi) => (
+        <GoogleMap
+          mapId="search-map"
+          googleMapsApi={googleMapsApi}
+          center={center}
+          className={className}
+          mapSettings={{
+            zoomControlOptions: {
+              position: googleMapsApi.ControlPosition.RIGHT_CENTER,
+            },
+            streetViewControl: false,
+            mapTypeControl: false,
+            fullscreenControl: false,
+            gestureHandling: "greedy",
+          }}
+        >
+          {(map) => (
+            <>
+              {providerList.map((provider) => (
+                <ProviderMapMarker
+                  key={provider._id}
+                  googleMapsApi={googleMapsApi}
+                  googleMap={map}
+                  provider={provider}
+                />
+              ))}
+              {children}
+            </>
+          )}
+        </GoogleMap>
+      )}
+    </GoogleMapsProxy>
+  );
+}

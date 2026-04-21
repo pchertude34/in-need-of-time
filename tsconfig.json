@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "lib": ["dom", "dom.iterable", "esnext"],
+    "target": "ESNext",
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
@@ -8,24 +8,9 @@
     "esModuleInterop": true,
     "module": "esnext",
     "moduleDetection": "force",
+    "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "jsx": "react-jsx",
-    "incremental": true,
-    // new stuff
-    "moduleResolution": "bundler",
-    "allowImportingTsExtensions": true,
-    // end new stuff
-    "plugins": [
-      {
-        "name": "next"
-      }
-    ],
-    "paths": {
-      "@/*": ["./*"]
-    },
-    "target": "ESNext"
-  },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", ".next/dev/types/**/*.ts"],
-  "exclude": ["node_modules"]
+    "allowImportingTsExtensions": true
+  }
 }

@@ -1,0 +1,14 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "module": "preserve",
+    "lib": ["DOM", "dom.iterable", "esnext"],
+    "jsx": "react-jsx",
+    "forceConsistentCasingInFileNames": true,
+    "paths": {
+      "@/*": ["./*"]
+    }
+  },
+  "include": ["**/*.ts", "**/*.tsx"],
+  "exclude": ["node_modules"]
+}
