@@ -42,15 +42,23 @@ There are a few more helpful database related commands:
 ### Running locally
 
 1. Make sure all dependencies are up to date by running `npm install`
-2. run `npm run dev`
-3. Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+
+#### Frontend
+
+1. Run `npm run frontend` to start the Next.js dev server
+2. Open [http://localhost:3000](http://localhost:3000) with your browser to see the result
+
+#### Studio
+
+1. Run `npm run studio` to start the Sanity Studio dev server
+2. Open [http://localhost:3333](http://localhost:3333) with your browser to access the CMS
 
 ## Accessing the CMS
 
 We use [sanity.io](https://www.sanity.io/) for a content management system. This allows our content administrators to add and update providers and services within our system. Sanity provides us with a prebuilt CMS UI as well as database and query tools.
 
 1. Setup a sanity account. You will need to be invited to the project.
-2. Access the CMS locally at [http://localhost:3000/studio](http://localhost:3000/studio)
+2. Run `npm run studio` and open [http://localhost:3333](http://localhost:3333) to access the CMS locally
 
 ## Deploy on Vercel
 
