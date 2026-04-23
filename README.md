@@ -20,6 +20,7 @@ The variables are grouped by package/app domain:
 - Root app (`frontend`): `NEXT_PUBLIC_*`, `OPENAI_API_KEY`, `FIRECRAWL_API_KEY`
 - Database package (`packages/db`): `DATABASE_URL`
 - Studio (`studio`): `SANITY_STUDIO_*`
+- App SDK apps (`apps/*`): `SANITY_APP_*`
 
 ### Installing Docker and running local database
 
@@ -52,6 +53,25 @@ There are a few more helpful database related commands:
 
 1. Run `npm run studio` to start the Sanity Studio dev server
 2. Open [http://localhost:3333](http://localhost:3333) with your browser to access the CMS
+
+#### App SDK Apps
+
+The `apps/` workspace contains Sanity App SDK apps.
+
+1. Ensure your `.env.local` includes all required `SANITY_APP_*` variables from `.env.example`
+2. Run a specific app script from the root workspace, for example:
+
+```
+npm run app:ai-provider-editor
+```
+
+You can also run any app package directly with npm workspaces:
+
+```
+npm run -w @in-need-of-time/ai-provider-editor dev
+```
+
+When the app starts, Sanity prints the local URL and a Sanity dashboard URL for loading the app.
 
 ## Accessing the CMS
 
