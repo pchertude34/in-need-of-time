@@ -1,0 +1,31 @@
+{
+  "name": "@in-need-of-time/ai-provider-editor",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "build": "sanity build",
+    "dev": "sanity dev",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@sanity/sdk": "^2.8.0",
+    "@sanity/sdk-react": "^2.8.0",
+    "react": "^19.2.5",
+    "react-dom": "^19.2.5",
+    "sanity": "^5.22.0"
+  },
+  "devDependencies": {
+    "@types/node": "^25.6.0",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^6.0.1",
+    "typescript": "^6.0.3",
+    "vite": "^8.0.10"
+  }
+}

@@ -5,6 +5,7 @@
   "workspaces": [
     "studio",
     "frontend",
+    "apps/*",
     "packages/*"
   ],
   "scripts": {
@@ -17,6 +18,7 @@
     "studio:typegen": "dotenv -e ./.env.local -- npm run -w @in-need-of-time/studio typegen",
     "studio:type-check": "dotenv -e ./.env.local -- npm run -w @in-need-of-time/studio type-check",
     "studio:generate-types": "dotenv -e ./.env.local -- npm run -w @in-need-of-time/studio generate-types",
+    "app:ai-provider-editor": "dotenv -e ./.env.local -- npm run -w @in-need-of-time/ai-provider-editor dev",
     "docker:up": "docker compose up -d",
     "docker:down": "docker compose down",
     "docker:reset": "docker compose down && docker volume rm $(docker volume ls -q --filter name=neon_data) && docker compose up -d",
