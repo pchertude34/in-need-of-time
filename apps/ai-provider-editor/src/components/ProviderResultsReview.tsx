@@ -20,7 +20,7 @@ const listStyle: CSSProperties = {
   gap: "14px",
 };
 
-function toProviderDoc(c: SanityProviderCandidate) {
+function toProviderDoc(c: SanityProviderCandidate, serviceTypeMap: Map<string, string>) {
   const doc: Record<string, unknown> = {
     _type: "provider",
     _id: crypto.randomUUID(),
@@ -34,11 +34,15 @@ function toProviderDoc(c: SanityProviderCandidate) {
   }
 
   if (c.serviceTypes?.length) {
-    doc.serviceTypes = c.serviceTypes.map((s, i) => ({
-      _key: `st-${i}`,
-      _type: "reference",
-      _ref: s._id,
-    }));
+    const refs = c.serviceTypes
+      .map((s, i) => {
+        const normalized = s._id.replace(/_/g, " ").toLowerCase();
+        const ref = serviceTypeMap.get(normalized);
+        if (!ref) return null;
+        return { _key: `st-${i}`, _type: "reference", _ref: ref };
+      })
+      .filter(Boolean);
+    if (refs.length) doc.serviceTypes = refs;
   }
 
   if (c.hoursOfOperation?.periods?.length) {
@@ -70,11 +74,18 @@ export function ProviderResultsReview({ job }: ProviderResultsReviewProps) {
 
   async function handleSave() {
     setSaveStatus("saving");
+
+    const serviceTypeDocs = await client.fetch<Array<{ _id: string; title: string }>>(
+      '*[_type == "serviceType"]{ _id, title }',
+    );
+    const serviceTypeMap = new Map(serviceTypeDocs.filter((d) => d.title).map((d) => [d.title.toLowerCase(), d._id]));
+
     let saved = 0;
     let failed = 0;
     for (const candidate of candidates) {
+      const doc = toProviderDoc(candidate, serviceTypeMap);
       try {
-        await client.create(toProviderDoc(candidate));
+        await client.createOrReplace(doc);
         saved++;
       } catch {
         failed++;
