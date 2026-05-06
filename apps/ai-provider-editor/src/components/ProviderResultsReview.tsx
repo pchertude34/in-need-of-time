@@ -1,6 +1,8 @@
+import { useState } from "react";
 import type { CSSProperties } from "react";
+import { useClient } from "@sanity/sdk-react";
 
-import type { PipelineJob } from "../types/pipeline";
+import type { PipelineJob, SanityProviderCandidate } from "../types/pipeline";
 import { ProviderCandidateCard } from "./ProviderCandidateCard";
 
 type ProviderResultsReviewProps = {
@@ -18,10 +20,69 @@ const listStyle: CSSProperties = {
   gap: "14px",
 };
 
+function toProviderDoc(c: SanityProviderCandidate) {
+  const doc: Record<string, unknown> = {
+    _type: "provider",
+    title: c.name,
+    description: c.description,
+    address: c.address,
+  };
+
+  if (c.location.latitude !== null && c.location.longitude !== null) {
+    doc.location = { _type: "geopoint", lat: c.location.latitude, lng: c.location.longitude };
+  }
+
+  if (c.serviceTypes?.length) {
+    doc.serviceTypes = c.serviceTypes.map((s, i) => ({
+      _key: `st-${i}`,
+      _type: "reference",
+      _ref: s._id,
+    }));
+  }
+
+  if (c.hoursOfOperation?.periods?.length) {
+    doc.hoursOfOperation = c.hoursOfOperation.periods.map((p, i) => ({
+      _key: `hr-${i}`,
+      open: p.open,
+      close: p.close,
+    }));
+  }
+
+  const contact: Record<string, string> = {};
+  if (c.contact.phone) contact.phone = c.contact.phone;
+  if (c.contact.website) contact.website = c.contact.website;
+  if (c.contact.email) contact.email = c.contact.email;
+  if (Object.keys(contact).length) doc.publicContact = contact;
+
+  return doc;
+}
+
 export function ProviderResultsReview({ job }: ProviderResultsReviewProps) {
+  const client = useClient({ apiVersion: "2024-03-09" });
+  const [saveStatus, setSaveStatus] = useState<"idle" | "saving" | "done">("idle");
+  const [savedCount, setSavedCount] = useState(0);
+  const [failedCount, setFailedCount] = useState(0);
+
   if (job.status !== "ready_for_review") return null;
 
   const candidates = job.output?.sanity ?? [];
+
+  async function handleSave() {
+    setSaveStatus("saving");
+    let saved = 0;
+    let failed = 0;
+    for (const candidate of candidates) {
+      try {
+        await client.create(toProviderDoc(candidate));
+        saved++;
+      } catch {
+        failed++;
+      }
+    }
+    setSavedCount(saved);
+    setFailedCount(failed);
+    setSaveStatus("done");
+  }
 
   return (
     <section style={sectionStyle}>
@@ -31,6 +92,19 @@ export function ProviderResultsReview({ job }: ProviderResultsReviewProps) {
           {candidates.length} provider candidate{candidates.length === 1 ? "" : "s"} found.
         </p>
       </div>
+
+      {candidates.length > 0 && (
+        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+          <button onClick={handleSave} disabled={saveStatus === "saving" || saveStatus === "done"}>
+            {saveStatus === "saving" ? "Saving…" : "Save to Sanity"}
+          </button>
+          {saveStatus === "done" && (
+            <span style={{ color: failedCount ? "#c00" : "#080" }}>
+              {savedCount} saved{failedCount ? `, ${failedCount} failed` : ""}
+            </span>
+          )}
+        </div>
+      )}
 
       {candidates.length ? (
         <div style={listStyle}>
