@@ -23,6 +23,7 @@ const listStyle: CSSProperties = {
 function toProviderDoc(c: SanityProviderCandidate) {
   const doc: Record<string, unknown> = {
     _type: "provider",
+    _id: crypto.randomUUID(),
     title: c.name,
     description: c.description,
     address: c.address,
