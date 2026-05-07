@@ -90,7 +90,7 @@ export default function App() {
 
           <PipelineProgress job={job} />
 
-          {job ? <ProviderResultsReview job={job} /> : null}
+          {job ? <ProviderResultsReview job={job} onJobUpdated={setJob} /> : null}
         </main>
       </SanityApp>
     </div>

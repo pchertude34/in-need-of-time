@@ -10,11 +10,14 @@ export type PipelineInput = {
 
 export type SanityBlock = {
   _type: "block";
+  _key?: string;
   children: Array<{
     _type: "span";
+    _key?: string;
     text: string;
+    marks?: string[];
   }>;
-  markDefs: [];
+  markDefs: Array<Record<string, unknown>>;
   style: "normal";
 };
 
@@ -91,4 +94,5 @@ export type PipelineJob = {
   approvedAt?: string;
   deniedAt?: string;
   reviewer?: string;
+  sanityDocumentIds?: string[];
 };
