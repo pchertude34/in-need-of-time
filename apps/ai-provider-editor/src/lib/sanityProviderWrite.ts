@@ -18,6 +18,7 @@ type SanityProviderDocument = {
   place?: {
     name?: string;
     address?: string;
+    placeId?: string;
     location?: {
       _type: "geopoint";
       lat?: number;
@@ -58,6 +59,7 @@ type SanityProviderDocument = {
 type ProviderWriteResult = {
   documentId: string;
   action: "created" | "updated";
+  skippedServiceTypes: string[];
 };
 
 const PROVIDER_QUERY = `*[
@@ -68,8 +70,55 @@ const PROVIDER_QUERY = `*[
   )
 ][0]._id`;
 
+const SERVICE_TYPE_QUERY = `*[_type == "serviceType"] {
+  _id,
+  name,
+  "slug": slug.current
+}`;
+
+type ServiceTypeDocument = {
+  _id: string;
+  name?: string;
+  slug?: string;
+};
+
+type ResolvedServiceTypeReferences = {
+  references: SanityProviderDocument["serviceTypes"];
+  skipped: string[];
+};
+
 function compactString(value: unknown): string {
   return typeof value === "string" ? value.trim() : "";
+}
+
+function normalizeLookupKey(value: string): string {
+  return value
+    .trim()
+    .toLowerCase()
+    .replace(/&/g, " and ")
+    .replace(/[_\s]+/g, "-")
+    .replace(/[^\p{L}\p{N}-]+/gu, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "");
+}
+
+function getServiceTypeAliasKeys(value: string): string[] {
+  const key = normalizeLookupKey(value);
+  const aliasMap: Record<string, string[]> = {
+    "food-assistance": ["food-pantry"],
+    "food-bank": ["food-pantry"],
+    "food-pantry": ["food-pantry"],
+    "food-box": ["food-boxes"],
+    "food-boxes": ["food-boxes"],
+    "food-delivery": ["food-delivery"],
+    "hot-meal": ["hot-meals"],
+    "hot-meals": ["hot-meals"],
+    "meal-program": ["hot-meals"],
+    shelter: ["temporary-shelter-anyone"],
+    "temporary-shelter": ["temporary-shelter-anyone"],
+  };
+
+  return [key, ...(aliasMap[key] ?? [])];
 }
 
 function stableKey(prefix: string, index: number): string {
@@ -78,6 +127,14 @@ function stableKey(prefix: string, index: number): string {
 
 function buildDocumentId(job: PipelineJob, index: number): string {
   return `provider-ai-${job.id}-${index}`.replace(/[^A-Za-z0-9._-]/g, "-");
+}
+
+function buildSyntheticPlaceId(candidate: SanityProviderCandidate): string {
+  const source =
+    compactString(candidate.contact?.website) || `${compactString(candidate.name)}-${compactString(candidate.address)}`;
+  const normalizedSource = normalizeLookupKey(source);
+
+  return `ai-generated-${normalizedSource || crypto.randomUUID()}`.slice(0, 180);
 }
 
 function toGeopoint(candidate: SanityProviderCandidate): SanityProviderDocument["location"] | undefined {
@@ -106,7 +163,11 @@ function withPortableTextKeys(blocks: SanityBlock[]): SanityBlock[] {
   }));
 }
 
-function buildProviderDocument(candidate: SanityProviderCandidate, job: PipelineJob): SanityProviderDocument {
+function buildProviderDocument(
+  candidate: SanityProviderCandidate,
+  job: PipelineJob,
+  serviceTypes: SanityProviderDocument["serviceTypes"],
+): SanityProviderDocument {
   const title = compactString(candidate.name);
   const address = compactString(candidate.address);
   const geopoint = toGeopoint(candidate);
@@ -130,6 +191,7 @@ function buildProviderDocument(candidate: SanityProviderCandidate, job: Pipeline
     place: {
       name: title,
       address,
+      placeId: buildSyntheticPlaceId(candidate),
       ...(geopoint ? { location: geopoint } : {}),
       type: "ai_generated",
     },
@@ -138,17 +200,7 @@ function buildProviderDocument(candidate: SanityProviderCandidate, job: Pipeline
       open: period.open,
       close: period.close,
     })),
-    serviceTypes: candidate.serviceTypes
-      .map((serviceType, index) =>
-        compactString(serviceType._id)
-          ? {
-              _key: stableKey("serviceType", index),
-              _type: "reference" as const,
-              _ref: serviceType._id,
-            }
-          : null,
-      )
-      .filter((serviceType): serviceType is NonNullable<typeof serviceType> => serviceType !== null),
+    serviceTypes,
     publicContact: {
       ...(phone ? { phone } : {}),
       ...(email ? { email } : {}),
@@ -175,6 +227,65 @@ async function findExistingProviderId(
   });
 
   return result ?? null;
+}
+
+function buildServiceTypeLookup(serviceTypes: ServiceTypeDocument[]): Map<string, ServiceTypeDocument> {
+  const lookup = new Map<string, ServiceTypeDocument>();
+
+  for (const serviceType of serviceTypes) {
+    for (const value of [serviceType._id, serviceType.name, serviceType.slug]) {
+      if (!value) continue;
+      lookup.set(normalizeLookupKey(value), serviceType);
+    }
+  }
+
+  return lookup;
+}
+
+async function resolveServiceTypeReferences(
+  client: SanityWriteClient,
+  candidate: SanityProviderCandidate,
+  candidateIndex: number,
+): Promise<ResolvedServiceTypeReferences> {
+  const serviceTypes = await client.fetch<ServiceTypeDocument[]>(SERVICE_TYPE_QUERY);
+  const lookup = buildServiceTypeLookup(serviceTypes);
+  const references: SanityProviderDocument["serviceTypes"] = [];
+  const skipped: string[] = [];
+  const seenDocumentIds = new Set<string>();
+
+  for (const rawServiceType of candidate.serviceTypes ?? []) {
+    const rawValue = compactString(rawServiceType._id);
+    if (!rawValue) continue;
+
+    const serviceType = getServiceTypeAliasKeys(rawValue)
+      .map((key) => lookup.get(key))
+      .find((value): value is ServiceTypeDocument => Boolean(value));
+
+    if (!serviceType) {
+      skipped.push(rawValue);
+      continue;
+    }
+
+    if (seenDocumentIds.has(serviceType._id)) continue;
+    seenDocumentIds.add(serviceType._id);
+    references.push({
+      _key: stableKey("serviceType", references.length),
+      _type: "reference",
+      _ref: serviceType._id,
+    });
+  }
+
+  if (!references.length) {
+    const availableNames = serviceTypes
+      .map((serviceType) => serviceType.name)
+      .filter(Boolean)
+      .join(", ");
+    throw new Error(
+      `Provider candidate ${candidateIndex + 1} has no matching Sanity service types. Use one of: ${availableNames}.`,
+    );
+  }
+
+  return { references, skipped };
 }
 
 export function validateProviderCandidates(value: unknown): SanityProviderCandidate[] {
@@ -217,12 +328,17 @@ export async function writeApprovedProvidersToSanity(
 
   for (const [index, candidate] of candidates.entries()) {
     const existingProviderId = await findExistingProviderId(client, candidate);
-    const providerDocument = buildProviderDocument(candidate, job);
+    const resolvedServiceTypes = await resolveServiceTypeReferences(client, candidate, index);
+    const providerDocument = buildProviderDocument(candidate, job, resolvedServiceTypes.references);
 
     if (existingProviderId) {
       const { _type, ...providerPatch } = providerDocument;
       const updated = await client.patch(existingProviderId).set(providerPatch).commit<{ _id: string }>();
-      results.push({ documentId: updated._id, action: "updated" });
+      results.push({
+        documentId: updated._id,
+        action: "updated",
+        skippedServiceTypes: resolvedServiceTypes.skipped,
+      });
       continue;
     }
 
@@ -230,7 +346,11 @@ export async function writeApprovedProvidersToSanity(
       ...providerDocument,
       _id: buildDocumentId(job, index),
     });
-    results.push({ documentId: created._id, action: "created" });
+    results.push({
+      documentId: created._id,
+      action: "created",
+      skippedServiceTypes: resolvedServiceTypes.skipped,
+    });
   }
 
   return results;
