@@ -10,7 +10,7 @@
   },
   "scripts": {
     "build": "sanity build",
-    "dev": "sanity dev",
+    "dev": "sanity dev --port 3334",
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
