@@ -11,7 +11,8 @@
   "scripts": {
     "build": "sanity build",
     "dev": "sanity dev --port 3334",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "test": "vitest run src/lib/pipelineInputValidation.test.ts"
   },
   "dependencies": {
     "@sanity/sdk": "^2.8.0",

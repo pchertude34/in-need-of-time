@@ -1,11 +1,16 @@
 import { useState, type CSSProperties, type FormEvent } from "react";
 
-import { startPipelineJob } from "../lib/pipelineApi";
+import { PipelineApiError, startPipelineJob } from "../lib/pipelineApi";
+import {
+  type PipelineInputField,
+  type PipelineInputFieldErrors,
+  validatePipelineInput,
+} from "../lib/pipelineInputValidation";
 import type { PipelineInput, PipelineJob } from "../types/pipeline";
 
 type ProviderSearchFormProps = {
   onJobStarted: (job: PipelineJob) => void;
-  onError: (message: string) => void;
+  onError: (message: string | null) => void;
 };
 
 const formStyle: CSSProperties = {
@@ -40,6 +45,18 @@ const inputStyle: CSSProperties = {
   font: "inherit",
 };
 
+const inputErrorStyle: CSSProperties = {
+  ...inputStyle,
+  borderColor: "#d92d20",
+};
+
+const fieldErrorStyle: CSSProperties = {
+  margin: 0,
+  color: "#b42318",
+  fontSize: "12px",
+  fontWeight: 500,
+};
+
 const buttonStyle: CSSProperties = {
   justifySelf: "start",
   minHeight: "40px",
@@ -53,16 +70,15 @@ const buttonStyle: CSSProperties = {
   fontWeight: 700,
 };
 
-function parseOptionalNumber(value: string, label: string): number | undefined {
-  const trimmed = value.trim();
-  if (!trimmed) return undefined;
+function clearFieldError(
+  currentErrors: PipelineInputFieldErrors,
+  field: PipelineInputField,
+): PipelineInputFieldErrors {
+  if (!currentErrors[field]) return currentErrors;
 
-  const parsed = Number(trimmed);
-  if (!Number.isFinite(parsed)) {
-    throw new Error(`${label} must be a valid number.`);
-  }
-
-  return parsed;
+  const nextErrors = { ...currentErrors };
+  delete nextErrors[field];
+  return nextErrors;
 }
 
 export function ProviderSearchForm({ onJobStarted, onError }: ProviderSearchFormProps) {
@@ -71,32 +87,64 @@ export function ProviderSearchForm({ onJobStarted, onError }: ProviderSearchForm
   const [category, setCategory] = useState("");
   const [perQuery, setPerQuery] = useState("");
   const [maxUrls, setMaxUrls] = useState("");
+  const [fieldErrors, setFieldErrors] = useState<PipelineInputFieldErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    onError(null);
+
+    const validationResult = validatePipelineInput({
+      city,
+      state,
+      category,
+      perQuery,
+      maxUrls,
+    });
+
+    if (!validationResult.ok) {
+      setFieldErrors(validationResult.fieldErrors);
+      return;
+    }
+
+    setFieldErrors({});
     setIsSubmitting(true);
 
     try {
-      const input: PipelineInput = {
-        city: city.trim(),
-        state: state.trim(),
-        category: category.trim(),
-        perQuery: parseOptionalNumber(perQuery, "perQuery"),
-        maxUrls: parseOptionalNumber(maxUrls, "maxUrls"),
-      };
+      const input: PipelineInput = validationResult.value;
 
       const job = await startPipelineJob(input);
       onJobStarted(job);
     } catch (error) {
+      if (error instanceof PipelineApiError && error.fieldErrors) {
+        setFieldErrors(error.fieldErrors);
+      }
+
       onError(error instanceof Error ? error.message : String(error));
     } finally {
       setIsSubmitting(false);
     }
   }
 
+  function updateField(field: PipelineInputField, value: string) {
+    const setters: Record<PipelineInputField, (nextValue: string) => void> = {
+      city: setCity,
+      state: setState,
+      category: setCategory,
+      perQuery: setPerQuery,
+      maxUrls: setMaxUrls,
+    };
+
+    setters[field](value);
+    setFieldErrors((current) => clearFieldError(current, field));
+  }
+
+  function getInputStyle(field: PipelineInputField): CSSProperties {
+    return fieldErrors[field] ? inputErrorStyle : inputStyle;
+  }
+
   return (
-    <form style={formStyle} onSubmit={handleSubmit}>
+    <form style={formStyle} onSubmit={handleSubmit} noValidate>
       <div>
         <h2 style={{ margin: "0 0 6px" }}>Start provider search</h2>
         <p style={{ margin: 0, color: "#555555" }}>
@@ -109,60 +157,65 @@ export function ProviderSearchForm({ onJobStarted, onError }: ProviderSearchForm
           City
           <input
             required
-            style={inputStyle}
+            style={getInputStyle("city")}
             type="text"
             value={city}
-            onChange={(event) => setCity(event.target.value)}
+            onChange={(event) => updateField("city", event.target.value)}
             placeholder="Salem"
           />
+          {fieldErrors.city ? <p style={fieldErrorStyle}>{fieldErrors.city}</p> : null}
         </label>
 
         <label style={labelStyle}>
           State
           <input
             required
-            style={inputStyle}
+            style={getInputStyle("state")}
             type="text"
             value={state}
-            onChange={(event) => setState(event.target.value)}
+            onChange={(event) => updateField("state", event.target.value)}
             placeholder="OR"
           />
+          {fieldErrors.state ? <p style={fieldErrorStyle}>{fieldErrors.state}</p> : null}
         </label>
 
         <label style={labelStyle}>
           Category
           <input
             required
-            style={inputStyle}
+            style={getInputStyle("category")}
             type="text"
             value={category}
-            onChange={(event) => setCategory(event.target.value)}
+            onChange={(event) => updateField("category", event.target.value)}
             placeholder="FOOD_BANK"
           />
+          {fieldErrors.category ? <p style={fieldErrorStyle}>{fieldErrors.category}</p> : null}
         </label>
 
         <label style={labelStyle}>
           perQuery
           <input
-            style={inputStyle}
+            style={getInputStyle("perQuery")}
             type="number"
             min="1"
             value={perQuery}
-            onChange={(event) => setPerQuery(event.target.value)}
+            onChange={(event) => updateField("perQuery", event.target.value)}
             placeholder="3"
           />
+          {fieldErrors.perQuery ? <p style={fieldErrorStyle}>{fieldErrors.perQuery}</p> : null}
         </label>
 
         <label style={labelStyle}>
           maxUrls
           <input
-            style={inputStyle}
+            style={getInputStyle("maxUrls")}
             type="number"
             min="1"
             value={maxUrls}
-            onChange={(event) => setMaxUrls(event.target.value)}
+            onChange={(event) => updateField("maxUrls", event.target.value)}
             placeholder="10"
           />
+          {fieldErrors.maxUrls ? <p style={fieldErrorStyle}>{fieldErrors.maxUrls}</p> : null}
         </label>
       </div>
 
