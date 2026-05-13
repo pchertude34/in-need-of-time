@@ -1,45 +1,13 @@
 import { type SanityConfig } from "@sanity/sdk";
 import { SanityApp } from "@sanity/sdk-react";
-import { useEffect, useState, type CSSProperties } from "react";
+import { useEffect, useState } from "react";
 
-import { PipelineProgress } from "./components/PipelineProgress";
+import { AppSidebar } from "./components/AppSidebar";
 import { ProviderResultsReview } from "./components/ProviderResultsReview";
 import { ProviderSearchForm } from "./components/ProviderSearchForm";
 import { getPipelineJob } from "./lib/pipelineApi";
 import type { PipelineJob } from "./types/pipeline";
-
-// import { SANITY_APP_DATASET, SANITY_APP_PROJECT_ID } from '../env';
-// console.log('process.env :>> ', process.env);
-
-const pageStyle: CSSProperties = {
-  minHeight: "100vh",
-  padding: "32px",
-  background: "#f7f7f5",
-  color: "#171717",
-  fontFamily: 'Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
-};
-
-const contentStyle: CSSProperties = {
-  display: "grid",
-  gap: "24px",
-  maxWidth: "1100px",
-  margin: "0 auto",
-};
-
-const headerStyle: CSSProperties = {
-  display: "grid",
-  gap: "6px",
-};
-
-const errorStyle: CSSProperties = {
-  maxWidth: "720px",
-  padding: "14px 16px",
-  border: "1px solid #fecdca",
-  borderRadius: "8px",
-  background: "#fffbfa",
-  color: "#b42318",
-  fontWeight: 700,
-};
+import "./index.css";
 
 export default function App() {
   const [job, setJob] = useState<PipelineJob | null>(null);
@@ -60,8 +28,8 @@ export default function App() {
       try {
         const updatedJob = await getPipelineJob(job.id);
         setJob(updatedJob);
-      } catch (error) {
-        setError(error instanceof Error ? error.message : String(error));
+      } catch (err) {
+        setError(err instanceof Error ? err.message : String(err));
         window.clearInterval(intervalId);
       }
     }, 2000);
@@ -69,28 +37,44 @@ export default function App() {
     return () => window.clearInterval(intervalId);
   }, [job?.id, job?.status]);
 
+  function handleNewJob() {
+    setJob(null);
+    setError(null);
+  }
+
   return (
-    <div style={pageStyle}>
-      <SanityApp config={config} fallback={<p>Loading...</p>}>
-        <main style={contentStyle}>
-          <header style={headerStyle}>
-            <h1 style={{ margin: 0 }}>AI Provider Editor</h1>
-            <p style={{ margin: 0, color: "#555555" }}>Local pipeline review</p>
-          </header>
+    <div className="flex h-screen overflow-hidden bg-white font-['Inter',ui-sans-serif,system-ui,sans-serif]">
+      <SanityApp config={config} fallback={<p className="p-8 text-sm text-slate-500">Loading…</p>}>
+        <AppSidebar job={job} onNewJob={handleNewJob} />
 
-          <ProviderSearchForm
-            onJobStarted={(nextJob) => {
-              setError(null);
-              setJob(nextJob);
-            }}
-            onError={setError}
-          />
+        <main className="flex-1 overflow-y-auto bg-[#f8fafc]">
+          <div className="mx-auto flex max-w-[960px] flex-col gap-8 px-8 py-10">
+            {/* Page header */}
+            <div className="flex flex-col items-center gap-2 pb-2">
+              <h1 className="text-[28px] font-bold tracking-tight text-[#0f172a]">Pipeline Review</h1>
+              <p className="text-[14px] text-[#64748b]">Create and review pipeline jobs</p>
+            </div>
 
-          {error ? <div style={errorStyle}>{error}</div> : null}
+            {/* Create job / status card */}
+            <ProviderSearchForm
+              job={job}
+              onJobStarted={(nextJob) => {
+                setError(null);
+                setJob(nextJob);
+              }}
+              onError={setError}
+            />
 
-          <PipelineProgress job={job} />
+            {/* Error banner */}
+            {error && (
+              <div className="rounded-lg border border-[#fecdca] bg-[#fffbfa] px-4 py-3 text-[14px] font-semibold text-[#b42318]">
+                {error}
+              </div>
+            )}
 
-          {job ? <ProviderResultsReview job={job} /> : null}
+            {/* Review section */}
+            {job && <ProviderResultsReview job={job} />}
+          </div>
         </main>
       </SanityApp>
     </div>
