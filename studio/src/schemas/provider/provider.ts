@@ -67,6 +67,10 @@ const providerSchema = defineType({
         Rule.custom(async (value: any, context) => {
           // This validation runs whenever a change is detected which can cause alot of API calls.
           // Don't run the query if we don't have a placeId to save on API calls.
+          if (value?.type === "ai_generated" && !value.placeId && (value.address || value.name || value.location)) {
+            return true;
+          }
+
           if (!value || !value.placeId) return "Place is required.";
 
           const isUnique = await isUniquePlace(value.placeId, context);

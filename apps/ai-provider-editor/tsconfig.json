@@ -11,6 +11,7 @@
     "moduleDetection": "force",
     "isolatedModules": true,
     "jsx": "preserve",
+    "types": ["node"],
     "incremental": true
   },
   "include": ["src/**/*"]
