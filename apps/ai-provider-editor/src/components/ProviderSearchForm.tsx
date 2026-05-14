@@ -1,6 +1,8 @@
 import { useState, type CSSProperties, type FormEvent } from "react";
+import { useClient } from "@sanity/sdk-react";
 
 import { PipelineApiError, startPipelineJob } from "../lib/pipelineApi";
+import { loadExistingProviders } from "../lib/loadExistingProviders";
 import {
   type PipelineInputField,
   type PipelineInputFieldErrors,
@@ -70,10 +72,16 @@ const buttonStyle: CSSProperties = {
   fontWeight: 700,
 };
 
-function clearFieldError(
-  currentErrors: PipelineInputFieldErrors,
-  field: PipelineInputField,
-): PipelineInputFieldErrors {
+const warningStyle: CSSProperties = {
+  margin: 0,
+  color: "#9a3412",
+  fontSize: "13px",
+  fontWeight: 600,
+};
+
+const SANITY_APP_API_VERSION = process.env.SANITY_APP_API_VERSION || "2024-03-09";
+
+function clearFieldError(currentErrors: PipelineInputFieldErrors, field: PipelineInputField): PipelineInputFieldErrors {
   if (!currentErrors[field]) return currentErrors;
 
   const nextErrors = { ...currentErrors };
@@ -82,6 +90,7 @@ function clearFieldError(
 }
 
 export function ProviderSearchForm({ onJobStarted, onError }: ProviderSearchFormProps) {
+  const client = useClient({ apiVersion: SANITY_APP_API_VERSION });
   const [city, setCity] = useState("");
   const [state, setState] = useState("");
   const [category, setCategory] = useState("");
@@ -89,10 +98,12 @@ export function ProviderSearchForm({ onJobStarted, onError }: ProviderSearchForm
   const [maxUrls, setMaxUrls] = useState("");
   const [fieldErrors, setFieldErrors] = useState<PipelineInputFieldErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [warning, setWarning] = useState<string | null>(null);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     onError(null);
+    setWarning(null);
 
     const validationResult = validatePipelineInput({
       city,
@@ -111,7 +122,19 @@ export function ProviderSearchForm({ onJobStarted, onError }: ProviderSearchForm
     setIsSubmitting(true);
 
     try {
+      let existingProviders: PipelineInput["existingProviders"] = [];
+      try {
+        existingProviders = await loadExistingProviders(client);
+      } catch (error) {
+        const warningMessage =
+          error instanceof Error
+            ? `Unable to preload existing Sanity providers for duplicate URL filtering: ${error.message}`
+            : "Unable to preload existing Sanity providers for duplicate URL filtering.";
+        setWarning(warningMessage);
+      }
+
       const input: PipelineInput = validationResult.value;
+      input.existingProviders = existingProviders;
 
       const job = await startPipelineJob(input);
       onJobStarted(job);
@@ -222,6 +245,8 @@ export function ProviderSearchForm({ onJobStarted, onError }: ProviderSearchForm
       <button style={buttonStyle} type="submit" disabled={isSubmitting}>
         {isSubmitting ? "Starting..." : "Start job"}
       </button>
+
+      {warning ? <p style={warningStyle}>{warning}</p> : null}
     </form>
   );
 }
