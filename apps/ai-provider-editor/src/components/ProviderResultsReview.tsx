@@ -352,6 +352,10 @@ function getReviewerName(user: ReturnType<typeof useCurrentUser>): string {
   return user?.email ?? user?.name ?? user?.id ?? "local-staff";
 }
 
+function formatSkipReason(reason: string): string {
+  return reason.replace(/_/g, " ");
+}
+
 export function ProviderResultsReview({ job, onJobUpdated }: ProviderResultsReviewProps) {
   const client = useClient({ apiVersion: SANITY_APP_API_VERSION });
   const user = useCurrentUser();
@@ -496,6 +500,57 @@ export function ProviderResultsReview({ job, onJobUpdated }: ProviderResultsRevi
           {providerForms.length} provider{providerForms.length === 1 ? "" : "s"}
         </span>
       </div>
+
+      {job.output?.skipped_urls?.length ? (
+        <div style={subtlePanelStyle}>
+          <h3 style={{ margin: "0 0 8px" }}>Skipped URLs</h3>
+          <p style={{ margin: "0 0 10px", color: "#555555" }}>
+            {job.output.skipped_urls.length} URL{job.output.skipped_urls.length === 1 ? "" : "s"} were skipped as
+            duplicates or invalid candidates.
+          </p>
+          <div style={{ display: "grid", gap: "8px" }}>
+            {job.output.skipped_urls.map((item, index) => (
+              <div
+                key={`${item.query}-${item.url}-${index}`}
+                style={{ border: "1px solid #e5e5e5", borderRadius: "6px", padding: "10px", background: "#fff" }}
+              >
+                <p style={{ margin: 0, fontWeight: 700, overflowWrap: "anywhere" }}>{item.url}</p>
+                <p style={{ margin: "4px 0 0", color: "#555555" }}>
+                  Query: {item.query} · Reason: {formatSkipReason(item.reason)}
+                </p>
+                {item.source.type === "previous_job" ? (
+                  <p style={{ margin: "4px 0 0", color: "#555555" }}>
+                    Matched prior job {item.source.jobId} ({item.source.jobStatus})
+                  </p>
+                ) : null}
+              </div>
+            ))}
+          </div>
+        </div>
+      ) : null}
+
+      {job.output?.directory_expansion?.length ? (
+        <div style={subtlePanelStyle}>
+          <h3 style={{ margin: "0 0 8px" }}>Directory Expansion</h3>
+          <div style={{ display: "grid", gap: "8px" }}>
+            {job.output.directory_expansion.map((entry, index) => (
+              <div
+                key={`${entry.listing_url}-${index}`}
+                style={{ border: "1px solid #e5e5e5", borderRadius: "6px", padding: "10px", background: "#fff" }}
+              >
+                <p style={{ margin: 0, fontWeight: 700, overflowWrap: "anywhere" }}>{entry.listing_url}</p>
+                <p style={{ margin: "4px 0 0", color: "#555555" }}>
+                  Discovered {entry.discovered_count} · Selected {entry.selected_count} · Skipped {entry.skipped_count}
+                  {entry.truncated ? " · Truncated" : ""}
+                </p>
+                {entry.truncation_reason ? (
+                  <p style={{ margin: "4px 0 0", color: "#555555" }}>{entry.truncation_reason}</p>
+                ) : null}
+              </div>
+            ))}
+          </div>
+        </div>
+      ) : null}
 
       {providerForms.length ? (
         <div style={listStyle}>
