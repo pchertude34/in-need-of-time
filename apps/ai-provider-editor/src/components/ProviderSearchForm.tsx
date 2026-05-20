@@ -1,22 +1,21 @@
 import { Check, Loader2 } from "lucide-react";
 import { useState, type FormEvent } from "react";
+import { useClient } from "@sanity/sdk-react";
 
-import { startPipelineJob } from "../lib/pipelineApi";
+import { PipelineApiError, startPipelineJob } from "../lib/pipelineApi";
+import { loadExistingProviders } from "../lib/loadExistingProviders";
+import {
+  type PipelineInputField,
+  type PipelineInputFieldErrors,
+  validatePipelineInput,
+} from "../lib/pipelineInputValidation";
 import type { PipelineInput, PipelineJob } from "../types/pipeline";
 
 type ProviderSearchFormProps = {
   job: PipelineJob | null;
   onJobStarted: (job: PipelineJob) => void;
-  onError: (message: string) => void;
+  onError: (message: string | null) => void;
 };
-
-function parseOptionalNumber(value: string, label: string): number | undefined {
-  const trimmed = value.trim();
-  if (!trimmed) return undefined;
-  const parsed = Number(trimmed);
-  if (!Number.isFinite(parsed)) throw new Error(`${label} must be a valid number.`);
-  return parsed;
-}
 
 type FieldProps = {
   label: string;
@@ -26,9 +25,10 @@ type FieldProps = {
   type?: string;
   required?: boolean;
   readOnly?: boolean;
+  error?: string;
 };
 
-function Field({ label, value, onChange, placeholder, type = "text", required, readOnly }: FieldProps) {
+function Field({ label, value, onChange, placeholder, type = "text", required, readOnly, error }: FieldProps) {
   return (
     <div className="flex flex-col gap-1.5">
       <label className="text-[13px] font-medium text-[#475569]">{label}</label>
@@ -39,8 +39,9 @@ function Field({ label, value, onChange, placeholder, type = "text", required, r
         placeholder={placeholder}
         required={required}
         readOnly={readOnly}
-        className={`h-[38px] rounded-lg border border-[1.5px] border-[#e2e8f0] bg-[#f8fafc] px-3 text-[14px] text-[#2d2d2d] outline-none transition-colors focus:border-[#2563eb] ${readOnly ? "cursor-default opacity-60" : ""}`}
+        className={`h-[38px] rounded-lg border border-[1.5px] ${error ? "border-[#d92d20]" : "border-[#e2e8f0]"} bg-[#f8fafc] px-3 text-[14px] text-[#2d2d2d] outline-none transition-colors focus:border-[#2563eb] ${readOnly ? "cursor-default opacity-60" : ""}`}
       />
+      {error && <p className="text-[12px] text-[#b42318]">{error}</p>}
     </div>
   );
 }
@@ -53,13 +54,23 @@ function StatusPill({ children }: { children: React.ReactNode }) {
   );
 }
 
+function clearFieldError(currentErrors: PipelineInputFieldErrors, field: PipelineInputField): PipelineInputFieldErrors {
+  if (!currentErrors[field]) return currentErrors;
+  const nextErrors = { ...currentErrors };
+  delete nextErrors[field];
+  return nextErrors;
+}
+
 export function ProviderSearchForm({ job, onJobStarted, onError }: ProviderSearchFormProps) {
+  const client = useClient({ apiVersion: process.env.SANITY_APP_API_VERSION || "2024-03-09" });
   const [city, setCity] = useState(job?.input.city ?? "");
   const [state, setState] = useState(job?.input.state ?? "");
   const [category, setCategory] = useState(job?.input.category ?? "");
   const [perQuery, setPerQuery] = useState(job?.input.perQuery != null ? String(job.input.perQuery) : "");
   const [maxUrls, setMaxUrls] = useState(job?.input.maxUrls != null ? String(job.input.maxUrls) : "");
+  const [fieldErrors, setFieldErrors] = useState<PipelineInputFieldErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [warning, setWarning] = useState<string | null>(null);
 
   const isProcessing = job?.status === "queued" || job?.status === "running";
   const isFinished = job?.status === "ready_for_review" || job?.status === "approved";
@@ -69,22 +80,52 @@ export function ProviderSearchForm({ job, onJobStarted, onError }: ProviderSearc
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    onError(null);
+    setWarning(null);
+
+    const validationResult = validatePipelineInput({ city, state, category, perQuery, maxUrls });
+
+    if (!validationResult.ok) {
+      setFieldErrors(validationResult.fieldErrors);
+      return;
+    }
+
+    setFieldErrors({});
     setIsSubmitting(true);
     try {
-      const input: PipelineInput = {
-        city: city.trim(),
-        state: state.trim(),
-        category: category.trim(),
-        perQuery: parseOptionalNumber(perQuery, "perQuery"),
-        maxUrls: parseOptionalNumber(maxUrls, "maxUrls"),
-      };
-      const newJob = await startPipelineJob(input);
+      let existingProviders: PipelineInput["existingProviders"] = [];
+      try {
+        existingProviders = await loadExistingProviders(client);
+      } catch (error) {
+        setWarning(
+          error instanceof Error
+            ? `Unable to preload existing providers for duplicate filtering: ${error.message}`
+            : "Unable to preload existing providers for duplicate filtering.",
+        );
+      }
+
+      const newJob = await startPipelineJob({ ...validationResult.value, existingProviders });
       onJobStarted(newJob);
     } catch (error) {
+      if (error instanceof PipelineApiError && error.fieldErrors) {
+        setFieldErrors(error.fieldErrors);
+      }
       onError(error instanceof Error ? error.message : String(error));
     } finally {
       setIsSubmitting(false);
     }
+  }
+
+  function updateField(field: PipelineInputField, value: string) {
+    const setters: Record<PipelineInputField, (nextValue: string) => void> = {
+      city: setCity,
+      state: setState,
+      category: setCategory,
+      perQuery: setPerQuery,
+      maxUrls: setMaxUrls,
+    };
+    setters[field](value);
+    setFieldErrors((current) => clearFieldError(current, field));
   }
 
   return (
@@ -103,44 +144,52 @@ export function ProviderSearchForm({ job, onJobStarted, onError }: ProviderSearc
         <Field
           label="City"
           value={isReadOnly ? (job?.input.city ?? "") : city}
-          onChange={!isReadOnly ? setCity : undefined}
+          onChange={!isReadOnly ? (v) => updateField("city", v) : undefined}
           placeholder="Salem"
           required={!isReadOnly}
           readOnly={isReadOnly}
+          error={fieldErrors.city}
         />
         <Field
           label="State"
           value={isReadOnly ? (job?.input.state ?? "") : state}
-          onChange={!isReadOnly ? setState : undefined}
+          onChange={!isReadOnly ? (v) => updateField("state", v) : undefined}
           placeholder="OR"
           required={!isReadOnly}
           readOnly={isReadOnly}
+          error={fieldErrors.state}
         />
         <Field
           label="Category"
           value={isReadOnly ? (job?.input.category ?? "") : category}
-          onChange={!isReadOnly ? setCategory : undefined}
+          onChange={!isReadOnly ? (v) => updateField("category", v) : undefined}
           placeholder="FOOD_BANK"
           required={!isReadOnly}
           readOnly={isReadOnly}
+          error={fieldErrors.category}
         />
         <Field
           label="Per Query"
           value={isReadOnly ? (job?.input.perQuery != null ? String(job.input.perQuery) : "") : perQuery}
-          onChange={!isReadOnly ? setPerQuery : undefined}
+          onChange={!isReadOnly ? (v) => updateField("perQuery", v) : undefined}
           placeholder="3"
           type="number"
           readOnly={isReadOnly}
+          error={fieldErrors.perQuery}
         />
         <Field
           label="Max URLs"
           value={isReadOnly ? (job?.input.maxUrls != null ? String(job.input.maxUrls) : "") : maxUrls}
-          onChange={!isReadOnly ? setMaxUrls : undefined}
+          onChange={!isReadOnly ? (v) => updateField("maxUrls", v) : undefined}
           placeholder="10"
           type="number"
           readOnly={isReadOnly}
+          error={fieldErrors.maxUrls}
         />
       </div>
+
+      {/* Warning */}
+      {warning && <p className="text-[12px] font-medium text-[#9a3412]">{warning}</p>}
 
       {/* Buttons / status row */}
       <div className="flex flex-wrap items-center gap-3">

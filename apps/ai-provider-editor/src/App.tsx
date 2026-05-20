@@ -73,7 +73,7 @@ export default function App() {
             )}
 
             {/* Review section */}
-            {job && <ProviderResultsReview job={job} />}
+            {job && <ProviderResultsReview job={job} onJobUpdated={setJob} />}
           </div>
         </main>
       </SanityApp>

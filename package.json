@@ -15,6 +15,7 @@
     "frontend": "dotenv -e ./.env.local -- npm run -w @in-need-of-time/frontend dev",
     "frontend:build": "dotenv -e ./.env.local -- npm run -w @in-need-of-time/frontend build",
     "studio": "dotenv -e ./.env.local -- npm run -w @in-need-of-time/studio dev",
+    "dev:all-review": "dotenv -e ./.env.local -- bash -c 'set -euo pipefail; trap \"kill 0\" EXIT INT TERM; AGENTS_DIR=\"${ITON_AGENTS_DIR:-$(cd .. && pwd)/IToN_Agents}\"; if [ ! -d \"$AGENTS_DIR\" ]; then echo \"IToN_Agents not found at $AGENTS_DIR\"; echo \"Set ITON_AGENTS_DIR in .env.local (or shell env) to your local IToN_Agents path.\"; exit 1; fi; check_port(){ local p=\"$1\"; if command -v lsof >/dev/null 2>&1; then lsof -nP -iTCP:\"$p\" -sTCP:LISTEN >/dev/null 2>&1; elif command -v ss >/dev/null 2>&1; then ss -ltn | grep -q \":$p \"; else return 1; fi; }; for port in 3000 3333 3334; do if check_port \"$port\"; then echo \"Port $port is already in use. Stop the existing process and retry.\"; exit 1; fi; done; npm run studio & npm run app:ai-provider-editor & (cd \"$AGENTS_DIR\" && npm run server) & wait'",
     "studio:typegen": "dotenv -e ./.env.local -- npm run -w @in-need-of-time/studio typegen",
     "studio:type-check": "dotenv -e ./.env.local -- npm run -w @in-need-of-time/studio type-check",
     "studio:generate-types": "dotenv -e ./.env.local -- npm run -w @in-need-of-time/studio generate-types",

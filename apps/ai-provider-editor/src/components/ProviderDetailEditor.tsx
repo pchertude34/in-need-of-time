@@ -6,7 +6,7 @@ import { displayValue, flattenDescription, formatList } from "./utils";
 type ProviderDetailEditorProps = {
   candidate: SanityProviderCandidate;
   onApprove: (candidate: SanityProviderCandidate) => Promise<void>;
-  onDeny: (candidate: SanityProviderCandidate) => void;
+  onDeny: (candidate: SanityProviderCandidate) => Promise<void>;
   onSave: (candidate: SanityProviderCandidate) => Promise<void>;
 };
 
@@ -119,9 +119,14 @@ export function ProviderDetailEditor({ candidate, onApprove, onDeny, onSave }: P
           <button
             type="button"
             disabled={actionStatus === "saving"}
-            onClick={() => {
-              onDeny(buildEdited());
-              setActionStatus("denied");
+            onClick={async () => {
+              setActionStatus("saving");
+              try {
+                await onDeny(buildEdited());
+                setActionStatus("denied");
+              } catch {
+                setActionStatus("error");
+              }
             }}
             className="rounded-lg border border-[1.5px] border-[#fecaca] bg-[#fef2f2] px-4 py-2 text-[14px] font-semibold text-[#dc2626] transition-colors hover:bg-red-50 disabled:opacity-50"
           >

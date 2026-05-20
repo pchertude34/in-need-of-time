@@ -1,67 +1,28 @@
 import { useState } from "react";
-import { useClient } from "@sanity/sdk-react";
+import { useClient, useCurrentUser } from "@sanity/sdk-react";
 
-import type { HoursPeriod, PipelineJob, SanityBlock, SanityProviderCandidate } from "../types/pipeline";
+import type { PipelineJob, SanityProviderCandidate } from "../types/pipeline";
+import { approvePipelineJob, denyPipelineJob } from "../lib/pipelineApi";
+import { validateProviderCandidates, writeApprovedProvidersToSanity } from "../lib/sanityProviderWrite";
 import { ProviderListCard } from "./ProviderCandidateCard";
 import { ProviderDetailEditor } from "./ProviderDetailEditor";
 
 type ProviderResultsReviewProps = {
   job: PipelineJob;
+  onJobUpdated: (job: PipelineJob) => void;
 };
 
-function toProviderDoc(c: SanityProviderCandidate, serviceTypeMap: Map<string, string>, id: string) {
-  const doc: Record<string, unknown> = {
-    _type: "provider",
-    _id: id,
-    title: c.name,
-    address: c.address,
-    description: c.description?.map((block: SanityBlock, i: number) => ({
-      ...block,
-      _key: (block as SanityBlock & { _key?: string })._key ?? `block-${i}`,
-    })),
-  };
-
-  const place: Record<string, unknown> = {
-    name: c.name,
-    address: c.address,
-  };
-  if (c.location?.latitude !== null && c.location?.longitude !== null) {
-    place.location = { _type: "geopoint", lat: c.location.latitude, lng: c.location.longitude };
-    doc.location = { _type: "geopoint", lat: c.location.latitude, lng: c.location.longitude };
-  }
-  doc.place = place;
-
-  if (c.serviceTypes?.length) {
-    const refs = c.serviceTypes
-      .map((s, i) => {
-        const normalized = s._id.replace(/_/g, " ").toLowerCase();
-        const ref = serviceTypeMap.get(normalized);
-        if (!ref) return null;
-        return { _key: `st-${i}`, _type: "reference", _ref: ref };
-      })
-      .filter(Boolean);
-    if (refs.length) doc.serviceTypes = refs;
-  }
-
-  if (c.hoursOfOperation?.periods?.length) {
-    doc.hoursOfOperation = c.hoursOfOperation.periods.map((p: HoursPeriod, i: number) => ({
-      _key: `hr-${i}`,
-      open: p.open,
-      close: p.close,
-    }));
-  }
-
-  const contact: Record<string, string> = {};
-  if (c.contact?.phone) contact.phone = c.contact.phone;
-  if (c.contact?.website) contact.website = c.contact.website;
-  if (c.contact?.email) contact.email = c.contact.email;
-  if (Object.keys(contact).length) doc.publicContact = contact;
-
-  return doc;
+function getReviewerName(user: ReturnType<typeof useCurrentUser>): string {
+  return user?.email ?? user?.name ?? user?.id ?? "local-staff";
 }
 
-export function ProviderResultsReview({ job }: ProviderResultsReviewProps) {
+function formatSkipReason(reason: string): string {
+  return reason.replace(/_/g, " ");
+}
+
+export function ProviderResultsReview({ job, onJobUpdated }: ProviderResultsReviewProps) {
   const client = useClient({ apiVersion: "2024-03-09" });
+  const user = useCurrentUser();
   const [selectedIndex, setSelectedIndex] = useState(0);
 
   if (job.status !== "ready_for_review") return null;
@@ -77,27 +38,29 @@ export function ProviderResultsReview({ job }: ProviderResultsReviewProps) {
   }
 
   const selected = candidates[selectedIndex];
-
-  async function saveToSanity(candidate: SanityProviderCandidate) {
-    const serviceTypeDocs = await client.fetch<Array<{ _id: string; name: string }>>(
-      '*[_type == "serviceType"]{ _id, name }',
-    );
-    const serviceTypeMap = new Map(serviceTypeDocs.filter((d) => d.name).map((d) => [d.name.toLowerCase(), d._id]));
-    const id = `${job.id}-${selectedIndex}`;
-    const doc = toProviderDoc(candidate, serviceTypeMap, id);
-    await client.createOrReplace(doc);
-  }
+  const reviewerName = getReviewerName(user);
+  const skippedUrls = job.output?.skipped_urls ?? [];
+  const directoryExpansion = job.output?.directory_expansion ?? [];
 
   async function handleApprove(candidate: SanityProviderCandidate) {
-    await saveToSanity(candidate);
+    const validated = validateProviderCandidates([candidate]);
+    const writeResults = await writeApprovedProvidersToSanity(client, validated, job);
+    const approvedJob = await approvePipelineJob(job.id, reviewerName);
+    onJobUpdated({
+      ...approvedJob,
+      output: approvedJob.output ? { ...approvedJob.output, sanity: candidates } : approvedJob.output,
+      sanityDocumentIds: writeResults.map((r) => r.documentId),
+    });
   }
 
-  function handleDeny(_candidate: SanityProviderCandidate) {
-    // Deny = skip this candidate, no Sanity write
+  async function handleDeny(_candidate: SanityProviderCandidate) {
+    const deniedJob = await denyPipelineJob(job.id, reviewerName);
+    onJobUpdated(deniedJob);
   }
 
   async function handleSave(candidate: SanityProviderCandidate) {
-    await saveToSanity(candidate);
+    const validated = validateProviderCandidates([candidate]);
+    await writeApprovedProvidersToSanity(client, validated, job);
   }
 
   return (
@@ -107,6 +70,49 @@ export function ProviderResultsReview({ job }: ProviderResultsReviewProps) {
         <h2 className="text-[28px] font-bold tracking-tight text-[#0f172a]">Review Job</h2>
         <p className="text-[14px] text-[#64748b]">Readable view of agent output</p>
       </div>
+
+      {/* Skipped URLs */}
+      {skippedUrls.length > 0 && (
+        <div className="rounded-lg border border-[#e2e8f0] bg-[#f8fafc] p-4">
+          <h3 className="mb-2 text-[13px] font-semibold text-[#0f172a]">Skipped URLs ({skippedUrls.length})</h3>
+          <div className="flex flex-col gap-2">
+            {skippedUrls.map((item, index) => (
+              <div
+                key={`${item.query}-${item.url}-${index}`}
+                className="rounded-md border border-[#e2e8f0] bg-white px-3 py-2"
+              >
+                <p className="break-all text-[12px] font-semibold text-[#0f172a]">{item.url}</p>
+                <p className="text-[11px] text-[#64748b]">
+                  Query: {item.query} · Reason: {formatSkipReason(item.reason)}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Directory expansion */}
+      {directoryExpansion.length > 0 && (
+        <div className="rounded-lg border border-[#e2e8f0] bg-[#f8fafc] p-4">
+          <h3 className="mb-2 text-[13px] font-semibold text-[#0f172a]">
+            Directory Expansion ({directoryExpansion.length})
+          </h3>
+          <div className="flex flex-col gap-2">
+            {directoryExpansion.map((entry, index) => (
+              <div
+                key={`${entry.listing_url}-${index}`}
+                className="rounded-md border border-[#e2e8f0] bg-white px-3 py-2"
+              >
+                <p className="break-all text-[12px] font-semibold text-[#0f172a]">{entry.listing_url}</p>
+                <p className="text-[11px] text-[#64748b]">
+                  Discovered {entry.discovered_count} · Selected {entry.selected_count} · Skipped {entry.skipped_count}
+                  {entry.truncated ? " · Truncated" : ""}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Two-panel layout */}
       <div className="flex items-start gap-4">
