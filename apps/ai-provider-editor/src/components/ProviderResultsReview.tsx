@@ -24,6 +24,7 @@ export function ProviderResultsReview({ job, onJobUpdated }: ProviderResultsRevi
   const client = useClient({ apiVersion: "2024-03-09" });
   const user = useCurrentUser();
   const [selectedIndex, setSelectedIndex] = useState(0);
+  const [completeStatus, setCompleteStatus] = useState<"idle" | "saving" | "error">("idle");
 
   if (job.status !== "ready_for_review") return null;
 
@@ -45,11 +46,10 @@ export function ProviderResultsReview({ job, onJobUpdated }: ProviderResultsRevi
   async function handleApprove(candidate: SanityProviderCandidate) {
     const validated = validateProviderCandidates([candidate]);
     const writeResults = await writeApprovedProvidersToSanity(client, validated, job);
-    const approvedJob = await approvePipelineJob(job.id, reviewerName);
     onJobUpdated({
-      ...approvedJob,
-      output: approvedJob.output ? { ...approvedJob.output, sanity: candidates } : approvedJob.output,
-      sanityDocumentIds: writeResults.map((r) => r.documentId),
+      ...job,
+      output: job.output ? { ...job.output, sanity: candidates } : job.output,
+      sanityDocumentIds: [...(job.sanityDocumentIds ?? []), ...writeResults.map((r) => r.documentId)],
     });
   }
 
@@ -63,12 +63,41 @@ export function ProviderResultsReview({ job, onJobUpdated }: ProviderResultsRevi
     await writeApprovedProvidersToSanity(client, validated, job);
   }
 
+  async function handleCompleteReview() {
+    setCompleteStatus("saving");
+    try {
+      const approvedJob = await approvePipelineJob(job.id, reviewerName);
+      onJobUpdated({
+        ...approvedJob,
+        output: approvedJob.output ? { ...approvedJob.output, sanity: candidates } : approvedJob.output,
+        sanityDocumentIds: job.sanityDocumentIds,
+      });
+    } catch {
+      setCompleteStatus("error");
+    }
+  }
+
   return (
     <section className="flex flex-col gap-6">
       {/* Section title */}
-      <div className="flex flex-col items-center gap-2 py-4">
-        <h2 className="text-[28px] font-bold tracking-tight text-[#0f172a]">Review Job</h2>
-        <p className="text-[14px] text-[#64748b]">Readable view of agent output</p>
+      <div className="flex items-center justify-between py-4">
+        <div className="flex flex-col gap-1">
+          <h2 className="text-[28px] font-bold tracking-tight text-[#0f172a]">Review Job</h2>
+          <p className="text-[14px] text-[#64748b]">Readable view of agent output</p>
+        </div>
+        <div className="flex flex-col items-end gap-1">
+          <button
+            type="button"
+            disabled={completeStatus === "saving"}
+            onClick={handleCompleteReview}
+            className="rounded-lg bg-[#2563eb] px-5 py-2.5 text-[14px] font-semibold text-white shadow-sm transition-colors hover:bg-blue-700 disabled:opacity-60"
+          >
+            {completeStatus === "saving" ? "Completing…" : "Complete Review"}
+          </button>
+          {completeStatus === "error" && (
+            <p className="text-[12px] text-[#dc2626]">Failed — check console for details.</p>
+          )}
+        </div>
       </div>
 
       {/* Skipped URLs */}
