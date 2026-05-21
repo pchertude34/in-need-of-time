@@ -45,6 +45,60 @@ const providerSchema = defineType({
       rows: 3,
     }),
     defineField({
+      name: "freshness",
+      title: "Freshness",
+      type: "object",
+      description: "Metadata from local stale-provider checks.",
+      fields: [
+        defineField({
+          name: "sourceUrl",
+          title: "Source URL",
+          type: "url",
+        }),
+        defineField({
+          name: "lastCheckedAt",
+          title: "Last Checked At",
+          type: "datetime",
+        }),
+        defineField({
+          name: "lastSuccessfulScrapeAt",
+          title: "Last Successful Scrape At",
+          type: "datetime",
+        }),
+        defineField({
+          name: "status",
+          title: "Status",
+          type: "string",
+          options: {
+            list: [
+              { title: "Current", value: "current" },
+              { title: "Needs Review", value: "needs_review" },
+              { title: "Failed", value: "failed" },
+              { title: "Skipped", value: "skipped" },
+            ],
+            layout: "radio",
+          },
+        }),
+        defineField({
+          name: "lastCheckSummary",
+          title: "Last Check Summary",
+          type: "text",
+          rows: 3,
+        }),
+        defineField({
+          name: "lastDiffFields",
+          title: "Last Diff Fields",
+          type: "array",
+          of: [{ type: "string" }],
+        }),
+        defineField({
+          name: "lastRunId",
+          title: "Last Run ID",
+          type: "string",
+        }),
+      ],
+    }),
+    defineField({
       name: "place",
       title: "Place",
       type: "object",
