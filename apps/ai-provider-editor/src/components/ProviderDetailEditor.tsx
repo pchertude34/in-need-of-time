@@ -46,6 +46,25 @@ function LabeledField({ label, value, onChange, multiline, className }: LabeledF
 
 type ActionStatus = "idle" | "saving" | "approved" | "saved" | "denied" | "error";
 
+function textToDescriptionBlock(text: string): SanityProviderCandidate["description"] {
+  return [
+    {
+      _type: "block",
+      children: [{ _type: "span", text }],
+      markDefs: [],
+      style: "normal",
+    },
+  ];
+}
+
+function parseList(value: string): Array<{ _id: string }> {
+  return value
+    .split(/[,\n]/)
+    .map((item) => item.trim())
+    .filter(Boolean)
+    .map((_id) => ({ _id }));
+}
+
 export function ProviderDetailEditor({ candidate, onApprove, onDeny, onSave }: ProviderDetailEditorProps) {
   const [actionStatus, setActionStatus] = useState<ActionStatus>("idle");
   const [name, setName] = useState(displayValue(candidate.name));
@@ -69,8 +88,8 @@ export function ProviderDetailEditor({ candidate, onApprove, onDeny, onSave }: P
       name,
       address,
       contact: { phone, email, website },
-      description: candidate.description,
-      serviceTypes: candidate.serviceTypes,
+      description: textToDescriptionBlock(description),
+      serviceTypes: parseList(serviceTypes),
       location: {
         latitude: latitude ? Number(latitude) : null,
         longitude: longitude ? Number(longitude) : null,
@@ -78,6 +97,7 @@ export function ProviderDetailEditor({ candidate, onApprove, onDeny, onSave }: P
       hoursOfOperation: {
         ...candidate.hoursOfOperation,
         weekdayText: hours.split("\n").filter(Boolean),
+        periods: candidate.hoursOfOperation?.periods ?? [],
       },
     };
   }

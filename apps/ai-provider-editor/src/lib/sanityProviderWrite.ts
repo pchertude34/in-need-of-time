@@ -54,6 +54,15 @@ type SanityProviderDocument = {
     website?: string;
   };
   description: SanityBlock[];
+  freshness: {
+    sourceUrl?: string;
+    lastCheckedAt: string;
+    lastSuccessfulScrapeAt?: string;
+    status: "current";
+    lastCheckSummary: string;
+    lastDiffFields: string[];
+    lastRunId: string;
+  };
 };
 
 type ProviderWriteResult = {
@@ -207,6 +216,14 @@ function buildProviderDocument(
       ...(website ? { website } : {}),
     },
     description: withPortableTextKeys(candidate.description ?? []),
+    freshness: {
+      ...(website ? { sourceUrl: website } : {}),
+      lastCheckedAt: new Date().toISOString(),
+      status: "current",
+      lastCheckSummary: `Initialized from approved pipeline job ${job.id}.`,
+      lastDiffFields: [],
+      lastRunId: job.id,
+    },
   };
 }
 

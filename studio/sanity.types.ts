@@ -158,6 +158,15 @@ export type Provider = {
   _rev: string;
   title?: string;
   agentRequest?: string;
+  freshness?: {
+    sourceUrl?: string;
+    lastCheckedAt?: string;
+    lastSuccessfulScrapeAt?: string;
+    status?: "current" | "needs_review" | "failed" | "skipped";
+    lastCheckSummary?: string;
+    lastDiffFields?: Array<string>;
+    lastRunId?: string;
+  };
   place?: {
     name?: string;
     address?: string;
@@ -325,3 +334,16 @@ export type AllSanitySchemaTypes =
   | SanityFileAsset
   | SanityAssetSourceData
   | SanityImageAsset;
+
+// Source: src/schemas/provider/provider.ts
+// Variable: query
+// Query: !defined(*[    _type == "provider" &&    !(_id in [$draft, $published]) &&    place.placeId == $placeId  ][0]._id)
+export type QueryResult = false | true;
+
+// Query TypeMap
+import "@sanity/client";
+declare module "@sanity/client" {
+  interface SanityQueries {
+    '!defined(*[\n    _type == "provider" &&\n    !(_id in [$draft, $published]) &&\n    place.placeId == $placeId\n  ][0]._id)': QueryResult;
+  }
+}
