@@ -1,352 +1,16 @@
-import { useEffect, useMemo, useState, type CSSProperties } from "react";
+import { useState } from "react";
 import { useClient, useCurrentUser } from "@sanity/sdk-react";
 
-import type { HoursPeriod, PipelineJob, SanityBlock, SanityProviderCandidate } from "../types/pipeline";
+import type { PipelineJob, SanityProviderCandidate } from "../types/pipeline";
 import { approvePipelineJob, denyPipelineJob } from "../lib/pipelineApi";
 import { validateProviderCandidates, writeApprovedProvidersToSanity } from "../lib/sanityProviderWrite";
+import { ProviderListCard } from "./ProviderCandidateCard";
+import { ProviderDetailEditor } from "./ProviderDetailEditor";
 
 type ProviderResultsReviewProps = {
   job: PipelineJob;
   onJobUpdated: (job: PipelineJob) => void;
 };
-
-type ProviderReviewFormState = {
-  localId: string;
-  name: string;
-  descriptionText: string;
-  address: string;
-  latitude: string;
-  longitude: string;
-  serviceTypesText: string;
-  weekdayText: string;
-  periods: HoursPeriod[];
-  phone: string;
-  email: string;
-  website: string;
-};
-
-const SANITY_APP_API_VERSION = process.env.SANITY_APP_API_VERSION || "2024-03-09";
-
-const dayOptions = [
-  { value: 0, label: "Sunday" },
-  { value: 1, label: "Monday" },
-  { value: 2, label: "Tuesday" },
-  { value: 3, label: "Wednesday" },
-  { value: 4, label: "Thursday" },
-  { value: 5, label: "Friday" },
-  { value: 6, label: "Saturday" },
-];
-
-const sectionStyle: CSSProperties = {
-  display: "grid",
-  gap: "18px",
-  maxWidth: "980px",
-};
-
-const reviewHeaderStyle: CSSProperties = {
-  display: "flex",
-  flexWrap: "wrap",
-  justifyContent: "space-between",
-  gap: "12px",
-  alignItems: "start",
-};
-
-const countStyle: CSSProperties = {
-  width: "fit-content",
-  borderRadius: "999px",
-  padding: "4px 10px",
-  background: "#eeeeee",
-  color: "#171717",
-  fontSize: "13px",
-  fontWeight: 700,
-};
-
-const listStyle: CSSProperties = {
-  display: "grid",
-  gap: "16px",
-};
-
-const cardStyle: CSSProperties = {
-  display: "grid",
-  gap: "18px",
-  padding: "18px",
-  border: "1px solid #d9d9d9",
-  borderRadius: "8px",
-  background: "#ffffff",
-};
-
-const cardHeaderStyle: CSSProperties = {
-  display: "flex",
-  flexWrap: "wrap",
-  justifyContent: "space-between",
-  gap: "12px",
-  alignItems: "start",
-};
-
-const fieldGridStyle: CSSProperties = {
-  display: "grid",
-  gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
-  gap: "14px",
-};
-
-const twoColumnGridStyle: CSSProperties = {
-  display: "grid",
-  gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
-  gap: "14px",
-};
-
-const labelStyle: CSSProperties = {
-  display: "grid",
-  gap: "6px",
-  color: "#202020",
-  fontSize: "14px",
-  fontWeight: 700,
-};
-
-const inputStyle: CSSProperties = {
-  minHeight: "40px",
-  border: "1px solid #c8c8c8",
-  borderRadius: "6px",
-  padding: "8px 10px",
-  font: "inherit",
-  background: "#ffffff",
-};
-
-const textareaStyle: CSSProperties = {
-  ...inputStyle,
-  minHeight: "100px",
-  resize: "vertical",
-};
-
-const helpTextStyle: CSSProperties = {
-  margin: 0,
-  color: "#666666",
-  fontSize: "13px",
-  fontWeight: 400,
-};
-
-const subSectionStyle: CSSProperties = {
-  display: "grid",
-  gap: "10px",
-};
-
-const periodRowStyle: CSSProperties = {
-  display: "grid",
-  gridTemplateColumns: "repeat(auto-fit, minmax(130px, 1fr))",
-  gap: "10px",
-  alignItems: "end",
-};
-
-const actionRowStyle: CSSProperties = {
-  display: "flex",
-  flexWrap: "wrap",
-  gap: "10px",
-  alignItems: "center",
-};
-
-const buttonStyle: CSSProperties = {
-  minHeight: "38px",
-  border: 0,
-  borderRadius: "6px",
-  padding: "8px 14px",
-  background: "#171717",
-  color: "#ffffff",
-  cursor: "pointer",
-  font: "inherit",
-  fontWeight: 700,
-};
-
-const secondaryButtonStyle: CSSProperties = {
-  ...buttonStyle,
-  border: "1px solid #c8c8c8",
-  background: "#ffffff",
-  color: "#171717",
-};
-
-const dangerButtonStyle: CSSProperties = {
-  ...buttonStyle,
-  background: "#b42318",
-};
-
-const subtlePanelStyle: CSSProperties = {
-  padding: "14px",
-  border: "1px solid #e5e5e5",
-  borderRadius: "8px",
-  background: "#fbfbfa",
-};
-
-const messageStyle: CSSProperties = {
-  margin: 0,
-  fontWeight: 700,
-};
-
-function compactString(value: unknown): string {
-  return typeof value === "string" ? value.trim() : "";
-}
-
-function getReviewCandidates(job: PipelineJob): SanityProviderCandidate[] {
-  if (Array.isArray(job.output?.sanity) && job.output.sanity.length > 0) {
-    return job.output.sanity;
-  }
-
-  return (job.output?.extracted ?? []).map((item) => item.result).filter(Boolean);
-}
-
-function flattenDescription(description: SanityBlock[] | undefined): string {
-  return (description ?? [])
-    .map((block) =>
-      block.children
-        .map((child) => child.text)
-        .join("")
-        .trim(),
-    )
-    .filter(Boolean)
-    .join("\n\n");
-}
-
-function textToDescription(text: string): SanityBlock[] {
-  return text
-    .split(/\n{2,}/)
-    .map((paragraph) => paragraph.trim())
-    .filter(Boolean)
-    .map((paragraph) => ({
-      _type: "block" as const,
-      children: [
-        {
-          _type: "span" as const,
-          text: paragraph,
-        },
-      ],
-      markDefs: [],
-      style: "normal" as const,
-    }));
-}
-
-function splitEditableList(text: string): string[] {
-  const seen = new Set<string>();
-  const values: string[] = [];
-
-  for (const rawValue of text.split(/[,\n]/)) {
-    const value = rawValue.trim();
-    if (!value || seen.has(value)) continue;
-    seen.add(value);
-    values.push(value);
-  }
-
-  return values;
-}
-
-function formatCoordinate(value: number | null | undefined): string {
-  return typeof value === "number" && Number.isFinite(value) ? String(value) : "";
-}
-
-function parseOptionalCoordinate(value: string, label: string, providerIndex: number): number | null {
-  const trimmed = value.trim();
-  if (!trimmed) return null;
-
-  const parsed = Number(trimmed);
-  if (!Number.isFinite(parsed)) {
-    throw new Error(`Provider ${providerIndex + 1}: ${label} must be a valid number.`);
-  }
-
-  return parsed;
-}
-
-function toTimeInputValue(value: string): string {
-  const trimmed = value.trim();
-  if (/^\d{4}$/.test(trimmed)) {
-    return `${trimmed.slice(0, 2)}:${trimmed.slice(2)}`;
-  }
-
-  if (/^\d{1,2}:\d{2}$/.test(trimmed)) {
-    const [hour, minute] = trimmed.split(":");
-    return `${hour.padStart(2, "0")}:${minute}`;
-  }
-
-  return "";
-}
-
-function normalizePeriod(period: HoursPeriod): HoursPeriod {
-  return {
-    open: {
-      day: Number.isInteger(period.open?.day) ? period.open.day : 1,
-      time: toTimeInputValue(period.open?.time ?? "") || "09:00",
-    },
-    close: {
-      day: Number.isInteger(period.close?.day) ? period.close.day : 1,
-      time: toTimeInputValue(period.close?.time ?? "") || "17:00",
-    },
-  };
-}
-
-function createDefaultPeriod(): HoursPeriod {
-  return {
-    open: { day: 1, time: "09:00" },
-    close: { day: 1, time: "17:00" },
-  };
-}
-
-function createEmptyProviderFormState(index: number, category: string): ProviderReviewFormState {
-  return {
-    localId: `new-${Date.now()}-${index}`,
-    name: "",
-    descriptionText: "",
-    address: "",
-    latitude: "",
-    longitude: "",
-    serviceTypesText: category,
-    weekdayText: "",
-    periods: [],
-    phone: "",
-    email: "",
-    website: "",
-  };
-}
-
-function candidateToFormState(candidate: SanityProviderCandidate, index: number): ProviderReviewFormState {
-  return {
-    localId: `${candidate.name || "provider"}-${index}`,
-    name: compactString(candidate.name),
-    descriptionText: flattenDescription(candidate.description),
-    address: compactString(candidate.address),
-    latitude: formatCoordinate(candidate.location?.latitude),
-    longitude: formatCoordinate(candidate.location?.longitude),
-    serviceTypesText: (candidate.serviceTypes ?? [])
-      .map((serviceType) => serviceType._id)
-      .filter(Boolean)
-      .join("\n"),
-    weekdayText: (candidate.hoursOfOperation?.weekdayText ?? []).join("\n"),
-    periods: (candidate.hoursOfOperation?.periods ?? []).map(normalizePeriod),
-    phone: compactString(candidate.contact?.phone),
-    email: compactString(candidate.contact?.email),
-    website: compactString(candidate.contact?.website),
-  };
-}
-
-function formStateToCandidate(formState: ProviderReviewFormState, index: number): SanityProviderCandidate {
-  return {
-    name: formState.name.trim(),
-    description: textToDescription(formState.descriptionText),
-    address: formState.address.trim(),
-    location: {
-      latitude: parseOptionalCoordinate(formState.latitude, "latitude", index),
-      longitude: parseOptionalCoordinate(formState.longitude, "longitude", index),
-    },
-    serviceTypes: splitEditableList(formState.serviceTypesText).map((_id) => ({ _id })),
-    hoursOfOperation: {
-      periods: formState.periods.map(normalizePeriod),
-      weekdayText: formState.weekdayText
-        .split(/\n/)
-        .map((line) => line.trim())
-        .filter(Boolean),
-    },
-    contact: {
-      phone: formState.phone.trim(),
-      email: formState.email.trim(),
-      website: formState.website.trim(),
-    },
-  };
-}
 
 function getReviewerName(user: ReturnType<typeof useCurrentUser>): string {
   return user?.email ?? user?.name ?? user?.id ?? "local-staff";
@@ -357,494 +21,160 @@ function formatSkipReason(reason: string): string {
 }
 
 export function ProviderResultsReview({ job, onJobUpdated }: ProviderResultsReviewProps) {
-  const client = useClient({ apiVersion: SANITY_APP_API_VERSION });
+  const client = useClient({ apiVersion: "2024-03-09" });
   const user = useCurrentUser();
-  const sourceCandidates = useMemo(() => getReviewCandidates(job), [job]);
-  const sourceKey = `${job.id}:${job.output?.generated_at ?? job.updatedAt}:${sourceCandidates.length}`;
-  const [providerForms, setProviderForms] = useState<ProviderReviewFormState[]>(() =>
-    sourceCandidates.map(candidateToFormState),
-  );
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<string | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  useEffect(() => {
-    setProviderForms(sourceCandidates.map(candidateToFormState));
-    setError(null);
-    setSuccess(null);
-  }, [sourceKey, sourceCandidates]);
+  const [selectedIndex, setSelectedIndex] = useState(0);
+  const [completeStatus, setCompleteStatus] = useState<"idle" | "saving" | "error">("idle");
 
   if (job.status !== "ready_for_review") return null;
 
-  function updateProvider(index: number, updater: (provider: ProviderReviewFormState) => ProviderReviewFormState) {
-    setProviderForms((current) =>
-      current.map((provider, providerIndex) => (providerIndex === index ? updater(provider) : provider)),
+  const candidates: SanityProviderCandidate[] = job.output?.sanity ?? [];
+
+  if (!candidates.length) {
+    return (
+      <section className="py-12 text-center text-[#64748b]">
+        <p className="text-[15px]">No provider candidates found for this job.</p>
+      </section>
     );
-    setError(null);
-    setSuccess(null);
   }
 
-  function updateProviderField(index: number, field: keyof ProviderReviewFormState, value: string) {
-    updateProvider(index, (provider) => ({ ...provider, [field]: value }));
+  const selected = candidates[selectedIndex];
+  const reviewerName = getReviewerName(user);
+  const skippedUrls = job.output?.skipped_urls ?? [];
+  const directoryExpansion = job.output?.directory_expansion ?? [];
+
+  async function handleApprove(candidate: SanityProviderCandidate) {
+    const validated = validateProviderCandidates([candidate]);
+    const writeResults = await writeApprovedProvidersToSanity(client, validated, job);
+    onJobUpdated({
+      ...job,
+      output: job.output ? { ...job.output, sanity: candidates } : job.output,
+      sanityDocumentIds: [...(job.sanityDocumentIds ?? []), ...writeResults.map((r) => r.documentId)],
+    });
   }
 
-  function updatePeriod(
-    providerIndex: number,
-    periodIndex: number,
-    side: "open" | "close",
-    field: "day" | "time",
-    value: string,
-  ) {
-    updateProvider(providerIndex, (provider) => ({
-      ...provider,
-      periods: provider.periods.map((period, currentPeriodIndex) => {
-        if (currentPeriodIndex !== periodIndex) return period;
-
-        return {
-          ...period,
-          [side]: {
-            ...period[side],
-            [field]: field === "day" ? Number(value) : value,
-          },
-        };
-      }),
-    }));
+  async function handleDeny(_candidate: SanityProviderCandidate) {
+    const deniedJob = await denyPipelineJob(job.id, reviewerName);
+    onJobUpdated(deniedJob);
   }
 
-  function buildReviewedCandidates() {
+  async function handleSave(candidate: SanityProviderCandidate) {
+    const validated = validateProviderCandidates([candidate]);
+    await writeApprovedProvidersToSanity(client, validated, job);
+  }
+
+  async function handleCompleteReview() {
+    setCompleteStatus("saving");
     try {
-      const reviewedCandidates = validateProviderCandidates(providerForms.map(formStateToCandidate));
-      setError(null);
-      setSuccess(
-        `${reviewedCandidates.length} provider candidate${reviewedCandidates.length === 1 ? "" : "s"} validated.`,
-      );
-      return reviewedCandidates;
-    } catch (error) {
-      setSuccess(null);
-      setError(error instanceof Error ? error.message : String(error));
-      return null;
-    }
-  }
-
-  async function handleApprove() {
-    const reviewedCandidates = buildReviewedCandidates();
-    if (!reviewedCandidates) return;
-    if (!reviewedCandidates.length) {
-      setSuccess(null);
-      setError("There must be at least one reviewed provider candidate before approval.");
-      return;
-    }
-
-    setIsSubmitting(true);
-    setError(null);
-    setSuccess(null);
-
-    try {
-      const writeResults = await writeApprovedProvidersToSanity(client, reviewedCandidates, job);
-      const approvedJob = await approvePipelineJob(job.id, getReviewerName(user));
-
+      const approvedJob = await approvePipelineJob(job.id, reviewerName);
       onJobUpdated({
         ...approvedJob,
-        output: approvedJob.output ? { ...approvedJob.output, sanity: reviewedCandidates } : approvedJob.output,
-        sanityDocumentIds: writeResults.map((result) => result.documentId),
+        output: approvedJob.output ? { ...approvedJob.output, sanity: candidates } : approvedJob.output,
+        sanityDocumentIds: job.sanityDocumentIds,
       });
-
-      const createdCount = writeResults.filter((result) => result.action === "created").length;
-      const updatedCount = writeResults.filter((result) => result.action === "updated").length;
-      const skippedServiceTypes = Array.from(
-        new Set(writeResults.flatMap((result) => result.skippedServiceTypes ?? [])),
-      );
-      setSuccess(
-        [
-          `Approved and wrote ${createdCount} new / ${updatedCount} existing provider document${writeResults.length === 1 ? "" : "s"} to Sanity.`,
-          skippedServiceTypes.length
-            ? `Skipped unmatched service type value${skippedServiceTypes.length === 1 ? "" : "s"}: ${skippedServiceTypes.join(", ")}.`
-            : "",
-        ]
-          .filter(Boolean)
-          .join(" "),
-      );
-    } catch (error) {
-      setError(error instanceof Error ? error.message : String(error));
-    } finally {
-      setIsSubmitting(false);
-    }
-  }
-
-  async function handleDeny() {
-    setIsSubmitting(true);
-    setError(null);
-    setSuccess(null);
-
-    try {
-      const deniedJob = await denyPipelineJob(job.id, getReviewerName(user));
-      onJobUpdated(deniedJob);
-      setSuccess("Denied provider output. Sanity was not changed.");
-    } catch (error) {
-      setError(error instanceof Error ? error.message : String(error));
-    } finally {
-      setIsSubmitting(false);
+    } catch {
+      setCompleteStatus("error");
     }
   }
 
   return (
-    <section style={sectionStyle}>
-      <div style={reviewHeaderStyle}>
-        <div>
-          <h2 style={{ margin: "0 0 6px" }}>Review providers</h2>
-          <p style={{ margin: 0, color: "#555555" }}>
-            Check each provider record and edit the fields before approving it for Sanity.
-          </p>
+    <section className="flex flex-col gap-6">
+      {/* Section title */}
+      <div className="flex items-center justify-between py-4">
+        <div className="flex flex-col gap-1">
+          <h2 className="text-[28px] font-bold tracking-tight text-[#0f172a]">Review Job</h2>
+          <p className="text-[14px] text-[#64748b]">Readable view of agent output</p>
         </div>
-        <span style={countStyle}>
-          {providerForms.length} provider{providerForms.length === 1 ? "" : "s"}
-        </span>
+        <div className="flex flex-col items-end gap-1">
+          <button
+            type="button"
+            disabled={completeStatus === "saving"}
+            onClick={handleCompleteReview}
+            className="rounded-lg bg-[#2563eb] px-5 py-2.5 text-[14px] font-semibold text-white shadow-sm transition-colors hover:bg-blue-700 disabled:opacity-60"
+          >
+            {completeStatus === "saving" ? "Completing…" : "Complete Review"}
+          </button>
+          {completeStatus === "error" && (
+            <p className="text-[12px] text-[#dc2626]">Failed — check console for details.</p>
+          )}
+        </div>
       </div>
 
-      {job.output?.skipped_urls?.length ? (
-        <div style={subtlePanelStyle}>
-          <h3 style={{ margin: "0 0 8px" }}>Skipped URLs</h3>
-          <p style={{ margin: "0 0 10px", color: "#555555" }}>
-            {job.output.skipped_urls.length} URL{job.output.skipped_urls.length === 1 ? "" : "s"} were skipped as
-            duplicates or invalid candidates.
-          </p>
-          <div style={{ display: "grid", gap: "8px" }}>
-            {job.output.skipped_urls.map((item, index) => (
+      {/* Skipped URLs */}
+      {skippedUrls.length > 0 && (
+        <div className="rounded-lg border border-[#e2e8f0] bg-[#f8fafc] p-4">
+          <h3 className="mb-2 text-[13px] font-semibold text-[#0f172a]">Skipped URLs ({skippedUrls.length})</h3>
+          <div className="flex flex-col gap-2">
+            {skippedUrls.map((item, index) => (
               <div
                 key={`${item.query}-${item.url}-${index}`}
-                style={{ border: "1px solid #e5e5e5", borderRadius: "6px", padding: "10px", background: "#fff" }}
+                className="rounded-md border border-[#e2e8f0] bg-white px-3 py-2"
               >
-                <p style={{ margin: 0, fontWeight: 700, overflowWrap: "anywhere" }}>{item.url}</p>
-                <p style={{ margin: "4px 0 0", color: "#555555" }}>
+                <p className="break-all text-[12px] font-semibold text-[#0f172a]">{item.url}</p>
+                <p className="text-[11px] text-[#64748b]">
                   Query: {item.query} · Reason: {formatSkipReason(item.reason)}
                 </p>
-                {item.source.type === "previous_job" ? (
-                  <p style={{ margin: "4px 0 0", color: "#555555" }}>
-                    Matched prior job {item.source.jobId} ({item.source.jobStatus})
-                  </p>
-                ) : null}
               </div>
             ))}
           </div>
-        </div>
-      ) : null}
-
-      {job.output?.directory_expansion?.length ? (
-        <div style={subtlePanelStyle}>
-          <h3 style={{ margin: "0 0 8px" }}>Directory Expansion</h3>
-          <div style={{ display: "grid", gap: "8px" }}>
-            {job.output.directory_expansion.map((entry, index) => (
-              <div
-                key={`${entry.listing_url}-${index}`}
-                style={{ border: "1px solid #e5e5e5", borderRadius: "6px", padding: "10px", background: "#fff" }}
-              >
-                <p style={{ margin: 0, fontWeight: 700, overflowWrap: "anywhere" }}>{entry.listing_url}</p>
-                <p style={{ margin: "4px 0 0", color: "#555555" }}>
-                  Discovered {entry.discovered_count} · Selected {entry.selected_count} · Skipped {entry.skipped_count}
-                  {entry.truncated ? " · Truncated" : ""}
-                </p>
-                {entry.truncation_reason ? (
-                  <p style={{ margin: "4px 0 0", color: "#555555" }}>{entry.truncation_reason}</p>
-                ) : null}
-              </div>
-            ))}
-          </div>
-        </div>
-      ) : null}
-
-      {providerForms.length ? (
-        <div style={listStyle}>
-          {providerForms.map((provider, providerIndex) => {
-            const source = job.output?.extracted?.[providerIndex];
-
-            return (
-              <article key={provider.localId} style={cardStyle}>
-                <header style={cardHeaderStyle}>
-                  <div>
-                    <h3 style={{ margin: "0 0 6px" }}>Provider {providerIndex + 1}</h3>
-                    {source?.url ? (
-                      <p style={{ margin: 0, color: "#555555", overflowWrap: "anywhere" }}>
-                        Source:{" "}
-                        <a href={source.url} target="_blank" rel="noreferrer">
-                          {source.url}
-                        </a>
-                        {source.method ? ` (${source.method})` : ""}
-                      </p>
-                    ) : null}
-                  </div>
-
-                  <button
-                    style={secondaryButtonStyle}
-                    type="button"
-                    onClick={() => {
-                      setProviderForms((current) => current.filter((_, index) => index !== providerIndex));
-                      setError(null);
-                      setSuccess(null);
-                    }}
-                    disabled={isSubmitting}
-                  >
-                    Remove provider
-                  </button>
-                </header>
-
-                <div style={fieldGridStyle}>
-                  <label style={labelStyle}>
-                    Provider name
-                    <input
-                      required
-                      style={inputStyle}
-                      type="text"
-                      value={provider.name}
-                      onChange={(event) => updateProviderField(providerIndex, "name", event.target.value)}
-                    />
-                  </label>
-
-                  <label style={labelStyle}>
-                    Website
-                    <input
-                      style={inputStyle}
-                      type="url"
-                      value={provider.website}
-                      onChange={(event) => updateProviderField(providerIndex, "website", event.target.value)}
-                    />
-                  </label>
-                </div>
-
-                <label style={labelStyle}>
-                  Description
-                  <textarea
-                    style={textareaStyle}
-                    value={provider.descriptionText}
-                    onChange={(event) => updateProviderField(providerIndex, "descriptionText", event.target.value)}
-                  />
-                </label>
-
-                <label style={labelStyle}>
-                  Address
-                  <input
-                    style={inputStyle}
-                    type="text"
-                    value={provider.address}
-                    onChange={(event) => updateProviderField(providerIndex, "address", event.target.value)}
-                  />
-                </label>
-
-                <div style={twoColumnGridStyle}>
-                  <label style={labelStyle}>
-                    Latitude
-                    <input
-                      style={inputStyle}
-                      type="text"
-                      inputMode="decimal"
-                      value={provider.latitude}
-                      onChange={(event) => updateProviderField(providerIndex, "latitude", event.target.value)}
-                    />
-                  </label>
-
-                  <label style={labelStyle}>
-                    Longitude
-                    <input
-                      style={inputStyle}
-                      type="text"
-                      inputMode="decimal"
-                      value={provider.longitude}
-                      onChange={(event) => updateProviderField(providerIndex, "longitude", event.target.value)}
-                    />
-                  </label>
-                </div>
-
-                <div style={fieldGridStyle}>
-                  <label style={labelStyle}>
-                    Phone
-                    <input
-                      style={inputStyle}
-                      type="tel"
-                      value={provider.phone}
-                      onChange={(event) => updateProviderField(providerIndex, "phone", event.target.value)}
-                    />
-                  </label>
-
-                  <label style={labelStyle}>
-                    Email
-                    <input
-                      style={inputStyle}
-                      type="email"
-                      value={provider.email}
-                      onChange={(event) => updateProviderField(providerIndex, "email", event.target.value)}
-                    />
-                  </label>
-                </div>
-
-                <label style={labelStyle}>
-                  Service types
-                  <textarea
-                    style={{ ...textareaStyle, minHeight: "86px" }}
-                    value={provider.serviceTypesText}
-                    onChange={(event) => updateProviderField(providerIndex, "serviceTypesText", event.target.value)}
-                  />
-                  <p style={helpTextStyle}>Enter one service type name, slug, or document ID per line.</p>
-                  <p style={helpTextStyle}>
-                    Approval matches these values to Sanity service type names, slugs, or document IDs.
-                  </p>
-                </label>
-
-                <div style={subSectionStyle}>
-                  <div>
-                    <h4 style={{ margin: "0 0 4px" }}>Hours</h4>
-                    <p style={helpTextStyle}>
-                      Edit the public hours text and the schedule rows that get written to Sanity.
-                    </p>
-                  </div>
-
-                  <label style={labelStyle}>
-                    Public hours text
-                    <textarea
-                      style={textareaStyle}
-                      value={provider.weekdayText}
-                      onChange={(event) => updateProviderField(providerIndex, "weekdayText", event.target.value)}
-                    />
-                  </label>
-
-                  <div style={subtlePanelStyle}>
-                    <div style={{ ...subSectionStyle, gap: "12px" }}>
-                      {provider.periods.length ? (
-                        provider.periods.map((period, periodIndex) => (
-                          <div key={`${provider.localId}-period-${periodIndex}`} style={periodRowStyle}>
-                            <label style={labelStyle}>
-                              Opens
-                              <select
-                                style={inputStyle}
-                                value={period.open.day}
-                                onChange={(event) =>
-                                  updatePeriod(providerIndex, periodIndex, "open", "day", event.target.value)
-                                }
-                              >
-                                {dayOptions.map((day) => (
-                                  <option key={day.value} value={day.value}>
-                                    {day.label}
-                                  </option>
-                                ))}
-                              </select>
-                            </label>
-
-                            <label style={labelStyle}>
-                              Open time
-                              <input
-                                style={inputStyle}
-                                type="time"
-                                value={toTimeInputValue(period.open.time)}
-                                onChange={(event) =>
-                                  updatePeriod(providerIndex, periodIndex, "open", "time", event.target.value)
-                                }
-                              />
-                            </label>
-
-                            <label style={labelStyle}>
-                              Closes
-                              <select
-                                style={inputStyle}
-                                value={period.close.day}
-                                onChange={(event) =>
-                                  updatePeriod(providerIndex, periodIndex, "close", "day", event.target.value)
-                                }
-                              >
-                                {dayOptions.map((day) => (
-                                  <option key={day.value} value={day.value}>
-                                    {day.label}
-                                  </option>
-                                ))}
-                              </select>
-                            </label>
-
-                            <label style={labelStyle}>
-                              Close time
-                              <input
-                                style={inputStyle}
-                                type="time"
-                                value={toTimeInputValue(period.close.time)}
-                                onChange={(event) =>
-                                  updatePeriod(providerIndex, periodIndex, "close", "time", event.target.value)
-                                }
-                              />
-                            </label>
-
-                            <button
-                              style={secondaryButtonStyle}
-                              type="button"
-                              onClick={() =>
-                                updateProvider(providerIndex, (current) => ({
-                                  ...current,
-                                  periods: current.periods.filter((_, index) => index !== periodIndex),
-                                }))
-                              }
-                              disabled={isSubmitting}
-                            >
-                              Remove
-                            </button>
-                          </div>
-                        ))
-                      ) : (
-                        <p style={{ margin: 0, color: "#555555" }}>No schedule rows yet.</p>
-                      )}
-
-                      <button
-                        style={secondaryButtonStyle}
-                        type="button"
-                        onClick={() =>
-                          updateProvider(providerIndex, (current) => ({
-                            ...current,
-                            periods: [...current.periods, createDefaultPeriod()],
-                          }))
-                        }
-                        disabled={isSubmitting}
-                      >
-                        Add hours row
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </article>
-            );
-          })}
-        </div>
-      ) : (
-        <div style={subtlePanelStyle}>
-          <p style={{ margin: 0, color: "#555555" }}>
-            No provider records were returned by this job. Try running the search with a higher maxUrls value, or add a
-            provider manually before approving.
-          </p>
         </div>
       )}
 
-      <div style={actionRowStyle}>
-        <button
-          style={secondaryButtonStyle}
-          type="button"
-          onClick={() => {
-            setProviderForms((current) => [
-              ...current,
-              createEmptyProviderFormState(current.length, job.input.category),
-            ]);
-            setError(null);
-            setSuccess(null);
-          }}
-          disabled={isSubmitting}
-        >
-          Add provider
-        </button>
-        <button style={secondaryButtonStyle} type="button" onClick={buildReviewedCandidates} disabled={isSubmitting}>
-          Validate provider data
-        </button>
-        <button style={buttonStyle} type="button" onClick={handleApprove} disabled={isSubmitting}>
-          {isSubmitting ? "Working..." : "Approve and write to Sanity"}
-        </button>
-        <button style={dangerButtonStyle} type="button" onClick={handleDeny} disabled={isSubmitting}>
-          Deny
-        </button>
-      </div>
+      {/* Directory expansion */}
+      {directoryExpansion.length > 0 && (
+        <div className="rounded-lg border border-[#e2e8f0] bg-[#f8fafc] p-4">
+          <h3 className="mb-2 text-[13px] font-semibold text-[#0f172a]">
+            Directory Expansion ({directoryExpansion.length})
+          </h3>
+          <div className="flex flex-col gap-2">
+            {directoryExpansion.map((entry, index) => (
+              <div
+                key={`${entry.listing_url}-${index}`}
+                className="rounded-md border border-[#e2e8f0] bg-white px-3 py-2"
+              >
+                <p className="break-all text-[12px] font-semibold text-[#0f172a]">{entry.listing_url}</p>
+                <p className="text-[11px] text-[#64748b]">
+                  Discovered {entry.discovered_count} · Selected {entry.selected_count} · Skipped {entry.skipped_count}
+                  {entry.truncated ? " · Truncated" : ""}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
-      {error ? <p style={{ ...messageStyle, color: "#b42318" }}>{error}</p> : null}
-      {success ? <p style={{ ...messageStyle, color: "#027a48" }}>{success}</p> : null}
+      {/* Two-panel layout */}
+      <div className="flex items-start gap-4">
+        {/* Left: provider list */}
+        <div className="w-[277px] shrink-0 overflow-hidden rounded-xl border border-[#e2e8f0] bg-white shadow-[0px_1px_2px_rgba(0,0,0,0.03),0px_1px_3px_rgba(0,0,0,0.04)]">
+          <div className="px-4 pb-2 pt-4">
+            <p className="text-[14px] font-bold text-black">Providers</p>
+            <p className="mt-0.5 text-[10px] text-[#94a3b8]">{candidates.length} item(s)</p>
+          </div>
+          <div className="mx-4 mb-2 h-px bg-[#d9d9d9]" />
+          <div className="flex max-h-[560px] flex-col gap-2 overflow-y-auto px-3 pb-3">
+            {candidates.map((candidate, i) => (
+              <ProviderListCard
+                key={i}
+                candidate={candidate}
+                isSelected={i === selectedIndex}
+                onClick={() => setSelectedIndex(i)}
+              />
+            ))}
+          </div>
+        </div>
+
+        {/* Right: detail editor */}
+        {selected && (
+          <ProviderDetailEditor
+            key={selectedIndex}
+            candidate={selected}
+            onApprove={handleApprove}
+            onDeny={handleDeny}
+            onSave={handleSave}
+          />
+        )}
+      </div>
     </section>
   );
 }
