@@ -832,6 +832,85 @@
         },
         "optional": true
       },
+      "freshness": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "object",
+          "attributes": {
+            "sourceUrl": {
+              "type": "objectAttribute",
+              "value": {
+                "type": "string"
+              },
+              "optional": true
+            },
+            "lastCheckedAt": {
+              "type": "objectAttribute",
+              "value": {
+                "type": "string"
+              },
+              "optional": true
+            },
+            "lastSuccessfulScrapeAt": {
+              "type": "objectAttribute",
+              "value": {
+                "type": "string"
+              },
+              "optional": true
+            },
+            "status": {
+              "type": "objectAttribute",
+              "value": {
+                "type": "union",
+                "of": [
+                  {
+                    "type": "string",
+                    "value": "current"
+                  },
+                  {
+                    "type": "string",
+                    "value": "needs_review"
+                  },
+                  {
+                    "type": "string",
+                    "value": "failed"
+                  },
+                  {
+                    "type": "string",
+                    "value": "skipped"
+                  }
+                ]
+              },
+              "optional": true
+            },
+            "lastCheckSummary": {
+              "type": "objectAttribute",
+              "value": {
+                "type": "string"
+              },
+              "optional": true
+            },
+            "lastDiffFields": {
+              "type": "objectAttribute",
+              "value": {
+                "type": "array",
+                "of": {
+                  "type": "string"
+                }
+              },
+              "optional": true
+            },
+            "lastRunId": {
+              "type": "objectAttribute",
+              "value": {
+                "type": "string"
+              },
+              "optional": true
+            }
+          }
+        },
+        "optional": true
+      },
       "place": {
         "type": "objectAttribute",
         "value": {

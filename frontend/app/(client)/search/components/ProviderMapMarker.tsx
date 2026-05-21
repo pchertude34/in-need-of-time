@@ -23,10 +23,10 @@ export function ProviderMapMarker(props: ProvierMapMarkerProps) {
       // on compilation. This will ensure google maps is available before trying to create
       // a class that extends it.
       // An unfortunate circumstance of loading google maps from a script tag.
-      const { MapPopup } = await import("@in-need-of-time/components");
+      const { createMapPopup } = await import("@in-need-of-time/components");
 
       if (!popupRef.current) {
-        const popup = new MapPopup(
+        const popup = createMapPopup(
           new googleMapsApi.LatLng(provider.place.location.lat, provider.place.location.lng),
           <ProviderMapPopup
             id={provider._id}
