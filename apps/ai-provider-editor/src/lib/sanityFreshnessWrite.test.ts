@@ -115,4 +115,19 @@ describe("sanity freshness writes", () => {
       lastRunId: "job-1",
     });
   });
+
+  it("uses the reviewed website for approved freshness source metadata", async () => {
+    const { client, commits } = fakeClient();
+
+    await writeApprovedFreshnessProviderToSanity(
+      client,
+      review(),
+      candidate({ contact: { ...candidate().contact, website: "https://reviewed.example.org" } }),
+      "job-1",
+    );
+
+    expect(commits[0]?.set.freshness).toMatchObject({
+      sourceUrl: "https://reviewed.example.org",
+    });
+  });
 });

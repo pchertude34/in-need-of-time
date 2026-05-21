@@ -6,7 +6,7 @@ import {
   writeApprovedFreshnessProviderToSanity,
   writeDeniedFreshnessProviderToSanity,
 } from "../lib/sanityFreshnessWrite";
-import type { FreshnessJob, FreshnessReviewCandidate } from "../types/freshness";
+import type { FreshnessJob } from "../types/freshness";
 import type { SanityProviderCandidate } from "../types/pipeline";
 import { ProviderDetailEditor } from "./ProviderDetailEditor";
 import { ProviderListCard } from "./ProviderCandidateCard";
@@ -22,50 +22,6 @@ function getReviewerName(user: ReturnType<typeof useCurrentUser>): string {
 
 function formatReason(value: string): string {
   return value.replace(/_/g, " ");
-}
-
-function formatField(value: string): string {
-  return value.replace(/([A-Z])/g, " $1").replace(/_/g, " ");
-}
-
-function DiagnosticsPanel({ review }: { review: FreshnessReviewCandidate }) {
-  return (
-    <div className="rounded-lg border border-[#e2e8f0] bg-[#f8fafc] p-4">
-      <div className="mb-3 flex flex-wrap items-center gap-2">
-        <span className="rounded-full bg-[#eff6ff] px-3 py-1 text-[12px] font-semibold capitalize text-[#2563eb]">
-          {formatReason(review.reviewReason)}
-        </span>
-        {review.changedFields.map((field) => (
-          <span
-            key={field}
-            className="rounded-full border border-[#dbeafe] bg-white px-3 py-1 text-[12px] text-[#1e40af]"
-          >
-            {formatField(field)}
-          </span>
-        ))}
-        {!review.changedFields.length && (
-          <span className="rounded-full border border-[#e2e8f0] bg-white px-3 py-1 text-[12px] text-[#64748b]">
-            No field diff
-          </span>
-        )}
-      </div>
-      <div className="grid grid-cols-2 gap-3 text-[12px] text-[#475569]">
-        <p className="break-all">
-          <span className="font-semibold text-[#0f172a]">Source:</span> {review.diagnostics.sourceUrl}
-        </p>
-        <p className="break-all">
-          <span className="font-semibold text-[#0f172a]">Final:</span> {review.diagnostics.finalUrl || "-"}
-        </p>
-        <p>
-          <span className="font-semibold text-[#0f172a]">Scraper:</span> {review.diagnostics.scraperProvider || "-"}
-        </p>
-        <p>
-          <span className="font-semibold text-[#0f172a]">Fetched:</span>{" "}
-          {review.diagnostics.fetchedAt ? new Date(review.diagnostics.fetchedAt).toLocaleString() : "-"}
-        </p>
-      </div>
-    </div>
-  );
 }
 
 function RunDiagnostics({ job }: { job: FreshnessJob }) {
@@ -141,8 +97,8 @@ export function FreshnessResultsReview({ job, onJobUpdated }: FreshnessResultsRe
           <p className="text-[15px]">No stale-check review items were created for this run.</p>
         </section>
       ) : (
-        <div className="flex items-start gap-4">
-          <div className="w-[277px] shrink-0 overflow-hidden rounded-xl border border-[#e2e8f0] bg-white shadow-[0px_1px_2px_rgba(0,0,0,0.03),0px_1px_3px_rgba(0,0,0,0.04)]">
+        <div className="flex flex-col items-start gap-4 xl:flex-row">
+          <div className="w-full shrink-0 overflow-hidden rounded-xl border border-[#e2e8f0] bg-white shadow-[0px_1px_2px_rgba(0,0,0,0.03),0px_1px_3px_rgba(0,0,0,0.04)] xl:w-[277px]">
             <div className="px-4 pb-2 pt-4">
               <p className="text-[14px] font-bold text-black">Providers</p>
               <p className="mt-0.5 text-[10px] text-[#94a3b8]">{reviews.length} item(s)</p>
@@ -162,10 +118,10 @@ export function FreshnessResultsReview({ job, onJobUpdated }: FreshnessResultsRe
 
           {selected && (
             <div className="flex min-w-0 flex-1 flex-col gap-4">
-              <DiagnosticsPanel review={selected} />
               <ProviderDetailEditor
                 key={selected.providerId}
                 candidate={selected.candidate}
+                freshnessReview={selected}
                 onApprove={async (candidate) => {
                   setActionStatus("saving");
                   try {

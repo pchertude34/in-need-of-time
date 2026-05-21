@@ -18,6 +18,7 @@ export default function App() {
   const [job, setJob] = useState<PipelineJob | null>(null);
   const [freshnessJob, setFreshnessJob] = useState<FreshnessJob | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const hasFreshnessReviewItems = mode === "freshness" && Boolean(freshnessJob?.output?.reviewCandidates?.length);
 
   const config: SanityConfig[] = [
     {
@@ -84,7 +85,11 @@ export default function App() {
         />
 
         <main className="flex-1 overflow-y-auto bg-[#f8fafc]">
-          <div className="mx-auto flex max-w-[960px] flex-col gap-8 px-8 py-10">
+          <div
+            className={`mx-auto flex flex-col gap-8 px-8 py-10 ${
+              hasFreshnessReviewItems ? "max-w-[1280px]" : "max-w-[960px]"
+            }`}
+          >
             {/* Page header */}
             <div className="flex flex-col items-center gap-2 pb-2">
               <h1 className="text-[28px] font-bold tracking-tight text-[#0f172a]">

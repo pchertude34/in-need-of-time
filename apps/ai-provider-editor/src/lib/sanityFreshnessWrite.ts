@@ -155,11 +155,16 @@ function buildHours(periods: HoursPeriod[] | undefined) {
   }));
 }
 
-function freshnessPatch(review: FreshnessReviewCandidate, jobId: string, summary: string) {
+function freshnessPatch(
+  review: FreshnessReviewCandidate,
+  jobId: string,
+  summary: string,
+  reviewedCandidate: SanityProviderCandidate = review.candidate,
+) {
   const now = new Date().toISOString();
   return {
     sourceUrl:
-      compactString(review.candidate.contact?.website) || review.diagnostics.finalUrl || review.diagnostics.sourceUrl,
+      compactString(reviewedCandidate.contact?.website) || review.diagnostics.finalUrl || review.diagnostics.sourceUrl,
     lastCheckedAt: now,
     lastSuccessfulScrapeAt: review.diagnostics.fetchedAt || now,
     status: "current",
@@ -207,7 +212,7 @@ export async function writeApprovedFreshnessProviderToSanity(
         ...(website ? { website } : {}),
       },
       description: withPortableTextKeys(editedCandidate.description ?? []),
-      freshness: freshnessPatch(review, jobId, "Approved stale-check result."),
+      freshness: freshnessPatch(review, jobId, "Approved stale-check result.", editedCandidate),
     })
     .commit();
 }
