@@ -1,5 +1,6 @@
 import { ToolSet, ToolLoopAgent } from "ai";
 import { openai } from "@ai-sdk/openai";
+import { anthropic } from "@ai-sdk/anthropic";
 
 export type Agent = {
   name: string;
@@ -8,7 +9,7 @@ export type Agent = {
 };
 
 export const PageScrapeAgent = new ToolLoopAgent({
-  model: openai("gpt-4o-mini"),
+  model: openai("gpt-5"),
   instructions: "You are a helpful agent",
-  tools: {},
+  tools: { web_search: openai.tools.webSearch({}) },
 });

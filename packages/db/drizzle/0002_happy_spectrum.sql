@@ -1,0 +1,1 @@
+ALTER TABLE "event_log" RENAME TO "agent_event_log";

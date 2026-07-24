@@ -10,16 +10,22 @@
   },
   "scripts": {
     "type-check": "tsc --noEmit",
-    "start": "tsx src/index.ts"
+    "start": "tsx src/index.ts",
+    "dev-tools": "npx @ai-sdk/devtools@latest"
   },
   "dependencies": {
+    "@ai-sdk/anthropic": "^4.0.19",
+    "@ai-sdk/devtools": "^1.0.7",
     "@ai-sdk/openai": "^4.0.20",
+    "@ai-sdk/tui": "^1.0.38",
+    "@ai-sdk/workflow": "^1.0.37",
     "@dbos-inc/dbos-sdk": "^4.24.16",
     "@openai/agents": "^0.11.6",
     "ai": "^7.0.37",
     "cheerio": "^1.2.0",
     "dotenv": "^17.4.2",
     "firecrawl": "^4.25.2",
+    "workflow": "^4.6.1",
     "zod": "^4.4.3"
   },
   "devDependencies": {
