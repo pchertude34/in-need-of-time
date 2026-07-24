@@ -28,7 +28,8 @@
     "db:reset": "docker-compose down && docker volume rm $(docker volume ls -q --filter name=neon_data) && docker-compose up -d",
     "db:push": "dotenv -e ./.env.local -- npm run -w @in-need-of-time/db db:push",
     "db:studio": "dotenv -e ./.env.local -- npm run -w @in-need-of-time/db db:studio",
-    "db:migrate": "dotenv -e ./.env.local -- npm run -w @in-need-of-time/db db:migrate"
+    "db:migrate": "dotenv -e ./.env.local -- npm run -w @in-need-of-time/db db:migrate",
+    "agent:dev": "dotenv -e ./.env.local -- npm run -w @in-need-of-time/agent-core dev"
   },
   "simple-git-hooks": {
     "pre-commit": "npx pretty-quick --staged"

@@ -10,7 +10,7 @@
   },
   "scripts": {
     "type-check": "tsc --noEmit",
-    "start": "tsx src/index.ts",
+    "dev": "NODE_ENV=development tsx src/index.ts",
     "dev-tools": "npx @ai-sdk/devtools@latest"
   },
   "dependencies": {
@@ -20,6 +20,8 @@
     "@ai-sdk/tui": "^1.0.38",
     "@ai-sdk/workflow": "^1.0.37",
     "@dbos-inc/dbos-sdk": "^4.24.16",
+    "@in-need-of-time/db": "file:../db",
+    "@in-need-of-time/types": "file:../types",
     "@openai/agents": "^0.11.6",
     "ai": "^7.0.37",
     "cheerio": "^1.2.0",
