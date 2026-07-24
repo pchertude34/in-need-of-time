@@ -1,2 +1,2 @@
 export { db } from "./db";
-export { agentAuditLogTable, statusEnum, eventLog } from "./schema";
+export { agentAuditLogTable, statusEnum, agentEventLog } from "./schema";

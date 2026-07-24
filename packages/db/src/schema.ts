@@ -14,7 +14,7 @@ export const agentAuditLogTable = pgTable("agent_audit_log", {
   error: text(),
 });
 
-export const eventLog = pgTable("agent_event_log", {
+export const agentEventLog = pgTable("agent_event_log", {
   seq: bigserial("seq", { mode: "number" }).primaryKey(), // global order
   data: jsonb("data").$type<AgentEvent>().notNull(),
 });
