@@ -1,5 +1,6 @@
 import { ToolSet, ToolLoopAgent } from "ai";
 import { openai } from "@ai-sdk/openai";
+import { DBOS } from "@dbos-inc/dbos-sdk";
 import { EventType } from "@in-need-of-time/types/agentEvents";
 import { emit } from "./bus";
 
@@ -14,49 +15,60 @@ export function createAgent(workflowId: string) {
     model: openai("gpt-5"),
     instructions: "You are a helpful agent",
     tools: { web_search: openai.tools.webSearch({}) },
-    onStart: (event) => {
-      void emit({
-        type: EventType.WorkflowStarted,
-        workflowId,
-        input: JSON.stringify(event.messages),
+    onStart: async (event) => {
+      await DBOS.runStep(
+        () => emit({ type: EventType.WorkflowStarted, workflowId, input: JSON.stringify(event.messages) }),
+        { name: "workflow-started" },
+      );
+    },
+    onStepEnd: async (step) => {
+      await DBOS.runStep(() => emit({ type: EventType.ModelCompleted, workflowId, text: step.text }), {
+        name: "model-completed",
       });
     },
-    onStepStart: (step) => {
-      // void emit({
-      //   type: EventType.ModelDelta,
-      // })
+    onToolExecutionStart: async (event) => {
+      await DBOS.runStep(
+        () =>
+          emit({
+            type: EventType.ToolRequested,
+            workflowId,
+            toolCallId: event.toolCall.toolCallId,
+            name: event.toolCall.toolName,
+            args: event.toolCall.input,
+          }),
+        { name: "tool-requested" },
+      );
     },
-    onStepEnd: (step) => {
-      void emit({ type: EventType.ModelCompleted, workflowId, text: step.text });
-    },
-    onToolExecutionStart: (event) => {
-      void emit({
-        type: EventType.ToolRequested,
-        workflowId,
-        toolCallId: event.toolCall.toolCallId,
-        name: event.toolCall.toolName,
-        args: event.toolCall.input,
-      });
-    },
-    onToolExecutionEnd: (event) => {
-      if (event.toolOutput.type === "tool-error") {
-        void emit({
-          type: EventType.ToolFailed,
-          workflowId,
-          toolCallId: event.toolCall.toolCallId,
-          error: String(event.toolOutput.error),
-        });
+    onToolExecutionEnd: async (event) => {
+      const toolOutput = event.toolOutput;
+      if (toolOutput.type === "tool-error") {
+        await DBOS.runStep(
+          () =>
+            emit({
+              type: EventType.ToolFailed,
+              workflowId,
+              toolCallId: event.toolCall.toolCallId,
+              error: String(toolOutput.error),
+            }),
+          { name: "tool-failed" },
+        );
       } else {
-        void emit({
-          type: EventType.ToolCompleted,
-          workflowId,
-          toolCallId: event.toolCall.toolCallId,
-          result: event.toolOutput.output,
-        });
+        await DBOS.runStep(
+          () =>
+            emit({
+              type: EventType.ToolCompleted,
+              workflowId,
+              toolCallId: event.toolCall.toolCallId,
+              result: toolOutput.output,
+            }),
+          { name: "tool-completed" },
+        );
       }
     },
-    onEnd: (event) => {
-      void emit({ type: EventType.WorkflowCompleted, workflowId, output: event.text });
+    onEnd: async (event) => {
+      await DBOS.runStep(() => emit({ type: EventType.WorkflowCompleted, workflowId, output: event.text }), {
+        name: "workflow-completed",
+      });
     },
   });
 }
