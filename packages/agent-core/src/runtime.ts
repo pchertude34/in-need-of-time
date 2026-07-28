@@ -8,6 +8,7 @@ import { EventType } from "@in-need-of-time/types/agentEvents";
 import type { ModelMessage, JSONValue, ToolSet } from "ai";
 
 const MAX_STEPS = 10;
+const SYSTEM_PROMPT = "Your name is agent boy and you are helpful";
 
 type ToolCall = { toolCallId: string; toolName: string; input: Record<string, unknown> };
 type Turn = { text: string; toolCalls: ToolCall[]; responseMessages: ModelMessage[] };
@@ -16,6 +17,7 @@ type Turn = { text: string; toolCalls: ToolCall[]; responseMessages: ModelMessag
 async function modelTurn(workflowId: string, context: ModelMessage[], agentTools: ToolSet = {}): Promise<Turn> {
   const { textStream, toolCalls, text, responseMessages } = streamText({
     model: GPT_5,
+    system: SYSTEM_PROMPT,
     messages: context,
     tools: agentTools,
   });
@@ -67,10 +69,7 @@ async function agentWorkflow(input: string) {
   console.log("Starting agent workflow with input:", input, "and workflowId:", workflowId);
   await DBOS.runStep(() => emit({ type: EventType.WorkflowStarted, workflowId, input }), { name: "workflow-started" });
 
-  const messages: ModelMessage[] = [
-    { role: "system", content: "Your name is agent boy and you are helpful" },
-    { role: "user", content: input },
-  ];
+  const messages: ModelMessage[] = [{ role: "user", content: input }];
 
   // const turns: ModelMessage[][] = [];
   let step = 0;
