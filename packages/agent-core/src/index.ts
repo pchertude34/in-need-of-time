@@ -21,4 +21,4 @@
 // await DBOS.startWorkflow(runAgentWorkflow)({ workflowId: "b9ddcf72-c89e-4c5e-a0d2-95504f66a644" });
 
 export { runAgentWorkflow } from "./runtime";
-export { subscribe } from "./bus";
+export { subscribe, history } from "./bus";

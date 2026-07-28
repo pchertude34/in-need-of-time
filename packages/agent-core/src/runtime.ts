@@ -13,7 +13,7 @@ type ToolCall = { toolCallId: string; toolName: string; input: Record<string, un
 type Turn = { text: string; toolCalls: ToolCall[]; responseMessages: ModelMessage[] };
 
 // DBOS step so a completed turn is checkpointed and never re-billed.
-async function modelTurn(workflowId: string, context: ModelMessage[], agentTools: ToolSet): Promise<Turn> {
+async function modelTurn(workflowId: string, context: ModelMessage[], agentTools: ToolSet = {}): Promise<Turn> {
   const { textStream, toolCalls, text, responseMessages } = streamText({
     model: GPT_5,
     messages: context,
@@ -62,17 +62,24 @@ function toolResultMessage(call: ToolCall, value: JSONValue) {
   };
 }
 
-async function agentWorkflow(input: string, workflowId: string) {
+async function agentWorkflow(input: string) {
+  const workflowId = DBOS.workflowID ?? "unknown";
+  console.log("Starting agent workflow with input:", input, "and workflowId:", workflowId);
   await DBOS.runStep(() => emit({ type: EventType.WorkflowStarted, workflowId, input }), { name: "workflow-started" });
 
-  const turns: ModelMessage[][] = [];
+  const messages: ModelMessage[] = [
+    { role: "system", content: "Your name is agent boy and you are helpful" },
+    { role: "user", content: input },
+  ];
+
+  // const turns: ModelMessage[][] = [];
   let step = 0;
 
   while (step < MAX_STEPS) {
-    const turn = await DBOS.runStep(() => modelTurn(workflowId, turns.flat(), createAgent(workflowId).tools), {
+    const turn = await DBOS.runStep(() => modelTurn(workflowId, messages), {
       name: `model-${step}`,
     });
-    const turnMessages: ModelMessage[] = [...turn.responseMessages];
+    messages.push(...turn.responseMessages);
 
     if (turn.toolCalls.length === 0) {
       await DBOS.runStep(() => emit({ type: EventType.ModelCompleted, workflowId, text: turn.text }), {
@@ -86,7 +93,7 @@ async function agentWorkflow(input: string, workflowId: string) {
 
     for (const call of turn.toolCalls) {
       const output = await DBOS.runStep(() => toolStep(workflowId, call), { name: `tool-${call.toolName}}` });
-      turnMessages.push({
+      messages.push({
         role: "tool",
         content: [
           {
@@ -98,8 +105,6 @@ async function agentWorkflow(input: string, workflowId: string) {
         ],
       });
     }
-
-    turns.push(turnMessages);
     step++;
   }
 

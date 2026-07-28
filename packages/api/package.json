@@ -9,11 +9,12 @@
     ".": "./src/index.ts"
   },
   "scripts": {
-    "dev": "NODE_ENV=development tsx watch src/index.ts",
+    "dev": "NODE_ENV=development tsx src/index.ts",
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
     "@in-need-of-time/agent-core": "file:../agent-core",
+    "@in-need-of-time/types/api": "file:../types/api",
     "express": "^5.2.1"
   },
   "devDependencies": {
