@@ -5,7 +5,7 @@ import { WebSocketServer, type WebSocket } from "ws";
 import { subscribe, history, runAgentWorkflow } from "@in-need-of-time/agent-core";
 import type { ClientMessage } from "@in-need-of-time/types/agentEvents";
 
-const port = process.env.PORT ?? 4000;
+const port = process.env.PORT ?? 4011;
 
 async function main() {
   // adminPort must differ from the Express `port` below — DBOS's admin

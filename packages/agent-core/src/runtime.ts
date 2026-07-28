@@ -16,6 +16,7 @@ type Turn = { text: string; toolCalls: ToolCall[]; responseMessages: ModelMessag
 async function modelTurn(workflowId: string, context: ModelMessage[], agentTools: ToolSet = {}): Promise<Turn> {
   const { textStream, toolCalls, text, responseMessages } = streamText({
     model: GPT_5,
+    system: "you are an agent boi",
     messages: context,
     tools: agentTools,
   });
@@ -63,14 +64,11 @@ function toolResultMessage(call: ToolCall, value: JSONValue) {
 }
 
 async function agentWorkflow(input: string) {
-  const workflowId = DBOS.workflowID ?? "unknown";
+  const workflowId = "hello-world";
   console.log("Starting agent workflow with input:", input, "and workflowId:", workflowId);
   await DBOS.runStep(() => emit({ type: EventType.WorkflowStarted, workflowId, input }), { name: "workflow-started" });
 
-  const messages: ModelMessage[] = [
-    { role: "system", content: "Your name is agent boy and you are helpful" },
-    { role: "user", content: input },
-  ];
+  const messages: ModelMessage[] = [{ role: "user", content: input }];
 
   // const turns: ModelMessage[][] = [];
   let step = 0;
