@@ -18,7 +18,7 @@
     "studio:typegen": "dotenv -e ./.env.local -- npm run -w @in-need-of-time/studio typegen",
     "studio:type-check": "dotenv -e ./.env.local -- npm run -w @in-need-of-time/studio type-check",
     "studio:generate-types": "dotenv -e ./.env.local -- npm run -w @in-need-of-time/studio generate-types",
-    "api:dev": "npm run -w @in-need-of-time/api dev",
+    "api:dev": "dotenv -e ./.env.local -- npm run -w @in-need-of-time/api dev",
     "app:ai-provider-editor": "dotenv -e ./.env.local -- npm run -w @in-need-of-time/ai-provider-editor dev",
     "docker:up": "docker compose up -d",
     "docker:down": "docker compose down",

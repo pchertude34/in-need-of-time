@@ -7,6 +7,21 @@
     "shadcn": {
       "command": "npx",
       "args": ["shadcn@latest", "mcp"]
+    },
+    "postman": {
+      "command": "npx",
+      "args": ["-y", "@postman/postman-mcp-server"],
+      "env": {
+        "POSTMAN_API_KEY": "${input:postman-api-key}"
+      }
     }
-  }
+  },
+  "inputs": [
+    {
+      "id": "postman-api-key",
+      "type": "promptString",
+      "description": "Postman API key (https://web.postman.co/settings/me/api-keys)",
+      "password": true
+    }
+  ]
 }
