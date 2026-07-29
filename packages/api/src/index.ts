@@ -28,16 +28,31 @@ async function main() {
   const server = createServer(app);
   const wss = new WebSocketServer({ server, path: "/ws" });
 
-  subscribe((event) => {
-    const data = JSON.stringify(event);
-    for (const client of wss.clients) {
-      if (client.readyState === client.OPEN) {
-        client.send(data);
-      }
-    }
-  });
+  // subscribe((event) => {
+  //   const data = JSON.stringify(event);
+  //   for (const client of wss.clients) {
+  //     if (client.readyState === client.OPEN) {
+  //       client.send(data);
+  //     }
+  //   }
+  // });
 
-  wss.on("connection", async (socket: WebSocket) => {
+  wss.on("connection", async (socket: WebSocket, request) => {
+    const requestedJobId = new URL(request.url ?? "", "http://localhost").searchParams.get("jobId") ?? undefined;
+
+    let [agentJob] = requestedJobId
+      ? await db.select().from(agentJobsTable).where(eq(agentJobsTable.jobId, requestedJobId))
+      : [];
+
+    if (!agentJob) {
+      [agentJob] = await db
+        .insert(agentJobsTable)
+        .values({ ...(requestedJobId ? { jobId: requestedJobId } : {}), messages: [] })
+        .returning();
+    }
+
+    socket.send(JSON.stringify({ type: "connected", jobId: agentJob.jobId }));
+
     socket.on("message", async (raw) => {
       let message: ClientMessage;
       try {
@@ -48,42 +63,10 @@ async function main() {
       }
 
       if (message.type === "submit_task") {
-        let [agentJob] = message.jobId
-          ? await db.select().from(agentJobsTable).where(eq(agentJobsTable.jobId, message.jobId))
-          : [];
-
-        if (!agentJob) {
-          [agentJob] = await db
-            .insert(agentJobsTable)
-            .values({ ...(message.jobId ? { jobId: message.jobId } : {}), messages: [] })
-            .returning();
-        }
-
-        let priorMessages: ModelMessage[] = [];
-        // if (targetConversationId !== undefined) {
-        //   const [existing] = await db
-        //     .select()
-        //     .from(agentAuditLogTable)
-        //     .where(eq(agentAuditLogTable.id, targetConversationId));
-        //   if (!existing) {
-        //     socket.send(JSON.stringify({ type: "error", error: `No conversation found for conversationId ${targetConversationId}` }));
-        //     return;
-        //   }
-        //   priorMessages = (existing.agent_messages as ModelMessage[] | null) ?? [];
-        // }
-
         const messages: ModelMessage[] = [
           ...((agentJob.messages as any[]) || []),
           { role: "user", content: message.input },
         ];
-
-        // const [log] = await db
-        //   .insert(agentAuditLogTable)
-        //   .values({ input: message.input, agent_messages: messages, status: "PENDING" })
-        //   .returning();
-
-        // conversationId = log.id;
-        // socket.send(JSON.stringify({ type: "conversation", conversationId: log.id }));
 
         // Start the durable workflow in the background. It reports progress via
         // the event stream; we don't wait for the result here — but we do
@@ -97,6 +80,9 @@ async function main() {
             .update(agentJobsTable)
             .set({ output: result.text, messages: result.messages, status: "COMPLETED" })
             .where(eq(agentJobsTable.jobId, agentJob.jobId));
+          // Keep the connection-scoped job in sync so the next message on this
+          // socket builds on this turn's history without re-fetching it.
+          agentJob = { ...agentJob, messages: result.messages, output: result.text, status: "COMPLETED" };
         } catch (err) {
           await db
             .update(agentJobsTable)
@@ -105,44 +91,38 @@ async function main() {
         }
 
         socket.send(JSON.stringify({ type: "workflow_result", jobId: agentJob.jobId, result }));
-        // agentResult.getResult().then(
-        //   async ({ text, messages: updatedMessages }) => {
-        //     await db
-        //       .update(agentJobsTable)
-        //       .set({ output: text, messages: updatedMessages, status: "COMPLETED" })
-        //       .where(eq(agentJobsTable.jobId, agentJob.jobId));
-        //   },
-        //   async (err) => {
-        //     await db
-        //       .update(agentJobsTable)
-        //       .set({ status: "FAILED", error: err instanceof Error ? err.message : String(err) })
-        //       .where(eq(agentJobsTable.jobId, agentJob.jobId));
-        //   },
-        // );
-        // handle.getResult().then(
-        //   async ({ text, messages: updatedMessages }) => {
-        //     await db
-        //       .update(agentAuditLogTable)
-        //       .set({ output: text, agent_messages: updatedMessages, status: "COMPLETED" })
-        //       .where(eq(agentAuditLogTable.id, log.id));
-        //   },
-        //   async (err) => {
-        //     await db
-        //       .update(agentAuditLogTable)
-        //       .set({ status: "FAILED", error: err instanceof Error ? err.message : String(err) })
-        //       .where(eq(agentAuditLogTable.id, log.id));
-        //   },
-        // );
       }
     });
-
-    // for (const event of await history()) socket.send(JSON.stringify(event));
-    // socket.send(JSON.stringify({}));
   });
 
   server.listen(port, () => {
     console.log(`API listening on port ${port}`);
   });
+
+  // This can probably be removed, or only used when running locally
+  // But this prevents dangling ports when the process is killed.
+  let shuttingDown = false;
+  async function shutdown(signal: NodeJS.Signals) {
+    if (shuttingDown) return;
+    shuttingDown = true;
+    console.log(`Received ${signal}, shutting down...`);
+
+    const forceExit = setTimeout(() => {
+      console.error("Shutdown timed out, forcing exit");
+      process.exit(1);
+    }, 5000);
+
+    for (const client of wss.clients) client.close();
+    wss.close();
+    server.close();
+    await DBOS.shutdown();
+
+    clearTimeout(forceExit);
+    process.exit(0);
+  }
+
+  process.on("SIGINT", shutdown);
+  process.on("SIGTERM", shutdown);
 }
 
 main().catch((err) => {

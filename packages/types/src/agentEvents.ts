@@ -70,11 +70,11 @@ export type Emit = (event: EventInput) => void;
 
 // Messages the browser sends back to the server (over the same socket).
 // `mode` picks the runtime: the single-agent loop (default) or the supervisor.
-// `jobId` continues an existing job (its prior messages are loaded and
-// appended to); omit it to start a new one.
+// The job is chosen once per connection (`?jobId=` query param on the
+// WebSocket URL; omit it to start a new one) — every submit_task on that
+// socket continues the same job.
 export type ClientMessage = {
   type: "submit_task";
   input: string;
   mode?: "default" | "supervised";
-  jobId?: string;
 };

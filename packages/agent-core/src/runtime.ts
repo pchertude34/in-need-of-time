@@ -1,6 +1,5 @@
 import { streamText } from "ai";
 import { DBOS } from "@dbos-inc/dbos-sdk";
-import { createAgent } from "./agents";
 import { GPT_5 } from "./model";
 import { emit } from "./bus";
 import { runTool } from "./tools";
@@ -27,7 +26,7 @@ async function modelTurn(
   });
 
   for await (const part of textStream) {
-    await emit(jobId, { type: EventType.ModelDelta, workflowId, text: part });
+    await emit(jobId, { type: EventType.ModelDelta, workflowId, text: part }, false);
   }
 
   return {

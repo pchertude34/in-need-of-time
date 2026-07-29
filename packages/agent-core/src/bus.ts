@@ -16,9 +16,11 @@ export function subscribe(listener: Listener): () => void {
   return () => listeners.delete(listener);
 }
 
-export async function emit(jobId: string, input: EventInput): Promise<void> {
+export async function emit(jobId: string, input: EventInput, store: boolean = true): Promise<void> {
   const event: AgentEvent = { ...input, id: randomUUID(), ts: Date.now() };
-  await db.insert(agentEventLog).values({ jobId, data: event }); // durable, ordered by `seq`
+  if (store) {
+    await db.insert(agentEventLog).values({ jobId, data: event }); // durable, ordered by `seq`
+  }
   for (const listener of listeners) listener(event); // live
 }
 
