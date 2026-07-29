@@ -13,7 +13,12 @@ type ToolCall = { toolCallId: string; toolName: string; input: Record<string, un
 type Turn = { text: string; toolCalls: ToolCall[]; responseMessages: ModelMessage[] };
 
 // DBOS step so a completed turn is checkpointed and never re-billed.
-async function modelTurn(workflowId: string, context: ModelMessage[], agentTools: ToolSet = {}): Promise<Turn> {
+async function modelTurn(
+  jobId: string,
+  workflowId: string,
+  context: ModelMessage[],
+  agentTools: ToolSet = {},
+): Promise<Turn> {
   const { textStream, toolCalls, text, responseMessages } = streamText({
     model: GPT_5,
     system: "you are an agent boi",
@@ -22,7 +27,7 @@ async function modelTurn(workflowId: string, context: ModelMessage[], agentTools
   });
 
   for await (const part of textStream) {
-    await emit({ type: EventType.ModelDelta, workflowId, text: part });
+    await emit(jobId, { type: EventType.ModelDelta, workflowId, text: part });
   }
 
   return {
@@ -37,8 +42,8 @@ async function modelTurn(workflowId: string, context: ModelMessage[], agentTools
 }
 
 // Execute one tool. Run as a DBOS step so its side effect runs exactly once.
-async function toolStep(workflowId: string, call: ToolCall): Promise<Record<string, unknown>> {
-  await emit({
+async function toolStep(jobId: string, workflowId: string, call: ToolCall): Promise<Record<string, unknown>> {
+  await emit(jobId, {
     type: EventType.ToolRequested,
     workflowId,
     toolCallId: call.toolCallId,
@@ -46,7 +51,7 @@ async function toolStep(workflowId: string, call: ToolCall): Promise<Record<stri
     args: call.input,
   });
   const output = await runTool(call.toolName, call.input);
-  await emit({
+  await emit(jobId, {
     type: EventType.ToolCompleted,
     workflowId,
     toolCallId: call.toolCallId,
@@ -63,34 +68,35 @@ function toolResultMessage(call: ToolCall, value: JSONValue) {
   };
 }
 
-async function agentWorkflow(input: string) {
-  const workflowId = "hello-world";
+async function agentWorkflow(jobId: string, messages: ModelMessage[]) {
+  const workflowId = DBOS.workflowID ?? "unknown";
+  const lastMessage = messages.at(-1);
+  const input = typeof lastMessage?.content === "string" ? lastMessage.content : JSON.stringify(lastMessage?.content);
   console.log("Starting agent workflow with input:", input, "and workflowId:", workflowId);
-  await DBOS.runStep(() => emit({ type: EventType.WorkflowStarted, workflowId, input }), { name: "workflow-started" });
+  await DBOS.runStep(() => emit(jobId, { type: EventType.WorkflowStarted, workflowId, input }), {
+    name: "workflow-started",
+  });
 
-  const messages: ModelMessage[] = [{ role: "user", content: input }];
-
-  // const turns: ModelMessage[][] = [];
   let step = 0;
 
   while (step < MAX_STEPS) {
-    const turn = await DBOS.runStep(() => modelTurn(workflowId, messages), {
+    const turn = await DBOS.runStep(() => modelTurn(jobId, workflowId, messages), {
       name: `model-${step}`,
     });
     messages.push(...turn.responseMessages);
 
     if (turn.toolCalls.length === 0) {
-      await DBOS.runStep(() => emit({ type: EventType.ModelCompleted, workflowId, text: turn.text }), {
+      await DBOS.runStep(() => emit(jobId, { type: EventType.ModelCompleted, workflowId, text: turn.text }), {
         name: `model-done-${step}`,
       });
-      await DBOS.runStep(() => emit({ type: EventType.WorkflowCompleted, workflowId, output: turn.text }), {
+      await DBOS.runStep(() => emit(jobId, { type: EventType.WorkflowCompleted, workflowId, output: turn.text }), {
         name: "workflow-completed",
       });
-      return turn.text;
+      return { text: turn.text, messages };
     }
 
     for (const call of turn.toolCalls) {
-      const output = await DBOS.runStep(() => toolStep(workflowId, call), { name: `tool-${call.toolName}}` });
+      const output = await DBOS.runStep(() => toolStep(jobId, workflowId, call), { name: `tool-${call.toolName}}` });
       messages.push({
         role: "tool",
         content: [
@@ -106,10 +112,10 @@ async function agentWorkflow(input: string) {
     step++;
   }
 
-  await DBOS.runStep(() => emit({ type: EventType.WorkflowFailed, workflowId, error: "Max steps exceeded" }), {
+  await DBOS.runStep(() => emit(jobId, { type: EventType.WorkflowFailed, workflowId, error: "Max steps exceeded" }), {
     name: "workflow-failed",
   });
-  return "";
+  return { text: "", messages };
 }
 
 export const runAgentWorkflow = DBOS.registerWorkflow(agentWorkflow, {

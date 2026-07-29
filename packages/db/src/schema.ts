@@ -1,20 +1,37 @@
-import { integer, text, timestamp, pgTable, varchar, jsonb, pgEnum, bigserial } from "drizzle-orm/pg-core";
+import {
+  integer,
+  text,
+  timestamp,
+  pgTable,
+  varchar,
+  jsonb,
+  pgEnum,
+  bigserial,
+  uuid,
+  primaryKey,
+} from "drizzle-orm/pg-core";
 import type { AgentEvent } from "@in-need-of-time/types/agentEvents";
 
 export const statusEnum = pgEnum("status", ["PENDING", "COMPLETED", "FAILED"]);
 
-export const agentAuditLogTable = pgTable("agent_audit_log", {
-  id: integer().primaryKey().generatedAlwaysAsIdentity(),
+export const agentJobsTable = pgTable("agent_jobs", {
+  jobId: uuid().primaryKey().defaultRandom(),
   timestamp: timestamp("timestamp").notNull().defaultNow(),
   user_id: varchar(),
-  input: jsonb(),
   output: jsonb(),
-  agent_messages: jsonb(),
+  messages: jsonb(),
   status: statusEnum().notNull().default("PENDING"),
   error: text(),
 });
 
-export const agentEventLog = pgTable("agent_event_log", {
-  seq: bigserial("seq", { mode: "number" }).primaryKey(), // global order
-  data: jsonb("data").$type<AgentEvent>().notNull(),
-});
+export const agentEventLog = pgTable(
+  "agent_event_log",
+  {
+    jobId: uuid()
+      .notNull()
+      .references(() => agentJobsTable.jobId, { onDelete: "cascade" }),
+    seq: bigserial("seq", { mode: "number" }).notNull(), // per-job order
+    data: jsonb("data").$type<AgentEvent>().notNull(),
+  },
+  (table) => [primaryKey({ columns: [table.jobId, table.seq] })],
+);
