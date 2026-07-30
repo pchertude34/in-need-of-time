@@ -1,15 +1,29 @@
 import { randomUUID } from "node:crypto";
 import express from "express";
-import { DBOS } from "@dbos-inc/dbos-sdk";
 import { createServer } from "node:http";
 import { WebSocketServer, type WebSocket } from "ws";
 import { eq } from "drizzle-orm";
+import { DBOS } from "@dbos-inc/dbos-sdk";
 import { subscribe, history, runAgentWorkflow } from "@in-need-of-time/agent-core";
 import { db, agentJobsTable } from "@in-need-of-time/db";
-import type { ClientMessage } from "@in-need-of-time/types/agentEvents";
 import type { ModelMessage } from "ai";
+import type { ClientMessage } from "@in-need-of-time/types/agentEvents";
 
 const port = process.env.PORT ?? 4011;
+
+let server: ReturnType<typeof createServer> | undefined;
+let wss: WebSocketServer | undefined;
+
+async function closeServer() {
+  for (const client of wss?.clients ?? []) client.close();
+  wss?.close();
+  server?.close();
+  try {
+    await DBOS.shutdown();
+  } catch (err) {
+    console.error("Error shutting down DBOS:", err);
+  }
+}
 
 async function main() {
   // adminPort must differ from the Express `port` below — DBOS's admin
@@ -25,8 +39,8 @@ async function main() {
     res.json({ status: "ok" });
   });
 
-  const server = createServer(app);
-  const wss = new WebSocketServer({ server, path: "/ws" });
+  server = createServer(app);
+  wss = new WebSocketServer({ server, path: "/ws" });
 
   // subscribe((event) => {
   //   const data = JSON.stringify(event);
@@ -95,8 +109,14 @@ async function main() {
     });
   });
 
-  server.listen(port, () => {
-    console.log(`API listening on port ${port}`);
+  // listen() doesn't reject on bind failure (e.g. EADDRINUSE) — it emits an
+  // async 'error' event instead — so wrap it in a promise the caller can await/catch.
+  await new Promise<void>((resolve, reject) => {
+    server!.once("error", reject);
+    server!.listen(port, () => {
+      console.log(`API listening on port ${port}`);
+      resolve();
+    });
   });
 
   // This can probably be removed, or only used when running locally
@@ -112,10 +132,7 @@ async function main() {
       process.exit(1);
     }, 5000);
 
-    for (const client of wss.clients) client.close();
-    wss.close();
-    server.close();
-    await DBOS.shutdown();
+    await closeServer();
 
     clearTimeout(forceExit);
     process.exit(0);
@@ -125,7 +142,8 @@ async function main() {
   process.on("SIGTERM", shutdown);
 }
 
-main().catch((err) => {
+main().catch(async (err) => {
   console.error("Error starting the server:", err);
+  await closeServer();
   process.exit(1);
 });
