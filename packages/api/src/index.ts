@@ -104,7 +104,7 @@ async function main() {
             .where(eq(agentJobsTable.jobId, agentJob.jobId));
         }
 
-        socket.send(JSON.stringify({ type: "workflow_result", jobId: agentJob.jobId, result }));
+        socket.send(JSON.stringify({ jobId: agentJob.jobId, result: result.text }));
       }
     });
   });
