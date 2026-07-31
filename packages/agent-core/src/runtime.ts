@@ -1,11 +1,13 @@
 import { streamText, stepCountIs } from "ai";
 import { DBOS } from "@dbos-inc/dbos-sdk";
-import { GPT_5 } from "./model";
 import { emit } from "./bus";
-import { runTool } from "./tools";
-import { ProviderScrapeAgent } from "./agents";
+import { OrchestratorAgent } from "./agents/orchestratorAgent";
+import { DirectoryScrapeAgent } from "./agents/directoryScrapeAgent";
+import { ProviderScrapeAgent } from "./agents/providerScrapeAgent";
 import { EventType } from "@in-need-of-time/types/agentEvents";
-import type { ModelMessage, JSONValue, ToolSet, StopCondition } from "ai";
+import type { RoutableAgent } from "./agents/orchestratorAgent";
+import type { Agent } from "./types";
+import type { ModelMessage, ToolSet, StopCondition } from "ai";
 
 const MAX_STEPS = 10;
 
@@ -23,23 +25,18 @@ const noPendingToolCalls: StopCondition<ToolSet> = ({ steps }) => {
 // provider runs itself — their call + result already live in responseMessages,
 // so the manual loop below must NOT re-run them or inject a client result.
 type ToolCall = { toolCallId: string; toolName: string; input: Record<string, unknown>; providerExecuted: boolean };
-type Turn = { text: string; toolCalls: ToolCall[]; responseMessages: ModelMessage[] };
+type Turn = { text: string; output: unknown; toolCalls: ToolCall[]; responseMessages: ModelMessage[] };
 
 // DBOS step so a completed turn is checkpointed and never re-billed.
-async function modelTurn(
-  jobId: string,
-  workflowId: string,
-  context: ModelMessage[],
-  agentTools: ToolSet = {},
-): Promise<Turn> {
-  const { textStream, toolCalls, text, responseMessages } = streamText({
-    model: ProviderScrapeAgent.model,
-    system: ProviderScrapeAgent.systemPrompt,
-    tools: ProviderScrapeAgent.tools,
-    output: ProviderScrapeAgent.output,
+async function modelTurn(jobId: string, workflowId: string, agent: Agent, context: ModelMessage[]): Promise<Turn> {
+  const { textStream, toolCalls, text, output, responseMessages } = streamText({
+    model: agent.model,
+    system: agent.systemPrompt,
+    tools: agent.tools,
+    output: agent.output,
     // Let the SDK resolve hosted tools (web_search) and produce the final
     // structured output within this single call, rather than the manual loop.
-    stopWhen: [stepCountIs(MAX_STEPS)],
+    stopWhen: [stepCountIs(MAX_STEPS), noPendingToolCalls],
     messages: context,
   });
 
@@ -49,6 +46,7 @@ async function modelTurn(
 
   return {
     text: await text,
+    output: await output,
     toolCalls: (await toolCalls).map((c) => ({
       toolCallId: c.toolCallId,
       toolName: c.toolName,
@@ -59,39 +57,92 @@ async function modelTurn(
   };
 }
 
-// Execute one tool. Run as a DBOS step so its side effect runs exactly once.
-async function toolStep(jobId: string, workflowId: string, call: ToolCall): Promise<Record<string, unknown>> {
-  await emit(jobId, {
-    type: EventType.ToolRequested,
-    workflowId,
-    toolCallId: call.toolCallId,
-    name: call.toolName,
-    args: call.input,
-  });
-  const output = await runTool(call.toolName, call.input);
-  await emit(jobId, {
-    type: EventType.ToolCompleted,
-    workflowId,
-    toolCallId: call.toolCallId,
-    result: output,
-  });
+// Runs a single agent's turn to completion. Every current tool is either
+// provider-executed (e.g. web_search) or self-executing via its own
+// `execute()`, so streamText's own stopWhen-driven loop (see modelTurn)
+// already resolves everything internally in one call — no manual multi-step
+// handling needed here. If that stops being true (a tool with no `execute()`
+// is added), this will need a real loop that runs it and feeds back a result.
+async function runAgentLoop(
+  jobId: string,
+  workflowId: string,
+  agent: Agent,
+  messages: ModelMessage[],
+): Promise<{ text: string; output: unknown; messages: ModelMessage[] }> {
+  console.log(`[${jobId}/${workflowId}] starting agent: ${agent.name}`);
+  console.log(`[${jobId}/${workflowId}] ${agent.name} input:`, JSON.stringify(messages, null, 2));
 
-  return output;
+  const turn = await DBOS.runStep(() => modelTurn(jobId, workflowId, agent, messages), {
+    name: `${agent.name}-model`,
+  });
+  messages.push(...turn.responseMessages);
+
+  console.log(
+    `[${jobId}/${workflowId}] ${agent.name} output:`,
+    JSON.stringify({ text: turn.text, output: turn.output }, null, 2),
+  );
+
+  const unresolvedToolCalls = turn.toolCalls.filter((c) => !c.providerExecuted);
+  if (unresolvedToolCalls.length > 0) {
+    console.warn(
+      `[${jobId}/${workflowId}] ${agent.name} left ${unresolvedToolCalls.length} tool call(s) unresolved: ${unresolvedToolCalls.map((c) => c.toolName).join(", ")}`,
+    );
+  }
+
+  return { text: turn.text, output: turn.output, messages };
 }
 
-function toolResultMessage(call: ToolCall, value: JSONValue): ModelMessage {
-  return {
-    role: "tool",
-    content: [
-      {
-        type: "tool-result",
-        toolCallId: call.toolCallId,
-        toolName: call.toolName,
-        output: { type: "json", value },
-      },
-    ],
-  };
+// Runs ProviderScrapeAgent for a single URL as its own durable workflow, so a
+// directory's fanned-out URLs can be started concurrently (see agentWorkflow)
+// and each one is independently resumable if it crashes.
+async function providerScrapeWorkflow(jobId: string, url: string) {
+  const workflowId = DBOS.workflowID ?? "unknown";
+
+  await DBOS.runStep(
+    () =>
+      emit(jobId, {
+        type: EventType.SubagentStarted,
+        workflowId,
+        stepId: url,
+        agent: ProviderScrapeAgent.name,
+        objective: url,
+      }),
+    { name: "subagent-started" },
+  );
+
+  try {
+    const result = await runAgentLoop(jobId, workflowId, ProviderScrapeAgent, [{ role: "user", content: url }]);
+    await DBOS.runStep(
+      () =>
+        emit(jobId, {
+          type: EventType.SubagentCompleted,
+          workflowId,
+          stepId: url,
+          agent: ProviderScrapeAgent.name,
+          findings: result.text,
+        }),
+      { name: "subagent-completed" },
+    );
+    return { url, output: result.output };
+  } catch (err) {
+    await DBOS.runStep(
+      () =>
+        emit(jobId, {
+          type: EventType.SubagentFailed,
+          workflowId,
+          stepId: url,
+          agent: ProviderScrapeAgent.name,
+          error: err instanceof Error ? err.message : String(err),
+        }),
+      { name: "subagent-failed" },
+    );
+    throw err;
+  }
 }
+
+export const runProviderScrapeWorkflow = DBOS.registerWorkflow(providerScrapeWorkflow, {
+  name: "providerScrapeWorkflow",
+});
 
 async function agentWorkflow(jobId: string, messages: ModelMessage[]) {
   const workflowId = DBOS.workflowID ?? "unknown";
@@ -102,40 +153,61 @@ async function agentWorkflow(jobId: string, messages: ModelMessage[]) {
     name: "workflow-started",
   });
 
-  let step = 0;
+  // Classify on a copy of the conversation — the orchestrator's own
+  // reasoning is a private routing decision, not part of the persisted job.
+  const orchestratorResult = await runAgentLoop(jobId, workflowId, OrchestratorAgent, [...messages]);
+  const decision = orchestratorResult.output as { agent: RoutableAgent; reason: string };
 
-  while (step < MAX_STEPS) {
-    console.log("step", step);
-    const turn = await DBOS.runStep(() => modelTurn(jobId, workflowId, messages), {
-      name: `model-${step}`,
-    });
-    messages.push(...turn.responseMessages);
+  await DBOS.runStep(
+    () =>
+      emit(jobId, {
+        type: EventType.AgentHandoff,
+        workflowId,
+        from: OrchestratorAgent.name,
+        to: decision.agent,
+        reason: decision.reason,
+      }),
+    { name: "agent-handoff" },
+  );
 
-    // Provider-executed tools are already resolved inside responseMessages;
-    // only client tools need the manual run-and-inject loop below.
-    const clientToolCalls = turn.toolCalls.filter((c) => !c.providerExecuted);
-    console.log("tool call count", clientToolCalls.length);
-    if (clientToolCalls.length === 0) {
-      await DBOS.runStep(() => emit(jobId, { type: EventType.ModelCompleted, workflowId, text: turn.text }), {
-        name: `model-done-${step}`,
-      });
-      await DBOS.runStep(() => emit(jobId, { type: EventType.WorkflowCompleted, workflowId, output: turn.text }), {
-        name: "workflow-completed",
-      });
-      return { text: turn.text, messages };
-    }
+  let text: string;
 
-    // for (const call of clientToolCalls) {
-    //   const output = await DBOS.runStep(() => toolStep(jobId, workflowId, call), { name: `tool-${call.toolName}}` });
-    //   messages.push(toolResultMessage(call, output as JSONValue));
-    // }
-    step++;
+  if (decision.agent === "provider_scrape") {
+    const result = await runAgentLoop(jobId, workflowId, ProviderScrapeAgent, messages);
+    text = result.text;
+  } else {
+    const directoryResult = await runAgentLoop(jobId, workflowId, DirectoryScrapeAgent, messages);
+    const { urls } = directoryResult.output as { urls: string[] };
+
+    await DBOS.runStep(
+      () =>
+        emit(jobId, {
+          type: EventType.PlanCreated,
+          workflowId,
+          steps: urls.map((url, i) => ({ id: `${i}`, agent: ProviderScrapeAgent.name, objective: url })),
+        }),
+      { name: "plan-created" },
+    );
+
+    // Each URL runs as its own durable child workflow, started concurrently
+    // so they execute in parallel; a failed one doesn't sink the others.
+    const handles = await Promise.all(urls.map((url) => DBOS.startWorkflow(runProviderScrapeWorkflow)(jobId, url)));
+    const results = await Promise.allSettled(handles.map((handle) => handle.getResult()));
+
+    const providers = results.flatMap((result) =>
+      result.status === "fulfilled"
+        ? ((result.value.output as { providers?: unknown[] } | undefined)?.providers ?? [])
+        : [],
+    );
+
+    text = JSON.stringify({ providers });
   }
 
-  await DBOS.runStep(() => emit(jobId, { type: EventType.WorkflowFailed, workflowId, error: "Max steps exceeded" }), {
-    name: "workflow-failed",
+  await DBOS.runStep(() => emit(jobId, { type: EventType.WorkflowCompleted, workflowId, output: text }), {
+    name: "workflow-completed",
   });
-  return { text: "", messages };
+
+  return { text, messages };
 }
 
 export const runAgentWorkflow = DBOS.registerWorkflow(agentWorkflow, {

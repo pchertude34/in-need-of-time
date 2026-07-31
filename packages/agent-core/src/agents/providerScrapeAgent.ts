@@ -1,8 +1,8 @@
 import { Output } from "ai";
 import { openai } from "@ai-sdk/openai";
 import { z } from "zod";
-import { tools } from "./tools";
-import type { Agent } from "./types";
+import { tools } from "../tools";
+import type { Agent } from "../types";
 
 const portableTextBlockSchema = z.object({
   _type: z.literal("block"),
