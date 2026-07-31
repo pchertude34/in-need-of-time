@@ -5,9 +5,19 @@ import { emit } from "./bus";
 import { runTool } from "./tools";
 import { ProviderScrapeAgent } from "./agents";
 import { EventType } from "@in-need-of-time/types/agentEvents";
-import type { ModelMessage, JSONValue, ToolSet } from "ai";
+import type { ModelMessage, JSONValue, ToolSet, StopCondition } from "ai";
 
 const MAX_STEPS = 10;
+
+// Safety net: the SDK's own deferred-result bookkeeping for provider-executed
+// tools (e.g. web_search) doesn't always clear once resolved, which can keep
+// the internal step loop going — re-generating an already-complete answer —
+// until it hits the step-count cap. Stop as soon as a step has no tool calls
+// left to resolve, regardless of that bookkeeping.
+const noPendingToolCalls: StopCondition<ToolSet> = ({ steps }) => {
+  const last = steps.at(-1);
+  return last !== undefined && last.toolCalls.length === 0;
+};
 
 // `providerExecuted` marks hosted tools (e.g. openai web_search) that the
 // provider runs itself — their call + result already live in responseMessages,
@@ -29,7 +39,7 @@ async function modelTurn(
     output: ProviderScrapeAgent.output,
     // Let the SDK resolve hosted tools (web_search) and produce the final
     // structured output within this single call, rather than the manual loop.
-    stopWhen: stepCountIs(MAX_STEPS),
+    stopWhen: [stepCountIs(MAX_STEPS)],
     messages: context,
   });
 
@@ -95,6 +105,7 @@ async function agentWorkflow(jobId: string, messages: ModelMessage[]) {
   let step = 0;
 
   while (step < MAX_STEPS) {
+    console.log("step", step);
     const turn = await DBOS.runStep(() => modelTurn(jobId, workflowId, messages), {
       name: `model-${step}`,
     });
@@ -103,7 +114,7 @@ async function agentWorkflow(jobId: string, messages: ModelMessage[]) {
     // Provider-executed tools are already resolved inside responseMessages;
     // only client tools need the manual run-and-inject loop below.
     const clientToolCalls = turn.toolCalls.filter((c) => !c.providerExecuted);
-
+    console.log("tool call count", clientToolCalls.length);
     if (clientToolCalls.length === 0) {
       await DBOS.runStep(() => emit(jobId, { type: EventType.ModelCompleted, workflowId, text: turn.text }), {
         name: `model-done-${step}`,
@@ -114,10 +125,10 @@ async function agentWorkflow(jobId: string, messages: ModelMessage[]) {
       return { text: turn.text, messages };
     }
 
-    for (const call of clientToolCalls) {
-      const output = await DBOS.runStep(() => toolStep(jobId, workflowId, call), { name: `tool-${call.toolName}}` });
-      messages.push(toolResultMessage(call, output as JSONValue));
-    }
+    // for (const call of clientToolCalls) {
+    //   const output = await DBOS.runStep(() => toolStep(jobId, workflowId, call), { name: `tool-${call.toolName}}` });
+    //   messages.push(toolResultMessage(call, output as JSONValue));
+    // }
     step++;
   }
 

@@ -1,6 +1,7 @@
 import { ToolSet, Output } from "ai";
 import { openai } from "@ai-sdk/openai";
 import { z } from "zod";
+import { tools } from "./tools";
 
 export type Agent = {
   name: string;
@@ -100,10 +101,12 @@ Given a URL, examine its content and identify every distinct provider on the pag
 - Call \`get_service_types\` once per run, not once per provider.
 - Do not fabricate providers or details that aren't supported by the page's content.
 - If the page contains no qualifying providers, return an empty list rather than forcing a match.
+- If the provider contains no matching services from the get_service_types tool call, return an empty list
 - Do not include organizations that are out of scope for In Need of Time (e.g. general business directories, unrelated commercial services).
 - If the provider has a mobile or rotating schedule, try to determine its next stop based on the current date.`,
   tools: {
     web_search: openai.tools.webSearch(),
+    get_service_types: tools.fetchServiceTypes,
   },
   output: Output.object({ schema: providerScrapeOutputSchema }),
 };
