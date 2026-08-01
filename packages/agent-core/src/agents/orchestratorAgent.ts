@@ -1,5 +1,6 @@
 import { Output } from "ai";
 import { openai } from "@ai-sdk/openai";
+import { anthropic } from "@ai-sdk/anthropic";
 import { z } from "zod";
 import type { Agent } from "../types";
 
@@ -15,7 +16,7 @@ const orchestratorOutputSchema = z.object({
 
 export const OrchestratorAgent: Agent = {
   name: "orchestrator",
-  model: openai("gpt-5.5"),
+  model: anthropic("claude-haiku-4-5-20251001"),
   systemPrompt: `You are a routing assistant for In Need of Time's provider-discovery pipeline. Given a user's input (typically a URL), decide which specialized agent should handle it first:
 
 - "directory_scrape": the input is (or might be) a directory-style page listing multiple provider organizations — e.g. a community resource directory, membership listing, or search results page. This agent also correctly detects and handles the case where the page turns out to be a single provider's own site instead, so prefer this option whenever you're unsure.

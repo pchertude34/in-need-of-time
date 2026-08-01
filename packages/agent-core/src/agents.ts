@@ -1,9 +1,8 @@
 import { Output } from "ai";
 import { openai } from "@ai-sdk/openai";
-import { anthropic } from "@ai-sdk/anthropic";
 import { z } from "zod";
-import { tools } from "../tools";
-import type { Agent } from "../types";
+import { tools } from "./tools";
+import type { Agent } from "./types";
 
 const portableTextBlockSchema = z.object({
   _type: z.literal("block"),
@@ -66,23 +65,21 @@ const providerScrapeOutputSchema = z.object({
 
 export const ProviderScrapeAgent: Agent = {
   name: "page scraper",
-  model: anthropic("claude-sonnet-5"),
+  model: openai("gpt-5.5"),
   systemPrompt: `You are an AI assistant that scans a web page to find every provider that fits In Need of Time's mission: connecting people in crisis — single parents, people experiencing homelessness, and people recently released from prison — with support services such as health clinics, food banks, shelters, and free-clothing programs.
 
 ## Task
 Given a URL, examine its content and identify every distinct provider on the page that offers a qualifying service. A page may describe a single organization, or it may be a directory listing many organizations — handle both cases.
 
 ## Workflow
-1. Call \`web_fetch\` exactly once with the given URL — this is your primary and preferred source.
-2. If that content is enough to identify the provider(s) and capture the required fields below, move on to the next step without calling \`web_search\` at all.
-3. Only call \`web_search\` (at most once) if \`web_fetch\` failed to load, returned little or no usable content, or is clearly missing key details you need (e.g. no address, no contact info, no hours) — and only to fill in what's specifically missing, not to redo the task from scratch.
-4. Read through whatever content you have and identify each distinct provider mentioned. For a directory-style page, treat each listed organization as a separate provider.
-5. For each provider found, judge whether it fits In Need of Time's criteria:
+1. Retrieve the content of the given URL using your available tools. Do this once per unique URL — do not re-fetch or re-search for the same URL more than once.
+2. Read through the retrieved content and identify each distinct provider mentioned. For a directory-style page, treat each listed organization as a separate provider.
+3. For each provider found, judge whether it fits In Need of Time's criteria:
    - It offers a qualifying service (health clinic, food bank, shelter, free-clothing program, or a similar service aimed at people in crisis).
    - It appears to be a real, currently operating organization — not a defunct listing, an unrelated business, or a generic informational page.
-6. Exclude anything that does not clearly qualify. When in doubt, leave it out rather than guessing.
-7. Call \`get_service_types\` once and use it to select the service type(s) each qualifying provider offers.
-8. For each qualifying provider, capture:
+4. Exclude anything that does not clearly qualify. When in doubt, leave it out rather than guessing.
+5. Call \`get_service_types\` once and use it to select the service type(s) each qualifying provider offers.
+6. For each qualifying provider, capture:
    - Name
    - Description (1-5 sentences on mission, services, population served, requirements, and upcoming schedule changes)
    - Address (street, city, state, ZIP) and its geolocation
@@ -93,8 +90,7 @@ Given a URL, examine its content and identify every distinct provider on the pag
    Leave any field you can't determine from the page unset rather than guessing.
 
 ## Rules
-- Only call \`web_fetch\` once, for the URL you were given. Do not retry or repeat calls for the same URL.
-- Treat \`web_fetch\` as your primary source. Only call \`web_search\` (at most once) if it clearly didn't give you enough to work with — never call it just to double-check or supplement content that was already sufficient.
+- Only fetch each unique URL once. Do not retry or repeat calls for the same URL.
 - Call \`get_service_types\` once per run, not once per provider.
 - Do not fabricate providers or details that aren't supported by the page's content.
 - If the page contains no qualifying providers, return an empty list rather than forcing a match.
@@ -102,8 +98,7 @@ Given a URL, examine its content and identify every distinct provider on the pag
 - Do not include organizations that are out of scope for In Need of Time (e.g. general business directories, unrelated commercial services).
 - If the provider has a mobile or rotating schedule, try to determine its next stop based on the current date.`,
   tools: {
-    web_fetch: anthropic.tools.webFetch_20250910({ maxUses: 3 }),
-    web_search: anthropic.tools.webSearch_20250305({ maxUses: 1 }),
+    // web_search: openai.tools.webSearch(),
     get_service_types: tools.fetchServiceTypes,
   },
   output: Output.object({ schema: providerScrapeOutputSchema }),

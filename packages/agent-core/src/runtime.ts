@@ -7,7 +7,7 @@ import { ProviderScrapeAgent } from "./agents/providerScrapeAgent";
 import { EventType } from "@in-need-of-time/types/agentEvents";
 import type { RoutableAgent } from "./agents/orchestratorAgent";
 import type { Agent } from "./types";
-import type { ModelMessage, ToolSet, StopCondition } from "ai";
+import type { ModelMessage, ToolSet, StopCondition, LanguageModelUsage } from "ai";
 
 const MAX_STEPS = 10;
 
@@ -25,11 +25,22 @@ const noPendingToolCalls: StopCondition<ToolSet> = ({ steps }) => {
 // provider runs itself — their call + result already live in responseMessages,
 // so the manual loop below must NOT re-run them or inject a client result.
 type ToolCall = { toolCallId: string; toolName: string; input: Record<string, unknown>; providerExecuted: boolean };
-type Turn = { text: string; output: unknown; toolCalls: ToolCall[]; responseMessages: ModelMessage[] };
+// The AI SDK doesn't attribute token cost to an individual tool call — the
+// closest real correlation is per internal step, since each step's usage
+// covers whatever tool call(s) prompted it.
+type StepUsage = { toolNames: string[]; usage: LanguageModelUsage };
+type Turn = {
+  text: string;
+  output: unknown;
+  toolCalls: ToolCall[];
+  responseMessages: ModelMessage[];
+  usage: LanguageModelUsage;
+  steps: StepUsage[];
+};
 
 // DBOS step so a completed turn is checkpointed and never re-billed.
 async function modelTurn(jobId: string, workflowId: string, agent: Agent, context: ModelMessage[]): Promise<Turn> {
-  const { textStream, toolCalls, text, output, responseMessages } = streamText({
+  const { textStream, toolCalls, text, output, responseMessages, usage, steps } = streamText({
     model: agent.model,
     system: agent.systemPrompt,
     tools: agent.tools,
@@ -54,8 +65,19 @@ async function modelTurn(jobId: string, workflowId: string, agent: Agent, contex
       providerExecuted: c.providerExecuted ?? false,
     })),
     responseMessages: await responseMessages,
+    usage: await usage,
+    steps: (await steps).map((step) => ({
+      toolNames: step.toolCalls.map((c) => c.toolName),
+      usage: step.usage,
+    })),
   };
 }
+
+// Running total of tokens used per job, across every turn — the orchestrator,
+// the top-level agent, and each fanned-out child. Per-process only: if DBOS
+// ever distributes workflow execution across multiple executor processes,
+// this won't aggregate correctly across them.
+const jobTokenTotals = new Map<string, number>();
 
 // Runs a single agent's turn to completion. Every current tool is either
 // provider-executed (e.g. web_search) or self-executing via its own
@@ -69,25 +91,21 @@ async function runAgentLoop(
   agent: Agent,
   messages: ModelMessage[],
 ): Promise<{ text: string; output: unknown; messages: ModelMessage[] }> {
-  console.log(`[${jobId}/${workflowId}] starting agent: ${agent.name}`);
-  console.log(`[${jobId}/${workflowId}] ${agent.name} input:`, JSON.stringify(messages, null, 2));
-
   const turn = await DBOS.runStep(() => modelTurn(jobId, workflowId, agent, messages), {
     name: `${agent.name}-model`,
   });
   messages.push(...turn.responseMessages);
 
-  console.log(
-    `[${jobId}/${workflowId}] ${agent.name} output:`,
-    JSON.stringify({ text: turn.text, output: turn.output }, null, 2),
-  );
-
-  const unresolvedToolCalls = turn.toolCalls.filter((c) => !c.providerExecuted);
-  if (unresolvedToolCalls.length > 0) {
-    console.warn(
-      `[${jobId}/${workflowId}] ${agent.name} left ${unresolvedToolCalls.length} tool call(s) unresolved: ${unresolvedToolCalls.map((c) => c.toolName).join(", ")}`,
+  let totalTokens = jobTokenTotals.get(jobId) ?? 0;
+  for (const step of turn.steps) {
+    const stepTokens = step.usage.totalTokens ?? 0;
+    totalTokens += stepTokens;
+    const toolNames = step.toolNames.join(",") || "none";
+    console.log(
+      `[${jobId}/${workflowId}] agent=${agent.name} tools=${toolNames} stepTokens=${stepTokens} totalTokens=${totalTokens}`,
     );
   }
+  jobTokenTotals.set(jobId, totalTokens);
 
   return { text: turn.text, output: turn.output, messages };
 }
