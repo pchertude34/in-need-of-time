@@ -3,7 +3,8 @@ import { DBOS } from "@dbos-inc/dbos-sdk";
 import { emit } from "./bus";
 import { OrchestratorAgent } from "./agents/orchestratorAgent";
 import { DirectoryScrapeAgent } from "./agents/directoryScrapeAgent";
-import { ProviderScrapeAgent } from "./agents/providerScrapeAgent";
+import { ProviderExtractAgent } from "./agents/providerExtractAgent";
+import { ProviderFormatAgent } from "./agents/providerFormatAgent";
 import { EventType } from "@in-need-of-time/types/agentEvents";
 import type { RoutableAgent } from "./agents/orchestratorAgent";
 import type { Agent } from "./types";
@@ -28,7 +29,10 @@ type ToolCall = { toolCallId: string; toolName: string; input: Record<string, un
 // The AI SDK doesn't attribute token cost to an individual tool call — the
 // closest real correlation is per internal step, since each step's usage
 // covers whatever tool call(s) prompted it.
-type StepUsage = { toolNames: string[]; usage: LanguageModelUsage };
+type StepUsage = {
+  toolCalls: { toolName: string; input: Record<string, unknown> }[];
+  usage: LanguageModelUsage;
+};
 type Turn = {
   text: string;
   output: unknown;
@@ -67,7 +71,10 @@ async function modelTurn(jobId: string, workflowId: string, agent: Agent, contex
     responseMessages: await responseMessages,
     usage: await usage,
     steps: (await steps).map((step) => ({
-      toolNames: step.toolCalls.map((c) => c.toolName),
+      toolCalls: step.toolCalls.map((c) => ({
+        toolName: c.toolName,
+        input: c.input as Record<string, unknown>,
+      })),
       usage: step.usage,
     })),
   };
@@ -90,29 +97,61 @@ async function runAgentLoop(
   workflowId: string,
   agent: Agent,
   messages: ModelMessage[],
-): Promise<{ text: string; output: unknown; messages: ModelMessage[] }> {
+): Promise<{ text: string; output: unknown }> {
   const turn = await DBOS.runStep(() => modelTurn(jobId, workflowId, agent, messages), {
     name: `${agent.name}-model`,
   });
-  messages.push(...turn.responseMessages);
 
   let totalTokens = jobTokenTotals.get(jobId) ?? 0;
   for (const step of turn.steps) {
     const stepTokens = step.usage.totalTokens ?? 0;
     totalTokens += stepTokens;
-    const toolNames = step.toolNames.join(",") || "none";
+    const toolNames = step.toolCalls.map((c) => c.toolName).join(",") || "none";
     console.log(
-      `[${jobId}/${workflowId}] agent=${agent.name} tools=${toolNames} stepTokens=${stepTokens} totalTokens=${totalTokens}`,
+      `[${jobId}/${workflowId}] agent=${agent.name} tools=${toolNames} inputTokens=${step.usage.inputTokens ?? 0} stepTokens=${stepTokens} totalTokens=${totalTokens}`,
     );
+    // for (const call of step.toolCalls) {
+    //   console.log(
+    //     `[${jobId}/${workflowId}] agent=${agent.name} tool_call=${call.toolName} input=${JSON.stringify(call.input)}`,
+    //   );
+    // }
   }
   jobTokenTotals.set(jobId, totalTokens);
 
-  return { text: turn.text, output: turn.output, messages };
+  return { text: turn.text, output: turn.output };
 }
 
-// Runs ProviderScrapeAgent for a single URL as its own durable workflow, so a
-// directory's fanned-out URLs can be started concurrently (see agentWorkflow)
-// and each one is independently resumable if it crashes.
+const PROVIDER_SCRAPE_PIPELINE_NAME = "provider scrape";
+
+// Two-step provider pipeline: ProviderExtractAgent reads the page and writes
+// up its findings in plain text (no output schema, so its multi-step
+// web_fetch/web_search exchange never carries the schema's token cost);
+// ProviderFormatAgent then converts that text into the final structured
+// object in a single step, on a fresh context that never sees the raw page
+// or the extraction agent's own tool-calling history.
+async function runProviderScrape(
+  jobId: string,
+  workflowId: string,
+  messages: ModelMessage[],
+): Promise<{ text: string; output: unknown }> {
+  // Extraction runs on its own copy — its web_fetch/web_search tool-call and
+  // result content is large and only useful for producing this one answer,
+  // so it's never merged into the caller's persisted conversation.
+  const extraction = await runAgentLoop(jobId, workflowId, ProviderExtractAgent, [...messages]);
+  const formatted = await runAgentLoop(jobId, workflowId, ProviderFormatAgent, [
+    { role: "user", content: extraction.text },
+  ]);
+
+  // Only the final structured answer becomes part of the persisted
+  // conversation, not the extraction agent's raw fetch/search transcript.
+  messages.push({ role: "assistant", content: formatted.text });
+
+  return { text: formatted.text, output: formatted.output };
+}
+
+// Runs the provider pipeline for a single URL as its own durable workflow, so
+// a directory's fanned-out URLs can be started concurrently (see
+// agentWorkflow) and each one is independently resumable if it crashes.
 async function providerScrapeWorkflow(jobId: string, url: string) {
   const workflowId = DBOS.workflowID ?? "unknown";
 
@@ -122,21 +161,21 @@ async function providerScrapeWorkflow(jobId: string, url: string) {
         type: EventType.SubagentStarted,
         workflowId,
         stepId: url,
-        agent: ProviderScrapeAgent.name,
+        agent: PROVIDER_SCRAPE_PIPELINE_NAME,
         objective: url,
       }),
     { name: "subagent-started" },
   );
 
   try {
-    const result = await runAgentLoop(jobId, workflowId, ProviderScrapeAgent, [{ role: "user", content: url }]);
+    const result = await runProviderScrape(jobId, workflowId, [{ role: "user", content: url }]);
     await DBOS.runStep(
       () =>
         emit(jobId, {
           type: EventType.SubagentCompleted,
           workflowId,
           stepId: url,
-          agent: ProviderScrapeAgent.name,
+          agent: PROVIDER_SCRAPE_PIPELINE_NAME,
           findings: result.text,
         }),
       { name: "subagent-completed" },
@@ -149,7 +188,7 @@ async function providerScrapeWorkflow(jobId: string, url: string) {
           type: EventType.SubagentFailed,
           workflowId,
           stepId: url,
-          agent: ProviderScrapeAgent.name,
+          agent: PROVIDER_SCRAPE_PIPELINE_NAME,
           error: err instanceof Error ? err.message : String(err),
         }),
       { name: "subagent-failed" },
@@ -191,18 +230,26 @@ async function agentWorkflow(jobId: string, messages: ModelMessage[]) {
   let text: string;
 
   if (decision.agent === "provider_scrape") {
-    const result = await runAgentLoop(jobId, workflowId, ProviderScrapeAgent, messages);
+    const result = await runProviderScrape(jobId, workflowId, messages);
     text = result.text;
   } else {
-    const directoryResult = await runAgentLoop(jobId, workflowId, DirectoryScrapeAgent, messages);
+    // Runs on its own copy — its web_search/pagination tool-calling
+    // transcript is only useful for finding the URLs, so it's not merged
+    // into the caller's persisted conversation (same reasoning as
+    // runProviderScrape's extraction step).
+    const directoryResult = await runAgentLoop(jobId, workflowId, DirectoryScrapeAgent, [...messages]);
     const { urls } = directoryResult.output as { urls: string[] };
+
+    // Only the final answer becomes part of the persisted conversation, not
+    // the raw tool-calling transcript that produced it.
+    messages.push({ role: "assistant", content: directoryResult.text });
 
     await DBOS.runStep(
       () =>
         emit(jobId, {
           type: EventType.PlanCreated,
           workflowId,
-          steps: urls.map((url, i) => ({ id: `${i}`, agent: ProviderScrapeAgent.name, objective: url })),
+          steps: urls.map((url, i) => ({ id: `${i}`, agent: PROVIDER_SCRAPE_PIPELINE_NAME, objective: url })),
         }),
       { name: "plan-created" },
     );

@@ -76,9 +76,9 @@ export const tools = {
     }),
     execute: async ({ url }) => {
       // TEMP: mocked out to isolate fetchServiceTypes' context-window impact.
-      // const doc = await firecrawl.scrape(url, { formats: ["markdown"] });
-      // return { markdown: doc.markdown ?? null };
-      return { markdown: `# Test Provider\n\nA food bank at ${url}. Open Mon-Fri 9-5. Call 555-1234.` };
+      const doc = await firecrawl.scrape(url, { formats: ["markdown"], onlyMainContent: true });
+      return { markdown: doc.markdown ?? null };
+      // return { markdown: `# Test Provider\n\nA food bank at ${url}. Open Mon-Fri 9-5. Call 555-1234.` };
     },
   }),
 };

@@ -1,12 +1,8 @@
 import { Output } from "ai";
 import { openai } from "@ai-sdk/openai";
-import { anthropic } from "@ai-sdk/anthropic";
 import { z } from "zod";
+import { tools } from "../tools";
 import type { Agent } from "../types";
-
-const webSearchTool = anthropic.tools.webSearch_20250305({
-  maxUses: 3,
-});
 
 const directoryScrapeOutputSchema = z.object({
   urls: z
@@ -18,7 +14,7 @@ const directoryScrapeOutputSchema = z.object({
 
 export const DirectoryScrapeAgent: Agent = {
   name: "directory scraper",
-  model: anthropic("claude-sonnet-5"),
+  model: openai("gpt-5.6-luna"),
   systemPrompt: `You are an AI assistant that finds every provider listed in an online directory of service providers, so each one can be individually reviewed later.
 
 ## Task
@@ -41,8 +37,8 @@ Given a URL, first determine whether it's a directory-style page (one that lists
 - If a provider's own page or profile URL isn't linked from the directory, omit it rather than guessing one.
 - If the page has no clear pagination, treat it as a single page and return everything found on it.`,
   tools: {
-    web_search: webSearchTool,
-    web_fetch: anthropic.tools.webFetch_20250910({ maxUses: 3 }),
+    web_search: openai.tools.webSearch(),
+    web_fetch: tools.fetchUrlContent,
   },
   output: Output.object({ schema: directoryScrapeOutputSchema }),
 };
