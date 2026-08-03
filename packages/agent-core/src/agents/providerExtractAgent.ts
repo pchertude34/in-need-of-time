@@ -1,5 +1,6 @@
 import { openai } from "@ai-sdk/openai";
 import type { Agent } from "../types";
+import { tools } from "../tools";
 
 // Deliberately has no `output` schema. The schema for the final structured
 // shape (see providerFormatAgent.ts) is large, and streamText resends
@@ -18,7 +19,7 @@ Given a URL, use \`web_search\` to find out what organization(s) it belongs to a
 
 ## Workflow
 1. Use \`web_search\` to research the given URL — search for the URL itself and/or the organization or directory it belongs to. Run as many searches as you genuinely need, but keep it focused: stop once you have enough to identify the provider(s) and their details, rather than searching exhaustively.
-2. Identify each distinct provider associated with the URL. For a directory-style page, treat each listed organization as a separate provider.
+2. Identify each distinct provider associated with the URL. For a directory-style page, treat each listed organization as a separate provider. If a single organization runs services out of multiple physical locations, treat each location as a separate provider too — the database needs one address per entry.
 3. For each provider found, judge whether it fits In Need of Time's criteria:
    - It offers a qualifying service (health clinic, food bank, shelter, free-clothing program, or a similar service aimed at people in crisis).
    - It appears to be a real, currently operating organization — not a defunct listing, an unrelated business, or a generic informational page.
@@ -28,19 +29,22 @@ Given a URL, use \`web_search\` to find out what organization(s) it belongs to a
    - Name
    - What you know about its mission, services, population served, requirements, and upcoming schedule changes
    - Address, if stated
-   - Hours of operation, if stated
+   - Hours of operation, if stated. If the provider offers multiple services and they all run on the same schedule, give one set of hours. If different services run on different days/times (e.g. a food pantry open Mon/Wed/Fri but a clothing closet only open Tue/Thu), give hours per service instead of a single set.
    - Contact info (phone, email, website) you found
    - A direct URL to its own page, if different from the one you were given
    - A brief reason it fits In Need of Time's criteria
    Say explicitly when a detail wasn't found rather than guessing or silently leaving it out — the formatting agent needs to know the difference between "not found" and "not searched yet."
-6. If no providers qualify, say so explicitly rather than writing anything up.
+6. For each detail above, also note what it's worth trusting: whether it came from the provider's own website or from a third-party directory/listing site, how recent the source looks, whether you found it on more than one page, and whether sources disagree (e.g. one page lists different hours or a different phone number than another). Be explicit about any conflicts rather than silently picking one value — the formatting agent uses this to judge how confident to be in each field, and it can only mark a field as very confident when the provider's own site is what confirmed it.
+7. If no providers qualify, say so explicitly rather than writing anything up.
 
 ## Rules
 - Do not fabricate providers or details that aren't supported by your search results.
 - Do not include organizations that are out of scope for In Need of Time (e.g. general business directories, unrelated commercial services).
 - If a provider has a mobile or rotating schedule, try to determine its next stop based on the current date.
+- If an organization's services are split across multiple physical locations, write each location up as its own provider rather than combining them into one entry.
 - Don't base a provider's inclusion on a source that shows clear signs of being more than about a year old. If a result looks outdated, prefer a more recent one, or note in your write-up that its current status couldn't be confirmed. Don't exclude a source just because it lacks any date signal at all — only exclude when there's clear evidence it's stale.`,
   tools: {
+    get_service_types: tools.fetchServiceTypes,
     web_search: openai.tools.webSearch(),
   },
 };

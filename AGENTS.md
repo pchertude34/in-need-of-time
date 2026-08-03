@@ -56,6 +56,11 @@ Every workspace also has its own `type-check` script (`npm run type-check -w <pa
 
 - Give every new package a `type-check` script (`tsc --noEmit`), matching every existing workspace — there's no root-level aggregate type-check, so each package must be independently checkable.
 
+### General code style
+
+- **Constant exports go at the top of the file**, where applicable — before the functions that use them, not interspersed or appended at the bottom.
+- **Use function declarations for top-level functions**, where applicable. Prefer arrow functions for inline/callback functions (e.g. passed to `.map`, `.filter`, event handlers, `DBOS.runStep`).
+
 ## Testing
 
 There are no tests anywhere in this repo yet — no `*.test.ts`/`*.spec.ts` files, no vitest/jest/playwright config. Don't assume an existing test convention or framework; ask before introducing one.
