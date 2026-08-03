@@ -61,7 +61,9 @@ const providerScrapeOutputSchema = z.object({
           z
             .object({ latitude: z.number(), longitude: z.number() })
             .nullable()
-            .describe("Geolocation of the address. Null if not found."),
+            .describe(
+              "Always null here — a separate step geocodes this from `address` after formatting, so don't try to determine it yourself.",
+            ),
         ),
         serviceTypes: z
           .array(

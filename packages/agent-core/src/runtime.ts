@@ -2,6 +2,7 @@ import { streamText, stepCountIs } from "ai";
 import { DBOS } from "@dbos-inc/dbos-sdk";
 import { emit } from "./bus";
 import { ProviderExtractAgent } from "./agents/providerExtractAgent";
+import { ProviderSearchAgent } from "./agents/providerSearchAgent";
 import { ProviderFormatAgent } from "./agents/providerFormatAgent";
 import { EventType } from "@in-need-of-time/types/agentEvents";
 import type { Agent } from "./types";
@@ -39,11 +40,12 @@ type Turn = {
   responseMessages: ModelMessage[];
   usage: LanguageModelUsage;
   steps: StepUsage[];
+  urls: string[];
 };
 
 // DBOS step so a completed turn is checkpointed and never re-billed.
 async function modelTurn(jobId: string, workflowId: string, agent: Agent, context: ModelMessage[]): Promise<Turn> {
-  const { textStream, toolCalls, text, output, responseMessages, usage, steps } = streamText({
+  const { textStream, toolCalls, text, output, responseMessages, usage, steps, sources } = streamText({
     model: agent.model,
     system: agent.systemPrompt,
     tools: agent.tools,
@@ -76,6 +78,7 @@ async function modelTurn(jobId: string, workflowId: string, agent: Agent, contex
       })),
       usage: step.usage,
     })),
+    urls: (await sources).flatMap((source) => (source.sourceType === "url" ? [source.url] : [])),
   };
 }
 
@@ -96,7 +99,7 @@ export async function runAgentLoop(
   workflowId: string,
   agent: Agent,
   messages: ModelMessage[],
-): Promise<{ text: string; output: unknown }> {
+): Promise<{ text: string; output: unknown; urls: string[] }> {
   const turn = await DBOS.runStep(() => modelTurn(jobId, workflowId, agent, messages), {
     name: `${agent.name}-model`,
   });
@@ -112,29 +115,40 @@ export async function runAgentLoop(
   }
   jobTokenTotals.set(jobId, totalTokens);
 
-  return { text: turn.text, output: turn.output };
+  return { text: turn.text, output: turn.output, urls: turn.urls };
 }
 
-// Two-step provider pipeline: ProviderExtractAgent reads the page and writes
-// up its findings in plain text (no output schema, so its multi-step
-// web_search exchange never carries the schema's token cost); ProviderFormatAgent
-// then converts that text into the final structured object in a single step,
-// on a fresh context that never sees the extraction agent's own search history.
+// Three-step provider pipeline: ProviderExtractAgent reads the given URL
+// first and writes up its findings in plain text; ProviderSearchAgent then
+// researches the same provider more broadly across the web, writing up to 5
+// more site-tagged findings (first-party vs. third-party). Neither carries an
+// `output` schema, so their own multi-step web_search exchanges never carry
+// the schema's token cost. ProviderFormatAgent then converts both write-ups
+// into the final structured object in a single step, on a fresh context that
+// never sees either agent's own search history — the extra sources let it
+// judge confidence (agreement/conflicts, first- vs. third-party) properly.
 export async function runProviderScrape(
   jobId: string,
   workflowId: string,
   messages: ModelMessage[],
 ): Promise<{ text: string; output: unknown }> {
-  // Extraction runs on its own copy — its web_search tool-call and result
+  // Both run on their own copies — their web_search tool-call and result
   // content is large and only useful for producing this one answer, so it's
   // never merged into the caller's persisted conversation.
   const extraction = await runAgentLoop(jobId, workflowId, ProviderExtractAgent, [...messages]);
+  console.log(`[${jobId}/${workflowId}] agent=${ProviderExtractAgent.name} findings=${extraction.text}`);
+  for (const url of extraction.urls) {
+    console.log(`[${jobId}/${workflowId}] agent=${ProviderExtractAgent.name} searched=${url}`);
+  }
+
+  // const search = await runAgentLoop(jobId, workflowId, ProviderSearchAgent, [...messages]);
+
   const formatted = await runAgentLoop(jobId, workflowId, ProviderFormatAgent, [
-    { role: "user", content: extraction.text },
+    { role: "user", content: `${extraction.text}` },
   ]);
 
   // Only the final structured answer becomes part of the persisted
-  // conversation, not the extraction agent's raw search transcript.
+  // conversation, not either agent's raw search transcript.
   messages.push({ role: "assistant", content: formatted.text });
 
   return { text: formatted.text, output: formatted.output };
