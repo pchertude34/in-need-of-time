@@ -132,6 +132,7 @@ export async function runProviderScrape(
   workflowId: string,
   messages: ModelMessage[],
 ): Promise<{ text: string; output: unknown }> {
+  console.log(messages);
   // Both run on their own copies — their web_search tool-call and result
   // content is large and only useful for producing this one answer, so it's
   // never merged into the caller's persisted conversation.
