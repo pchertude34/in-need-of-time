@@ -3,6 +3,7 @@ import { DBOS } from "@dbos-inc/dbos-sdk";
 import { emit } from "./bus";
 import { ProviderExtractAgent } from "./agents/providerExtractAgent";
 import { ProviderSearchAgent } from "./agents/providerSearchAgent";
+import { ProviderResearchAgent } from "./agents/providerResearchAgent";
 import { ProviderFormatAgent } from "./agents/providerFormatAgent";
 import { EventType } from "@in-need-of-time/types/agentEvents";
 import type { Agent } from "./types";
@@ -136,7 +137,24 @@ export async function runProviderScrape(
   // Both run on their own copies — their web_search tool-call and result
   // content is large and only useful for producing this one answer, so it's
   // never merged into the caller's persisted conversation.
-  const extraction = await runAgentLoop(jobId, workflowId, ProviderExtractAgent, [...messages]);
+  const research = await runAgentLoop(jobId, workflowId, ProviderResearchAgent, [...messages]);
+  console.log(`[${jobId}/${workflowId}] agent=${ProviderResearchAgent.name} findings=${research.text}`);
+
+  const researchUrls = (research.output as { urls?: { url: string; isThirdParty: boolean }[] } | undefined)?.urls;
+  const extractionContext =
+    researchUrls && researchUrls.length > 0
+      ? [
+          ...messages,
+          {
+            role: "user" as const,
+            content: `Websites found by an earlier research step — investigate these along with anything else you find:\n${researchUrls
+              .map((u) => `- ${u.url} (${u.isThirdParty ? "third-party" : "provider's own site"})`)
+              .join("\n")}`,
+          },
+        ]
+      : [...messages];
+
+  const extraction = await runAgentLoop(jobId, workflowId, ProviderExtractAgent, extractionContext);
   console.log(`[${jobId}/${workflowId}] agent=${ProviderExtractAgent.name} findings=${extraction.text}`);
   for (const url of extraction.urls) {
     console.log(`[${jobId}/${workflowId}] agent=${ProviderExtractAgent.name} searched=${url}`);
