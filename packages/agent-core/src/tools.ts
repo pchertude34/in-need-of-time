@@ -1,6 +1,7 @@
 import { tool } from "ai";
 import { z } from "zod";
 import { createClient } from "@sanity/client";
+import { geocodeAddress } from "@in-need-of-time/utils";
 import Firecrawl from "firecrawl";
 
 const client = createClient({
@@ -68,6 +69,20 @@ export const tools = {
     ),
     execute: getServiceTypes,
   }),
+  geocodeAddress: tool({
+    description: `Geocodes a free-form address string using the US Census Bureau Geocoding Services API.`,
+    inputSchema: z.object({ address: z.string() }),
+    outputSchema: z
+      .object({
+        latitude: z.number(),
+        longitude: z.number(),
+        matchedAddress: z.string(),
+        raw: z.any(),
+      })
+      .nullable()
+      .describe("Null if the address couldn't be matched (bad or ambiguous address)."),
+    execute: ({ address }) => geocodeAddress(address),
+  }),
   fetchUrlContent: tool({
     description: `Fetches the markdown content of exactly the given URL. Does not search the web or visit any other page.`,
     inputSchema: z.object({ url: z.string().describe("The exact URL to fetch.") }),
@@ -82,17 +97,3 @@ export const tools = {
     },
   }),
 };
-
-// I don't think I really need this
-export async function runTool(name: string, args: Record<string, unknown>): Promise<Record<string, unknown>> {
-  switch (name) {
-    case "web_search":
-      // Implement web search logic here
-      return { result: "Web search results" };
-    case "data_analysis":
-      // Implement data analysis logic here
-      return { result: "Data analysis results" };
-    default:
-      throw new Error(`Unknown tool: ${name}`);
-  }
-}

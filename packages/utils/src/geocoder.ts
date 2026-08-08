@@ -1,6 +1,3 @@
-// import URL from 'node:url';
-// import fetch from 'node-fetch';
-
 /**
  * Thin TypeScript client for the US Census Bureau Geocoding Services API.
  * Docs: https://geocoding.geo.census.gov/geocoder/Geocoding_Services_API.pdf
@@ -140,28 +137,3 @@ export async function geocodeAddresses(
 
   return results;
 }
-
-// --- Example usage ---
-//
-// const result = await geocodeAddress("1032 W. Main St., Medford, OR 97501");
-// if (result) {
-//   console.log(result.latitude, result.longitude, result.matchedAddress);
-// } else {
-//   console.log("No match found — flag for manual review");
-// }
-
-geocodeAddresses([
-  "1032 W. Main St., Medford, OR 97501",
-  "1600 Pennsylvania Ave NW, Washington, DC 20500",
-  "1 Infinite Loop, Cupertino, CA 95014",
-]).then((results) => {
-  for (const { address, result, error } of results) {
-    if (error) {
-      console.error(`Error geocoding "${address}": ${error}`);
-    } else if (result) {
-      console.log(`Geocoded "${address}" to ${result.latitude}, ${result.longitude}`);
-    } else {
-      console.log(`No match found for "${address}"`);
-    }
-  }
-});
