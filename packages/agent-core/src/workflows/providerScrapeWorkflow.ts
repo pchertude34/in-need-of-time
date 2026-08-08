@@ -1,7 +1,32 @@
 import { DBOS } from "@dbos-inc/dbos-sdk";
 import { emit } from "../bus";
 import { EventType } from "@in-need-of-time/types/agentEvents";
-import { runProviderScrape, PROVIDER_SCRAPE_PIPELINE_NAME } from "../runtime";
+import { runAgent, buildContext } from "./utils";
+import { ModelMessage } from "ai";
+import { ProviderResearchAgent, type ProviderResearchOutput } from "../agents/providerResearchAgent";
+import { ProviderExtractAgent } from "../agents/providerExtractAgent";
+import { ProviderFormatAgent } from "../agents/providerFormatAgent";
+
+export const PROVIDER_SCRAPE_PIPELINE_NAME = "provider scrape";
+
+export async function runProviderScrape(jobId: string, workflowId: string, messages: ModelMessage[]) {
+  const research = await runAgent(jobId, workflowId, messages, ProviderResearchAgent);
+  const { urls } = research.output as ProviderResearchOutput;
+  const extractionContext = buildContext(
+    messages,
+    `Websites found by an earlier research step — investigate these along with anything else you find:\n${urls
+      .map((u) => `- ${u.url} (${u.isThirdParty ? "third-party" : "provider's own site"})`)
+      .join("\n")}`,
+  );
+  const providerInfo = await runAgent(jobId, workflowId, extractionContext, ProviderExtractAgent);
+  const formatContext = buildContext(extractionContext, providerInfo.text);
+  const formattedProvider = await runAgent(jobId, workflowId, formatContext, ProviderFormatAgent);
+
+  return {
+    text: formattedProvider.text,
+    output: formattedProvider.output,
+  };
+}
 
 // Runs the provider pipeline for a single URL as its own durable workflow, so
 // a directory's fanned-out URLs can be started concurrently (see

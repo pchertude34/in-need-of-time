@@ -24,6 +24,8 @@ const providerResearchOutputSchema = z.object({
     ),
 });
 
+export type ProviderResearchOutput = z.infer<typeof providerResearchOutputSchema>;
+
 export const ProviderResearchAgent: Agent = {
   name: "provider_research",
   model: openai(GPT_LIGHTWEIGHT_MODEL),

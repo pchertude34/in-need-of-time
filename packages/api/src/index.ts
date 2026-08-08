@@ -1,4 +1,3 @@
-import { randomUUID } from "node:crypto";
 import express from "express";
 import { createServer } from "node:http";
 import { WebSocketServer, type WebSocket } from "ws";
@@ -71,41 +70,40 @@ async function main() {
       let message: ClientMessage;
       try {
         message = JSON.parse(raw.toString());
+        console.log("message received :>> ", message);
       } catch (err) {
         console.error("Failed to parse message:", err);
         return;
       }
 
-      if (message.type === "submit_task") {
-        const messages: ModelMessage[] = [
-          ...((agentJob.messages as any[]) || []),
-          { role: "user", content: message.input },
-        ];
+      const messages: ModelMessage[] = [
+        ...((agentJob.messages as any[]) || []),
+        { role: "user", content: message.input },
+      ];
 
-        // Start the durable workflow in the background. It reports progress via
-        // the event stream; we don't wait for the result here — but we do
-        // attach to it so the conversation's history gets persisted once done.
-        const agentResult = await DBOS.startWorkflow(runAgentWorkflow)(agentJob.jobId, messages);
+      // Start the durable workflow in the background. It reports progress via
+      // the event stream; we don't wait for the result here — but we do
+      // attach to it so the conversation's history gets persisted once done.
+      const agentResult = await DBOS.startWorkflow(runAgentWorkflow)(agentJob.jobId, messages);
 
-        let result: any;
-        try {
-          result = await agentResult.getResult();
-          await db
-            .update(agentJobsTable)
-            .set({ output: result.text, messages: result.messages, status: "COMPLETED" })
-            .where(eq(agentJobsTable.jobId, agentJob.jobId));
-          // Keep the connection-scoped job in sync so the next message on this
-          // socket builds on this turn's history without re-fetching it.
-          agentJob = { ...agentJob, messages: result.messages, output: result.text, status: "COMPLETED" };
-        } catch (err) {
-          await db
-            .update(agentJobsTable)
-            .set({ status: "FAILED", error: err instanceof Error ? err.message : String(err) })
-            .where(eq(agentJobsTable.jobId, agentJob.jobId));
-        }
-
-        socket.send(JSON.stringify({ jobId: agentJob.jobId, result: result.text }));
+      let result: any;
+      try {
+        result = await agentResult.getResult();
+        await db
+          .update(agentJobsTable)
+          .set({ output: result.text, messages: result.messages, status: "COMPLETED" })
+          .where(eq(agentJobsTable.jobId, agentJob.jobId));
+        // Keep the connection-scoped job in sync so the next message on this
+        // socket builds on this turn's history without re-fetching it.
+        agentJob = { ...agentJob, messages: result.messages, output: result.text, status: "COMPLETED" };
+      } catch (err) {
+        await db
+          .update(agentJobsTable)
+          .set({ status: "FAILED", error: err instanceof Error ? err.message : String(err) })
+          .where(eq(agentJobsTable.jobId, agentJob.jobId));
       }
+
+      socket.send(JSON.stringify({ jobId: agentJob.jobId, result: result.text }));
     });
   });
 
