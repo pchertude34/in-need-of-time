@@ -36,10 +36,20 @@ const confidenceLevelSchema = z
     "Confidence that this field is accurate, based on the research notes. Weigh how recent/authoritative the source looks, whether multiple sources agree, and whether any conflict (e.g. one page listing different hours than another). Use `very_low` if the field wasn't found at all. Only use `very_high` when the notes say the field was confirmed on the provider's own website — never for a field sourced only from a third-party directory or listing site.",
   );
 
-// Pairs a field's value with a confidence level, so the caller can tell a
-// well-sourced fact from a guess or a stale/conflicting one.
+// Pairs a field's value with a confidence level and the source it came from,
+// so the caller can tell a well-sourced fact from a guess or a
+// stale/conflicting one, and check the source itself if needed.
 function withConfidence<T extends z.ZodTypeAny>(value: T) {
-  return z.object({ value, confidence: confidenceLevelSchema });
+  return z.object({
+    value,
+    confidence: confidenceLevelSchema,
+    sourceUrl: z
+      .string()
+      .nullable()
+      .describe(
+        "The URL of the source page (from the notes) this value came from. Null if the notes don't attribute it to a specific source.",
+      ),
+  });
 }
 
 const providerSchema = z.object({
@@ -126,7 +136,10 @@ You will be given prose findings about one provider that another agent already v
    - A direct URL to its own page, if mentioned
    - The reason it fits In Need of Time's criteria, as given in the notes
    Leave any field the notes don't cover unset rather than guessing.
-3. For each field above (other than the reason and location), assign a confidence level — \`very_low\`, \`low\`, \`medium\`, \`high\`, or \`very_high\` — based only on what the notes say about that field's source: how recent it looked, whether multiple sources agreed, and whether the notes flag any conflict (e.g. different hours on different pages). Use \`very_low\` when the notes say the field wasn't found. Only use \`very_high\` when the notes say the field came from the provider's own website — if it only came from a third-party directory or listing site, cap it at \`high\` even if the source otherwise looks solid. Give location the same confidence as address, since it's derived from it.
+3. For each field above (other than the reason), assign:
+   - A confidence level — \`very_low\`, \`low\`, \`medium\`, \`high\`, or \`very_high\` — based only on what the notes say about that field's source: how recent it looked, whether multiple sources agreed, and whether the notes flag any conflict (e.g. different hours on different pages). Use \`very_low\` when the notes say the field wasn't found. Only use \`very_high\` when the notes say the field came from the provider's own website — if it only came from a third-party directory or listing site, cap it at \`high\` even if the source otherwise looks solid.
+   - A source URL — the URL of the specific entry in the notes that this value came from (each entry in the notes is tagged with the website it came from). Null if the field wasn't found, or the notes don't tie it to a specific entry.
+   Give location the same confidence and source URL as address, since it's derived from it.
 4. If the notes say no provider qualified, return \`null\`.
 
 ## Rules
@@ -136,7 +149,8 @@ You will be given prose findings about one provider that another agent already v
 - Do not fabricate details that aren't in the notes, and do not second-guess whether the provider qualifies — that judgment was already made.
 - Never guess coordinates yourself — location must come from \`geocode_address\`, never from the notes or your own knowledge.
 - Base confidence only on what the notes actually say about a source — don't invent recency or agreement signals the notes don't mention.
-- Never assign \`very_high\` confidence to a field sourced only from a third-party directory or listing site — reserve it for fields the notes say were confirmed on the provider's own website.`,
+- Never assign \`very_high\` confidence to a field sourced only from a third-party directory or listing site — reserve it for fields the notes say were confirmed on the provider's own website.
+- A source URL must be one that actually appears in the notes — never fabricate or guess one, and never fill it in from your own knowledge of the provider.`,
   tools: {
     get_service_types: tools.fetchServiceTypes,
     geocode_address: tools.geocodeAddress,

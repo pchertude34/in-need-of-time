@@ -11,14 +11,22 @@ export const PROVIDER_SCRAPE_PIPELINE_NAME = "provider scrape";
 
 export async function runProviderScrape(jobId: string, workflowId: string, messages: ModelMessage[]) {
   const research = await runAgent(jobId, workflowId, messages, ProviderResearchAgent);
+
   const { urls } = research.output as ProviderResearchOutput;
+  console.log(
+    "Provider research found URLs:",
+    urls.map((u) => u.url),
+  );
   const extractionContext = buildContext(
     messages,
     `Websites found by an earlier research step — investigate these along with anything else you find:\n${urls
       .map((u) => `- ${u.url} (${u.isThirdParty ? "third-party" : "provider's own site"})`)
       .join("\n")}`,
   );
+
   const providerInfo = await runAgent(jobId, workflowId, extractionContext, ProviderExtractAgent);
+
+  console.log("Provider info extracted:", providerInfo.text);
   const formatContext = buildContext(extractionContext, providerInfo.text);
   const formattedProvider = await runAgent(jobId, workflowId, formatContext, ProviderFormatAgent);
 
