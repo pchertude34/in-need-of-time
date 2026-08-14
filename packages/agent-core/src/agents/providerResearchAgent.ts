@@ -48,7 +48,13 @@ Given a provider's name and/or a URL associated with it, use \`web_search\` to f
 - Prefer URLs with substantive service details (service types, hours, address, requirements, contact info) over pages that only mention the provider's name.
 - Don't return duplicate URLs.`,
   tools: {
-    web_search: openai.tools.webSearch(),
+    web_search_preview: openai.tools.webSearchPreview({}),
+    web_search: openai.tools.webSearch({
+      userLocation: {
+        type: "approximate",
+        region: "Oregon",
+      },
+    }),
   },
   output: Output.object({ schema: providerResearchOutputSchema }),
 };

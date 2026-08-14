@@ -1,9 +1,11 @@
-import { DBOS } from "@dbos-inc/dbos-sdk";
+import { registerAiSdkTelemetry } from "@lmnr-ai/lmnr";
 import { EventType } from "@in-need-of-time/types/agentEvents";
 import { streamText, stepCountIs } from "ai";
 import { emit } from "../bus";
 import type { Agent } from "../types";
 import type { ModelMessage, LanguageModelUsage } from "ai";
+
+registerAiSdkTelemetry();
 
 const MAX_STEPS = 10;
 
@@ -20,6 +22,15 @@ export async function runAgent(jobId: string, workflowId: string, messages: Mode
     output: agent.output,
     messages,
     stopWhen: [stepCountIs(MAX_STEPS)],
+    runtimeContext: {
+      jobId,
+    },
+    telemetry: {
+      functionId: "release-notes",
+      includeRuntimeContext: {
+        jobId: true,
+      },
+    },
   });
 
   for await (const part of textStream) {

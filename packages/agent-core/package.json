@@ -23,6 +23,7 @@
     "@dbos-inc/dbos-sdk": "^4.24.16",
     "@in-need-of-time/db": "file:../db",
     "@in-need-of-time/types": "file:../types",
+    "@lmnr-ai/lmnr": "^0.8.40",
     "@openai/agents": "^0.11.6",
     "ai": "^7.0.37",
     "cheerio": "^1.2.0",
