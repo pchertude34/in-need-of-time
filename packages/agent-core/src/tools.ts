@@ -28,32 +28,11 @@ async function getServiceTypes(): Promise<ServiceType[]> {
   if (serviceTypesCache && Date.now() - serviceTypesCache.fetchedAt < SERVICE_TYPES_CACHE_TTL_MS) {
     return serviceTypesCache.data;
   }
-  // const query = `*[_type == "serviceType"]{_id, name, description}`;
-  // const data: ServiceType[] = await client.fetch(query);
-  // serviceTypesCache = { data, fetchedAt: Date.now() };
-  return [
-    {
-      _id: "food",
-      name: "Food Assistance",
-      description: "Food banks, meal programs, and other food assistance services.",
-    },
-    {
-      _id: "shelter",
-      name: "Shelter",
-      description: "Emergency shelters, transitional housing, and other shelter services.",
-    },
-    {
-      _id: "clothing",
-      name: "Clothing Assistance",
-      description: "Free clothing programs and clothing assistance services.",
-    },
-    {
-      _id: "healthcare",
-      name: "Healthcare Services",
-      description: "Health clinics, medical services, and other healthcare assistance.",
-    },
-    { _id: "legal", name: "Legal Aid", description: "Legal aid services for individuals in need." },
-  ];
+  const query = `*[_type == "serviceType"]{_id, name, description}`;
+  const data: ServiceType[] = await client.fetch(query);
+  serviceTypesCache = { data, fetchedAt: Date.now() };
+
+  return data;
 }
 
 export const tools = {
