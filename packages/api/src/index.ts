@@ -41,15 +41,6 @@ async function main() {
   server = createServer(app);
   wss = new WebSocketServer({ server, path: "/ws" });
 
-  // subscribe((event) => {
-  //   const data = JSON.stringify(event);
-  //   for (const client of wss.clients) {
-  //     if (client.readyState === client.OPEN) {
-  //       client.send(data);
-  //     }
-  //   }
-  // });
-
   wss.on("connection", async (socket: WebSocket, request) => {
     const requestedJobId = new URL(request.url ?? "", "http://localhost").searchParams.get("jobId") ?? undefined;
 
@@ -63,6 +54,14 @@ async function main() {
         .values({ ...(requestedJobId ? { jobId: requestedJobId } : {}), messages: [] })
         .returning();
     }
+
+    const jobId = agentJob.jobId;
+    const unsubscribe = subscribe((eventJobId, event) => {
+      if (eventJobId === jobId && socket.readyState === socket.OPEN) {
+        socket.send(JSON.stringify(event));
+      }
+    });
+    socket.on("close", unsubscribe);
 
     socket.send(JSON.stringify({ type: "connected", jobId: agentJob.jobId }));
 

@@ -8,7 +8,7 @@ import type { AgentEvent, EventInput } from "@in-need-of-time/types/agentEvents"
 //
 // `emit` is async now — we write to the database before we hand the event out.
 
-type Listener = (event: AgentEvent) => void;
+type Listener = (jobId: string, event: AgentEvent) => void;
 const listeners = new Set<Listener>();
 
 export function subscribe(listener: Listener): () => void {
@@ -21,7 +21,7 @@ export async function emit(jobId: string, input: EventInput, store: boolean = tr
   if (store) {
     await db.insert(agentEventLog).values({ jobId, data: event }); // durable, ordered by `seq`
   }
-  for (const listener of listeners) listener(event); // live
+  for (const listener of listeners) listener(jobId, event); // live
 }
 
 // The full timeline so far, in order — read back from Postgres on every connect.
