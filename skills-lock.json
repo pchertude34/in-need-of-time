@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "skills": {
+    "ai-sdk": {
+      "source": "vercel/ai",
+      "sourceType": "github",
+      "skillPath": "skills/use-ai-sdk/SKILL.md",
+      "computedHash": "0883204d11b055e968dee697c5858e68064c27dfd4deb6310212895daa65c5ad"
+    },
+    "dbos-typescript": {
+      "source": "dbos-inc/agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/dbos-typescript/SKILL.md",
+      "computedHash": "ae5f6213b330174589ca9b92f97e5936ec1548118fa3057dde7db681747cff5c"
+    }
+  }
+}

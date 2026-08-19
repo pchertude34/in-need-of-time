@@ -11,6 +11,7 @@
     "./schema": "./src/schema.ts"
   },
   "dependencies": {
+    "@in-need-of-time/types": "file:../types",
     "@neondatabase/serverless": "^1.0.2",
     "drizzle-orm": "^0.44.5",
     "postgres": "^3.4.7"

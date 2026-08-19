@@ -1,0 +1,31 @@
+{
+  "name": "@in-need-of-time/api",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "dev": "NODE_ENV=development tsx src/index.ts",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@in-need-of-time/agent-core": "file:../agent-core",
+    "@in-need-of-time/db": "file:../db",
+    "@in-need-of-time/types": "file:../types",
+    "@sanity/client": "^7.26.0",
+    "ai": "^7.0.37",
+    "drizzle-orm": "^0.44.5",
+    "express": "^5.2.1",
+    "ws": "^8.19.0"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.6",
+    "@types/ws": "^8.18.1",
+    "tsx": "^4.21.0",
+    "typescript": "^7.0.2"
+  }
+}

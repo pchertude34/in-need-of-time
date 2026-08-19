@@ -1,29 +1,65 @@
 {
-  "id": "7cf34346-e8e2-4d98-9d83-9696c0d6e210",
+  "id": "26977e8f-8736-4e81-be32-4f096fb04538",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
-    "public.agent_audit_log": {
-      "name": "agent_audit_log",
+    "public.agent_event_log": {
+      "name": "agent_event_log",
       "schema": "",
       "columns": {
-        "id": {
-          "name": "id",
-          "type": "integer",
+        "jobId": {
+          "name": "jobId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "seq": {
+          "name": "seq",
+          "type": "bigserial",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "data": {
+          "name": "data",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "agent_event_log_jobId_agent_jobs_jobId_fk": {
+          "name": "agent_event_log_jobId_agent_jobs_jobId_fk",
+          "tableFrom": "agent_event_log",
+          "tableTo": "agent_jobs",
+          "columnsFrom": ["jobId"],
+          "columnsTo": ["jobId"],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "agent_event_log_jobId_seq_pk": {
+          "name": "agent_event_log_jobId_seq_pk",
+          "columns": ["jobId", "seq"]
+        }
+      },
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.agent_jobs": {
+      "name": "agent_jobs",
+      "schema": "",
+      "columns": {
+        "jobId": {
+          "name": "jobId",
+          "type": "uuid",
           "primaryKey": true,
           "notNull": true,
-          "identity": {
-            "type": "always",
-            "name": "agent_audit_log_id_seq",
-            "schema": "public",
-            "increment": "1",
-            "startWith": "1",
-            "minValue": "1",
-            "maxValue": "2147483647",
-            "cache": "1",
-            "cycle": false
-          }
+          "default": "gen_random_uuid()"
         },
         "timestamp": {
           "name": "timestamp",
@@ -38,20 +74,14 @@
           "primaryKey": false,
           "notNull": false
         },
-        "input": {
-          "name": "input",
-          "type": "jsonb",
-          "primaryKey": false,
-          "notNull": false
-        },
         "output": {
           "name": "output",
           "type": "jsonb",
           "primaryKey": false,
           "notNull": false
         },
-        "agent_messages": {
-          "name": "agent_messages",
+        "messages": {
+          "name": "messages",
           "type": "jsonb",
           "primaryKey": false,
           "notNull": false
