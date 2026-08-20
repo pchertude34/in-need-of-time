@@ -14,6 +14,7 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
+    "@in-need-of-time/ui": "file:../../packages/ui",
     "@sanity/sdk": "^2.8.0",
     "@sanity/sdk-react": "^2.8.0",
     "react": "^19.2.5",
@@ -21,10 +22,13 @@
     "sanity": "^5.22.0"
   },
   "devDependencies": {
-    "@types/node": "^25.6.0",
+    "@types/node": "^25.9.5",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^6.0.1",
+    "autoprefixer": "^10.0.1",
+    "postcss": "^8",
+    "tailwindcss": "^3.3.0",
     "typescript": "^6.0.3",
     "vite": "^8.0.10"
   }

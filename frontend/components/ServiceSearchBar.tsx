@@ -4,11 +4,19 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { MagnifyingGlassIcon, ViewfinderCircleIcon, ArrowRightIcon } from "@heroicons/react/24/outline";
 import { cva, VariantProps } from "class-variance-authority";
-import { Button } from "./ui/button";
-import { Separator } from "./ui/separator";
-import { InputGroup, InputLeftElement } from "./ui/input-group";
+import {
+  Button,
+  Separator,
+  InputGroup,
+  InputLeftElement,
+  Select,
+  SelectTrigger,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectValue,
+} from "@in-need-of-time/ui";
 import { Typeahead } from "./Typeahead";
-import { Select, SelectTrigger, SelectContent, SelectGroup, SelectItem, SelectValue } from "./ui/select";
 import { cn } from "@in-need-of-time/utils";
 import { CheckCircleIcon } from "@heroicons/react/24/solid";
 import { LocationInput } from "./LocationInput";

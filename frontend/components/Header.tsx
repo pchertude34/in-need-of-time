@@ -11,15 +11,19 @@ import {
   MagnifyingGlassIcon,
   BookOpenIcon,
 } from "@heroicons/react/24/outline";
-import { Drawer, DrawerClose, DrawerContent, DrawerTitle, DrawerTrigger } from "@/components/ui/drawer";
 import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerTitle,
+  DrawerTrigger,
   NavigationMenu,
   NavigationMenuItem,
   NavigationMenuLink,
   NavigationMenuList,
   navigationMenuTriggerStyle,
-} from "@/components/ui/navigation-menu";
-import { Button } from "@/components/ui/button";
+  Button,
+} from "@in-need-of-time/ui";
 
 export const navigation = [{ name: "Home", href: "/" }];
 
