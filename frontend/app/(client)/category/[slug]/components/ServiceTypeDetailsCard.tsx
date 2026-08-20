@@ -2,9 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { Button, Badge, Collapsible, CollapsibleContent, CollapsibleTrigger } from "@in-need-of-time/ui";
 import { ArrowRightIcon } from "@heroicons/react/24/outline";
 import { ChevronDownIcon } from "@heroicons/react/24/solid";
 import { cn } from "@in-need-of-time/utils";

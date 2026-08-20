@@ -10,7 +10,7 @@ import {
   FlagIcon,
 } from "@heroicons/react/24/solid";
 import { InformationCircleIcon } from "@heroicons/react/24/outline";
-import { Button } from "@/components/ui/button";
+import { Button } from "@in-need-of-time/ui";
 import { Footer } from "@/components/Footer";
 import { getProvider } from "@/lib/queries/getProviders";
 import { formatPhoneNumberForHref, generateGoogleLink } from "@in-need-of-time/utils";

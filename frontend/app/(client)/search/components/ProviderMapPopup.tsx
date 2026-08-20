@@ -1,6 +1,6 @@
 import React from "react";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
+import { Button } from "@in-need-of-time/ui";
 import { XMarkIcon, ArrowRightIcon } from "@heroicons/react/24/outline";
 import { PortableText } from "@portabletext/react";
 import { PortableTextBlock } from "@portabletext/types";

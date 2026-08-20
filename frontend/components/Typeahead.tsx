@@ -3,9 +3,7 @@
 import React, { useState, useCallback } from "react";
 import { useCombobox, UseComboboxState, UseComboboxStateChangeOptions } from "downshift";
 import { ChevronDownIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outline";
-import { Input } from "./ui/input";
-import { InputGroup, InputLeftElement, InputRightElement } from "./ui/input-group";
-import { Button } from "./ui/button";
+import { Input, InputGroup, InputLeftElement, InputRightElement, Button } from "@in-need-of-time/ui";
 import { cn } from "@in-need-of-time/utils";
 import { CheckCircleIcon } from "@heroicons/react/24/solid";
 
