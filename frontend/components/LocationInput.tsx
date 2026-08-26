@@ -4,10 +4,16 @@ import React, { useState, useEffect, useRef } from "react";
 import { MapPinIcon } from "@heroicons/react/24/outline";
 import { LocateFixed } from "lucide-react";
 import { CheckCircleIcon } from "@heroicons/react/24/solid";
-import { InputGroup, InputLeftElement, InputRightElement } from "./ui/input-group";
-import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
-import { Input } from "./ui/input";
-import { Button } from "./ui/button";
+import {
+  InputGroup,
+  InputLeftElement,
+  InputRightElement,
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+  Input,
+  Button,
+} from "@in-need-of-time/ui";
 import { useGooglePlaceSearch } from "@in-need-of-time/hooks";
 import { cn } from "@in-need-of-time/utils";
 import type { Location } from "@in-need-of-time/types";

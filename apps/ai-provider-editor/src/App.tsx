@@ -1,3 +1,4 @@
+import "./index.css";
 import React from "react";
 import { SanityApp } from "@sanity/sdk-react";
 import { type SanityConfig } from "@sanity/sdk";

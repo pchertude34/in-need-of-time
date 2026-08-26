@@ -2,11 +2,19 @@ import React from "react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { ProviderSearchMap } from "./components/ProviderSearchMap";
 import { ServiceSearchBar } from "@/components/ServiceSearchBar";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  ScrollArea,
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+  DrawerContent,
+  DrawerClose,
+  Drawer,
+  DrawerTrigger,
+  Button,
+} from "@in-need-of-time/ui";
 import { ProviderResultCard } from "./components/ProviderResultCard";
-import { DrawerContent, DrawerClose, Drawer, DrawerTrigger } from "@/components/ui/drawer";
-import { Button } from "@/components/ui/button";
 import { MobileResultsDrawer } from "./components/MobileResultsDrawer";
 import { queryAllServiceTypes } from "@/lib/queries/getServiceTypes";
 import { searchProviders } from "@/lib/queries/getProviders";

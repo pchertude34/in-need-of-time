@@ -1,11 +1,10 @@
 import Link from "next/link";
 import { ArrowRightIcon, XMarkIcon } from "@heroicons/react/24/outline";
-import { Button } from "@/components/ui/button";
+import { Button, Drawer, DrawerClose, DrawerContent, DrawerTrigger } from "@in-need-of-time/ui";
 import { Footer } from "@/components/Footer";
 import { ServiceCategoryCard } from "@/components/ServiceCategoryCard";
 import { ServiceSearchBar } from "@/components/ServiceSearchBar";
 import { ServiceSearchTriggerButton } from "@/components/ServiceSearchTriggerButton";
-import { Drawer, DrawerClose, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
 import { queryAllServiceTypes } from "@/lib/queries/getServiceTypes";
 import { queryAllServiceCategories } from "@/lib/queries/getServiceCategories";
 

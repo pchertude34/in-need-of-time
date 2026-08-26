@@ -3,11 +3,18 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { LocationInput } from "@/components/LocationInput";
-import { Select, SelectTrigger, SelectContent, SelectItem, SelectGroup, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectTrigger,
+  SelectContent,
+  SelectItem,
+  SelectGroup,
+  SelectValue,
+  Button,
+} from "@in-need-of-time/ui";
 import { CheckCircleIcon } from "@heroicons/react/24/solid";
 import { FunnelIcon } from "@heroicons/react/24/outline";
 import { cn } from "@in-need-of-time/utils";
-import { Button } from "@/components/ui/button";
 import type { Location } from "@in-need-of-time/types";
 
 type ServiceTypeFiltersProps = {

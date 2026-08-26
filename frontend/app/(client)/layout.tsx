@@ -5,8 +5,7 @@ import { Providers } from "@/components/Providers";
 import Header from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import "./globals.css";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { Toaster } from "@/components/ui/sonner";
+import { TooltipProvider, Toaster } from "@in-need-of-time/ui";
 
 const fontSans = FontSans({
   subsets: ["latin"],
