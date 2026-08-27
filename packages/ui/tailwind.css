@@ -1,0 +1,104 @@
+@theme {
+  --color-white: #ffffff;
+  --color-black: #000000;
+
+  --color-primary-50: #f0fbfb;
+  --color-primary-100: #d8f2f5;
+  --color-primary-200: #b6e6eb;
+  --color-primary-300: #84d3dc;
+  --color-primary-400: #4ab7c6;
+  --color-primary-500: #309fb0;
+  --color-primary-600: #2a7d90;
+  --color-primary-700: #286676;
+  --color-primary-800: #285562;
+  --color-primary-900: #142e38;
+
+  --color-secondary-50: #fdf4f3;
+  --color-secondary-100: #fce6e4;
+  --color-secondary-200: #fad1ce;
+  --color-secondary-300: #f6b0ab;
+  --color-secondary-400: #ed766e;
+  --color-secondary-500: #e35950;
+  --color-secondary-600: #cf3d33;
+  --color-secondary-700: #ae3027;
+  --color-secondary-800: #902b24;
+  --color-secondary-900: #41110e;
+
+  --color-error-50: #fdf2f4;
+  --color-error-100: #fce9ec;
+  --color-error-200: #f7cad2;
+  --color-error-300: #f2abb8;
+  --color-error-400: #eb7a8f;
+  --color-error-500: #df2a4a;
+  --color-error-600: #cc1f3e;
+  --color-error-700: #b61b38;
+  --color-error-800: #92162d;
+  --color-error-900: #6f1122;
+
+  --color-warning-50: #fff7eb;
+  --color-warning-100: #ffefd6;
+  --color-warning-200: #ffdead;
+  --color-warning-300: #ffc670;
+  --color-warning-400: #ffad33;
+  --color-warning-500: #f29100;
+  --color-warning-600: #db8400;
+  --color-warning-700: #bd7100;
+  --color-warning-800: #a36200;
+  --color-warning-900: #754600;
+
+  --color-success-50: #e3fcf2;
+  --color-success-100: #bff8e0;
+  --color-success-200: #67efb6;
+  --color-success-300: #17d888;
+  --color-success-400: #14b874;
+  --color-success-500: #0f8a56;
+  --color-success-600: #0d7c4e;
+  --color-success-700: #0b6a43;
+  --color-success-800: #0a5c3a;
+  --color-success-900: #074028;
+
+  --color-info-50: #f0f5fe;
+  --color-info-100: #e7eefe;
+  --color-info-200: #c9d9fd;
+  --color-info-300: #a2bdfb;
+  --color-info-400: #769df9;
+  --color-info-500: #376ff6;
+  --color-info-600: #1e5ff5;
+  --color-info-700: #0a4ce5;
+  --color-info-800: #0942c8;
+  --color-info-900: #062f8e;
+
+  /* --font-sans-app is supplied by each consuming app (next/font variable, or a
+     plain :root declaration) — not defined here, to avoid a self-referential
+     custom property cycle. */
+  --font-sans:
+    var(--font-sans-app), ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
+    "Segoe UI Symbol", "Noto Color Emoji";
+
+  --animate-accordion-down: accordion-down 0.2s ease-out;
+  --animate-accordion-up: accordion-up 0.2s ease-out;
+
+  --background-image-hero-image: url("/images/hero-image.jpg");
+  --background-image-cta-image: url("/images/cta-image.png");
+  --background-image-radial-gradient-center: radial-gradient(circle_at_center, var(--tw-gradient-stops));
+}
+
+@keyframes accordion-down {
+  from {
+    height: 0;
+  }
+  to {
+    height: var(--radix-accordion-content-height);
+  }
+}
+@keyframes accordion-up {
+  from {
+    height: var(--radix-accordion-content-height);
+  }
+  to {
+    height: 0;
+  }
+}
+
+@plugin "@tailwindcss/typography";
+@import "tw-animate-css";

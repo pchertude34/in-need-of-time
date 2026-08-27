@@ -35,10 +35,10 @@ export default function Header() {
       <>
         <div className="relative z-20 mx-auto max-w-7xl bg-white px-4 py-5 sm:px-6 lg:p-5">
           <div className="flex items-center">
-            <div className="flex-1 flex-shrink-0">
+            <div className="flex-1 shrink-0">
               <span className="hidden w-[66px] lg:block">
                 <Link href="/">
-                  <Image src="/logo.svg" alt="Logo" height={45} width={66} className=" h-12 w-auto" />
+                  <Image src="/logo.svg" alt="Logo" height={45} width={66} className="h-12 w-auto" />
                 </Link>
               </span>
               <span className="block w-[59px] lg:hidden">

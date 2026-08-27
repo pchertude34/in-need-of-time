@@ -6,6 +6,7 @@ export * from "./combobox";
 export * from "./command";
 export * from "./dialog";
 export * from "./drawer";
+export * from "./field";
 export * from "./input-group";
 export * from "./input";
 export * from "./label";

@@ -1,7 +1,13 @@
 :root {
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-sans-app: "Inter", ui-sans-serif, system-ui, sans-serif;
 }
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss" source(none);
+@source "./";
+@source "../../../packages/ui/src";
+
+@import "@in-need-of-time/ui/tailwind.css";
+
+/* Force light mode: no `.dark` class toggle exists in this app yet, so `dark:`
+   utilities stay inert instead of following the OS prefers-color-scheme. */
+@custom-variant dark (&:where(.dark, .dark *));
