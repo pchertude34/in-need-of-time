@@ -94,9 +94,9 @@ export function ServiceSearchBar(props: ServiceSearchBarProps) {
               "border-transparent focus:border-slate-400": !radius,
             })}
           >
-            <div className="flex w-full flex-grow items-center">
+            <div className="flex w-full grow items-center">
               <SelectValue placeholder="Select radius" />
-              {radius && <CheckCircleIcon className="text-success-400 ml-auto mr-1 h-5 w-5" />}
+              {radius && <CheckCircleIcon className="text-success-400 mr-1 ml-auto h-5 w-5" />}
             </div>
           </SelectTrigger>
           <SelectContent>
@@ -120,7 +120,7 @@ export function ServiceSearchBar(props: ServiceSearchBarProps) {
           <MagnifyingGlassIcon className="h-5 w-5" />
         ) : (
           <>
-            Find a Provider <ArrowRightIcon className=" ml-2 h-4 w-4" />
+            Find a Provider <ArrowRightIcon className="ml-2 h-4 w-4" />
           </>
         )}
       </Button>

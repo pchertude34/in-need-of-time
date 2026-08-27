@@ -21,7 +21,7 @@ export default async function Home() {
             <div className="bg-primary-500/40 h-[410px] w-full bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-black/30 to-black/50 sm:h-[486px]">
               <div className="p flex flex-col items-center justify-center pt-16 sm:pt-24 md:px-10 md:pt-32 lg:px-20 xl:px-60">
                 <div className="px-3 md:px-0">
-                  <h1 className="text-center text-3xl font-bold leading-snug tracking-tight text-white sm:text-4xl md:text-5xl">
+                  <h1 className="text-center text-3xl leading-snug font-bold tracking-tight text-white sm:text-4xl md:text-5xl">
                     Building a great community by helping each and everyone in service
                     <span className="text-secondary-400">.</span>
                   </h1>
@@ -34,7 +34,7 @@ export default async function Home() {
             </div>
           </div>
           {/* Service Search Bar */}
-          <div className="mx-auto w-[95%] -translate-y-[50%] rounded-full bg-white p-2 shadow-xl sm:p-4  lg:w-[85%] lg:p-8 xl:w-[75%]">
+          <div className="mx-auto w-[95%] -translate-y-[50%] rounded-full bg-white p-2 shadow-xl sm:p-4 lg:w-[85%] lg:p-8 xl:w-[75%]">
             {/* Desktop Search Bar */}
             <ServiceSearchBar serviceTypes={serviceTypes} orientation="horizontal" className="hidden md:flex" />
             {/* Mobile Search Menu */}
@@ -63,7 +63,7 @@ export default async function Home() {
         <div className="">
           <div className="mb-12 text-center">
             <h3 className="mb-3 text-2xl font-bold text-slate-900">Search by Category</h3>
-            <p className="text-lg text-slate-600 ">Select a provider type to start your narrowed search.</p>
+            <p className="text-lg text-slate-600">Select a provider type to start your narrowed search.</p>
           </div>
           <div className="flex flex-wrap justify-center gap-3 md:gap-6">
             {serviceCategories.map((category) => (
@@ -78,7 +78,7 @@ export default async function Home() {
           </div>
         </div>
         {/* Call to action */}
-        <div className="bg-cta-image my-16 overflow-hidden  rounded-3xl bg-[45%] md:my-32 ">
+        <div className="bg-cta-image my-16 overflow-hidden rounded-3xl bg-[45%] md:my-32">
           <div className="from-primary-500/95 to-primary-500/10 md:from-primary-500/85 flex h-[550px] w-full items-end justify-center bg-gradient-to-t from-45% to-100% p-6 md:h-[400px] md:items-center md:justify-start md:bg-gradient-to-r">
             <div className="max-w-[311px] md:ml-8 md:max-w-[346px]">
               <p className="text-4xl font-bold text-slate-900">

@@ -1,5 +1,6 @@
 import "./index.css";
 import React from "react";
+import { AddProviderPage } from "./pages/AddProvider/page";
 import { SanityApp } from "@sanity/sdk-react";
 import { type SanityConfig } from "@sanity/sdk";
 // import { SANITY_APP_DATASET, SANITY_APP_PROJECT_ID } from '../env';
@@ -14,8 +15,7 @@ export default function App() {
   return (
     <div>
       <SanityApp config={config} fallback={<p>Loading...</p>}>
-        <h1>AI Provider Editor</h1>
-        <p>This is where you can edit your AI providers.</p>
+        <AddProviderPage />
       </SanityApp>
     </div>
   );

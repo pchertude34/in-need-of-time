@@ -43,13 +43,13 @@ export default async function ProviderPage(props: ProviderPageProps) {
                 rel="noreferrer noopener"
                 href={generateGoogleLink(provider.place.placeId, provider.title)}
               >
-                <MapPinIcon className="mr-1 mt-1 h-4 w-4 self-start text-slate-600" />
+                <MapPinIcon className="mt-1 mr-1 h-4 w-4 self-start text-slate-600" />
                 <span className="text-wrap">{provider.place.address}</span>
               </a>
             </Button>
           </div>
           {shouldRenderContactInfo && (
-            <div className="flex space-x-6 md:ml-auto ">
+            <div className="flex space-x-6 md:ml-auto">
               {provider.publicContact?.phone && (
                 <Button variant="text-dark" size="text" asChild>
                   <a href={formatPhoneNumberForHref(provider.publicContact.phone)}>
@@ -86,7 +86,7 @@ export default async function ProviderPage(props: ProviderPageProps) {
                       </Button>
                     </div>
                   )}
-                  <div className="flex flex-col ">
+                  <div className="flex flex-col">
                     <span className="mb-1 text-slate-600">Email Address</span>
                     <Button variant="text-primary" size="text">
                       info@austinsdaycare.com
@@ -104,12 +104,12 @@ export default async function ProviderPage(props: ProviderPageProps) {
           </div>
           <div className="flex flex-col space-y-4">
             <ProviderDetailsMap
-              className=" mx-auto h-[300px] w-full md:w-[400px]"
+              className="mx-auto h-[300px] w-full md:w-[400px]"
               providerLocation={provider.place.location}
             />
             <div className="rounded-md bg-slate-50 p-6">
               <div className="flex">
-                <InformationCircleIcon className=" mr-2 mt-1 h-5 w-5 self-start text-blue-600" />
+                <InformationCircleIcon className="mt-1 mr-2 h-5 w-5 self-start text-blue-600" />
                 <h3 className="mb-2 inline-block text-lg font-bold">Are you part of this agency?</h3>
               </div>
               <p className="mb-5 text-xs text-slate-600">

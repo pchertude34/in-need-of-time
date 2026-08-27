@@ -43,8 +43,8 @@ export function ServiceTypeDetailsCard(props: ServiceTypeDetailsCardProps) {
           onMouseOver={() => setIsHovering(true)}
           onMouseOut={() => setIsHovering(false)}
         >
-          <div className="mr-4 flex flex-grow-0 items-center">
-            <h3 className="mb-0 text-pretty text-lg font-semibold">{label}</h3>
+          <div className="mr-4 flex grow-0 items-center">
+            <h3 className="mb-0 text-lg font-semibold text-pretty">{label}</h3>
             <div
               className={cn("ml-2 transform transition-all", {
                 "-translate-x-2 opacity-0": !isHovering,
@@ -56,7 +56,7 @@ export function ServiceTypeDetailsCard(props: ServiceTypeDetailsCardProps) {
           </div>
         </Link>
         {count > 0 && (
-          <Badge variant="primary" className="flex-shrink-0">
+          <Badge variant="primary" className="shrink-0">
             {count} Provider{count > 1 && "s"}
           </Badge>
         )}
