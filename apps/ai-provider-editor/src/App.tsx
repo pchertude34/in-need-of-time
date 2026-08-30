@@ -17,17 +17,17 @@ export default function App() {
     },
   ];
   return (
-    <div>
-      <SanityApp config={config} fallback={<p>Loading...</p>}>
-        <BrowserRouter>
-          <Navbar />
+    <SanityApp config={config} fallback={<p>Loading...</p>}>
+      <BrowserRouter>
+        <Navbar />
+        <main className="mx-auto mt-4 max-w-7xl px-4 sm:px-6 lg:px-8">
           <Routes>
             <Route path="/" element={<AddProviderPage />} />
             <Route path="/runs" element={<AgentRunsPage />} />
             <Route path="/job/:jobId" element={<JobDetailsPage />} />
           </Routes>
-        </BrowserRouter>
-      </SanityApp>
-    </div>
+        </main>
+      </BrowserRouter>
+    </SanityApp>
   );
 }

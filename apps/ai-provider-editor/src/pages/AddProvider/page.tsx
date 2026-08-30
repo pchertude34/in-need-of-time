@@ -38,7 +38,7 @@ export function AddProviderPage() {
 
   return (
     <div className="flex justify-center">
-      <div className="flex max-w-[720px] flex-col items-center space-y-6">
+      <div className="flex max-w-5xl flex-col items-center space-y-6">
         <div className="max-w-[520px] text-center">
           <h1 className="text-2xl font-bold text-slate-900">Add a provider</h1>
           <p className="text-center text-slate-600">
@@ -46,8 +46,8 @@ export function AddProviderPage() {
             rest
           </p>
         </div>
-        <Card className="space-y-6 p-6">
-          <div className="flex flex-row gap-4">
+        <Card className="space-y-2 p-6 md:space-y-6">
+          <div className="flex flex-row flex-wrap gap-2 md:gap-4">
             <Field className="flex-[7]">
               <FieldLabel htmlFor="provider-name">Provider Name</FieldLabel>
               <InputGroup>
@@ -64,7 +64,7 @@ export function AddProviderPage() {
                 />
               </InputGroup>
             </Field>
-            <Field className="flex-[3]">
+            <Field className="w-full flex-none md:flex-[3]">
               <FieldLabel htmlFor="state">State</FieldLabel>
               <Select value={state} onValueChange={setState}>
                 <SelectTrigger id="state">
@@ -80,11 +80,11 @@ export function AddProviderPage() {
               </Select>
             </Field>
           </div>
-          <div className="flex flex-row space-x-4">
-            <p className="text-sm text-slate-500">
+          <div className="flex flex-row flex-wrap gap-4">
+            <p className="w-full text-sm text-slate-500 md:max-w-[70%]">
               State narrows the seach so the agent doesn't match a same named provider elsewhere
             </p>
-            <Button className="ml-auto" variant="light" disabled={!providerName} onClick={onSubmit}>
+            <Button className="ml-auto w-full md:w-auto" variant="light" disabled={!providerName} onClick={onSubmit}>
               Search & Autofill
             </Button>
           </div>
