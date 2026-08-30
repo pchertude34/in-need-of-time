@@ -12,11 +12,22 @@ const WS_PATH = "/provider-agent/ws";
 
 export const providerAgentRouter = Router();
 
-// POST /provider-agent/jobs — create a new job. The websocket endpoint below
-// requires an existing jobId, so a client always creates the job here first.
-providerAgentRouter.post("/jobs", async (_req, res) => {
+// POST /provider-agent/jobs — create a new job on the provider agent and return the
+// job id to the client. Use the websocket endpoint to receive updates on the job's progress.
+providerAgentRouter.post("/jobs", async (req, res) => {
+  const { message } = req.body as { message: ClientMessage };
   const [agentJob] = await db.insert(agentJobsTable).values({ messages: [] }).returning();
+
+  const messages: ModelMessage[] = [{ role: "user", content: message.input }];
+  // Fire off the agent
+  await DBOS.startWorkflow(runAgentWorkflow)(agentJob.jobId, messages);
   res.status(201).json({ jobId: agentJob.jobId });
+});
+
+// GET /provider-agent/jobs — fetch all jobs.
+providerAgentRouter.get("/jobs", async (_req, res) => {
+  const agentJobs = await db.select().from(agentJobsTable);
+  res.json(agentJobs);
 });
 
 // GET /provider-agent/jobs/:jobId — fetch a job's current status/result, for
@@ -60,6 +71,7 @@ export function attachProviderAgentWebSocket(server: Server) {
         socket.send(JSON.stringify(event));
       }
     });
+
     socket.on("close", unsubscribe);
 
     socket.send(JSON.stringify({ type: "connected", jobId: agentJob.jobId }));
