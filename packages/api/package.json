@@ -18,11 +18,13 @@
     "@in-need-of-time/types": "file:../types",
     "@sanity/client": "^7.26.0",
     "ai": "^7.0.37",
+    "cors": "^2.8.6",
     "drizzle-orm": "^0.44.5",
     "express": "^5.2.1",
     "ws": "^8.19.0"
   },
   "devDependencies": {
+    "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
     "@types/ws": "^8.18.1",
     "tsx": "^4.21.0",

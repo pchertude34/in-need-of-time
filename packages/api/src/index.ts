@@ -1,10 +1,14 @@
 import express from "express";
+import cors from "cors";
 import { createServer } from "node:http";
 import type { WebSocketServer } from "ws";
 import { DBOS } from "@dbos-inc/dbos-sdk";
 import { providerAgentRouter, attachProviderAgentWebSocket } from "./routes/providerAgent";
 
 const port = process.env.PORT ?? 4011;
+// Defaults cover this repo's local dev servers: the Next.js frontend (3000)
+// and the ai-provider-editor Sanity app (3333).
+const allowedOrigins = (process.env.CORS_ALLOWED_ORIGINS ?? "http://localhost:3000,http://localhost:3333").split(",");
 
 let server: ReturnType<typeof createServer> | undefined;
 let wss: WebSocketServer | undefined;
@@ -28,6 +32,7 @@ async function main() {
   await DBOS.launch();
 
   const app = express();
+  app.use(cors({ origin: allowedOrigins }));
   app.use(express.json());
 
   app.get("/health", (_req, res) => {

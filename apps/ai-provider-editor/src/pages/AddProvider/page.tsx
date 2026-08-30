@@ -16,14 +16,24 @@ import {
   Button,
 } from "@in-need-of-time/ui";
 import { US_STATES } from "@in-need-of-time/utils";
+import { SANITY_APP_PROVIDER_AGENT_API_URL } from "../../../env";
 
 export function AddProviderPage() {
   const navigate = useNavigate();
   const [providerName, setProviderName] = useState("");
   const [state, setState] = useState("");
 
-  function onSubmit() {
-    // Fire off an agent job and get the Job id - Route to the job details page
+  async function onSubmit() {
+    const response = await fetch(`${SANITY_APP_PROVIDER_AGENT_API_URL}/provider-agent/jobs`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        message: { type: "submit_task", input: `Find information about ${providerName} in ${state}` },
+      }),
+    });
+
+    const { jobId } = await response.json();
+    navigate(`/job/${jobId}`);
   }
 
   return (
@@ -74,7 +84,7 @@ export function AddProviderPage() {
             <p className="text-sm text-slate-500">
               State narrows the seach so the agent doesn't match a same named provider elsewhere
             </p>
-            <Button className="ml-auto" variant="light" disabled={!providerName}>
+            <Button className="ml-auto" variant="light" disabled={!providerName} onClick={onSubmit}>
               Search & Autofill
             </Button>
           </div>
