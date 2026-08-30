@@ -1,7 +1,9 @@
 import "./index.css";
 import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { Navbar } from "./components/Navbar";
 import { AddProviderPage } from "./pages/AddProvider/page";
+import { AgentRunsPage } from "./pages/AgentRuns/page";
 import { JobDetailsPage } from "./pages/JobDetails/page";
 import { SanityApp } from "@sanity/sdk-react";
 import { type SanityConfig } from "@sanity/sdk";
@@ -18,8 +20,10 @@ export default function App() {
     <div>
       <SanityApp config={config} fallback={<p>Loading...</p>}>
         <BrowserRouter>
+          <Navbar />
           <Routes>
             <Route path="/" element={<AddProviderPage />} />
+            <Route path="/runs" element={<AgentRunsPage />} />
             <Route path="/job/:jobId" element={<JobDetailsPage />} />
           </Routes>
         </BrowserRouter>

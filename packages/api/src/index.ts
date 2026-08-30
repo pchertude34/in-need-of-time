@@ -5,7 +5,10 @@ import type { WebSocketServer } from "ws";
 import { DBOS } from "@dbos-inc/dbos-sdk";
 import { providerAgentRouter, attachProviderAgentWebSocket } from "./routes/providerAgent";
 
-const port = process.env.PORT ?? 4011;
+// Not just `PORT` — every workspace's dev script loads the same repo-wide
+// .env.local (via `dotenv -e ./.env.local --`), and Next.js's own dev server
+// also reads a bare `PORT`, so that name collides across workspaces.
+const port = process.env.API_PORT ?? 4011;
 // Defaults cover this repo's local dev servers: the Next.js frontend (3000)
 // and the ai-provider-editor Sanity app (3333).
 const allowedOrigins = (process.env.CORS_ALLOWED_ORIGINS ?? "http://localhost:3000,http://localhost:3333").split(",");
