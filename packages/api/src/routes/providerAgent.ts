@@ -3,7 +3,7 @@ import type { Server } from "node:http";
 import { WebSocketServer, type WebSocket } from "ws";
 import { eq } from "drizzle-orm";
 import { DBOS } from "@dbos-inc/dbos-sdk";
-import { subscribe, runAgentWorkflow } from "@in-need-of-time/agent-core";
+import { subscribe, runAgentWorkflow, history } from "@in-need-of-time/agent-core";
 import { db, agentJobsTable } from "@in-need-of-time/db";
 import type { ModelMessage } from "ai";
 import type { ClientMessage } from "@in-need-of-time/types/agentEvents";
@@ -66,6 +66,9 @@ export function attachProviderAgentWebSocket(server: Server) {
       return;
     }
 
+    // Subscribe before reading history so an event emitted mid-query is
+    // never dropped — worst case it's sent twice (once from history, once
+    // live), never missed.
     const unsubscribe = subscribe((eventJobId, event) => {
       if (eventJobId === jobId && socket.readyState === socket.OPEN) {
         socket.send(JSON.stringify(event));
@@ -73,6 +76,12 @@ export function attachProviderAgentWebSocket(server: Server) {
     });
 
     socket.on("close", unsubscribe);
+
+    const pastEvents = await history(jobId);
+    console.log(pastEvents);
+    for (const event of pastEvents) {
+      socket.send(JSON.stringify(event));
+    }
 
     socket.send(JSON.stringify({ type: "connected", jobId: agentJob.jobId }));
 
