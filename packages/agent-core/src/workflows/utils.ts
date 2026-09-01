@@ -1,7 +1,5 @@
 import { registerAiSdkTelemetry, Laminar, observe } from "@lmnr-ai/lmnr";
-import { EventType } from "@in-need-of-time/types/agentEvents";
-import { streamText, stepCountIs } from "ai";
-import { emit } from "../bus";
+import { generateText, stepCountIs } from "ai";
 import type { Agent } from "../types";
 import type { ModelMessage, LanguageModelUsage } from "ai";
 
@@ -18,7 +16,7 @@ export async function runAgent(jobId: string, workflowId: string, messages: Mode
   return observe({ name: "runAgent" }, async () => {
     Laminar.setTraceSessionId(`job-${jobId}`);
 
-    const { textStream, text, output, steps } = streamText({
+    const { text, output, steps } = await generateText({
       model: agent.model,
       system: agent.systemPrompt,
       tools: agent.tools,
@@ -36,16 +34,9 @@ export async function runAgent(jobId: string, workflowId: string, messages: Mode
       },
     });
 
-    for await (const part of textStream) {
-      await emit(jobId, { type: EventType.ModelDelta, workflowId, text: part }, false);
-    }
+    logStepTokens(agent, steps as StepUsage[]);
 
-    logStepTokens(agent, (await steps) as StepUsage[]);
-
-    return {
-      text: await text,
-      output: await output,
-    };
+    return { text, output };
   });
 }
 
