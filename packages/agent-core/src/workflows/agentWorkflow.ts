@@ -18,7 +18,13 @@ async function agentWorkflow(jobId: string, messages: ModelMessage[]) {
 
   // Classify on a copy of the conversation — the orchestrator's own
   // reasoning is a private routing decision, not part of the persisted job.
-  const orchestratorResult = await runAgent(jobId, workflowId, [...messages], OrchestratorAgent);
+  const orchestratorResult = await runAgent(
+    jobId,
+    workflowId,
+    [...messages],
+    OrchestratorAgent,
+    "Classifying the input to decide which specialized agent should handle it",
+  );
   const decision = orchestratorResult.output as { agent: RoutableAgent; reason: string };
 
   await DBOS.runStep(

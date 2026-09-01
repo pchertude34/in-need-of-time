@@ -10,7 +10,13 @@ import { ProviderFormatAgent } from "../agents/providerFormatAgent";
 export const PROVIDER_SCRAPE_PIPELINE_NAME = "provider scrape";
 
 export async function runProviderScrape(jobId: string, workflowId: string, messages: ModelMessage[]) {
-  const research = await runAgent(jobId, workflowId, messages, ProviderResearchAgent);
+  const research = await runAgent(
+    jobId,
+    workflowId,
+    messages,
+    ProviderResearchAgent,
+    "Researching websites with information about this provider",
+  );
 
   const { urls } = research.output as ProviderResearchOutput;
   console.log(
@@ -24,11 +30,23 @@ export async function runProviderScrape(jobId: string, workflowId: string, messa
       .join("\n")}`,
   );
 
-  const providerInfo = await runAgent(jobId, workflowId, extractionContext, ProviderExtractAgent);
+  const providerInfo = await runAgent(
+    jobId,
+    workflowId,
+    extractionContext,
+    ProviderExtractAgent,
+    "Extracting and vetting provider details from the researched websites",
+  );
 
   console.log("Provider info extracted:", providerInfo.text);
   const formatContext = buildContext(extractionContext, providerInfo.text);
-  const formattedProvider = await runAgent(jobId, workflowId, formatContext, ProviderFormatAgent);
+  const formattedProvider = await runAgent(
+    jobId,
+    workflowId,
+    formatContext,
+    ProviderFormatAgent,
+    "Structuring the provider's details into the directory's schema",
+  );
 
   return {
     text: formattedProvider.text,

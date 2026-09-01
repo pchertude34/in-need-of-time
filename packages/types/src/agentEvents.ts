@@ -14,6 +14,13 @@ export enum EventType {
   WorkflowStarted = "workflow.started",
   WorkflowCompleted = "workflow.completed",
   WorkflowFailed = "workflow.failed",
+  // a single agent invocation begins / ends (every runAgent() call — the
+  // orchestrator's classification, provider research, extraction,
+  // formatting, etc. — not the whole workflow, and not the per-URL parallel
+  // fan-out below, which stays on Subagent*)
+  AgentStarted = "agent.started",
+  AgentCompleted = "agent.completed",
+  AgentFailed = "agent.failed",
   // the model thinking out loud (streamed token by token)
   ModelDelta = "model.delta",
   ModelCompleted = "model.completed",
@@ -41,11 +48,21 @@ export type EventInput =
   | { type: EventType.WorkflowStarted; workflowId: string; input: string }
   | { type: EventType.WorkflowCompleted; workflowId: string; output: string }
   | { type: EventType.WorkflowFailed; workflowId: string; error: string }
+  | { type: EventType.AgentStarted; workflowId: string; agent: string; task: string }
+  | { type: EventType.AgentCompleted; workflowId: string; agent: string }
+  | { type: EventType.AgentFailed; workflowId: string; agent: string; error: string }
   | { type: EventType.ModelDelta; workflowId: string; text: string }
   | { type: EventType.ModelCompleted; workflowId: string; text: string }
-  | { type: EventType.ToolRequested; workflowId: string; toolCallId: string; name: string; args: unknown }
-  | { type: EventType.ToolCompleted; workflowId: string; toolCallId: string; result: unknown }
-  | { type: EventType.ToolFailed; workflowId: string; toolCallId: string; error: string }
+  | {
+      type: EventType.ToolRequested;
+      workflowId: string;
+      agent: string;
+      toolCallId: string;
+      name: string;
+      args: unknown;
+    }
+  | { type: EventType.ToolCompleted; workflowId: string; agent: string; toolCallId: string; result: unknown }
+  | { type: EventType.ToolFailed; workflowId: string; agent: string; toolCallId: string; error: string }
   | {
       type: EventType.MemoryCompacted;
       workflowId: string;
