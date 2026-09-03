@@ -7,7 +7,10 @@ import { runAgent } from "./utils";
 import type { ModelMessage } from "ai";
 import type { RoutableAgent } from "../agents/orchestratorAgent";
 
-async function agentWorkflow(jobId: string, messages: ModelMessage[]) {
+// `location` is the state the job was scoped to, e.g. "Oregon". It's optional
+// so a job submitted without one still runs, just without a geographic bias on
+// the agents' web searches.
+async function agentWorkflow(jobId: string, messages: ModelMessage[], location?: string) {
   const workflowId = DBOS.workflowID ?? "unknown";
   const lastMessage = messages.at(-1);
   const input = typeof lastMessage?.content === "string" ? lastMessage.content : JSON.stringify(lastMessage?.content);
@@ -42,14 +45,14 @@ async function agentWorkflow(jobId: string, messages: ModelMessage[]) {
   let text: string;
 
   // if (decision.agent === "provider_scrape") {
-  //   const result = await runProviderScrape(jobId, workflowId, messages);
+  //   const result = await runProviderScrape(jobId, workflowId, messages, location);
   //   text = result.text;
   // } else {
   //   // Runs on its own copy — its web_search/pagination tool-calling
   //   // transcript is only useful for finding the URLs, so it's not merged
   //   // into the caller's persisted conversation (same reasoning as
   //   // runProviderScrape's extraction step).
-  //   const directoryResult = await runAgentLoop(jobId, workflowId, DirectoryScrapeAgent, [...messages]);
+  //   const directoryResult = await runAgentLoop(jobId, workflowId, createDirectoryScrapeAgent(location), [...messages]);
   //   const { urls } = directoryResult.output as { urls: string[] };
 
   //   // Only the final answer becomes part of the persisted conversation, not
@@ -68,7 +71,9 @@ async function agentWorkflow(jobId: string, messages: ModelMessage[]) {
 
   //   // Each URL runs as its own durable child workflow, started concurrently
   //   // so they execute in parallel; a failed one doesn't sink the others.
-  //   const handles = await Promise.all(urls.map((url) => DBOS.startWorkflow(runProviderScrapeWorkflow)(jobId, url)));
+  //   const handles = await Promise.all(
+  //     urls.map((url) => DBOS.startWorkflow(runProviderScrapeWorkflow)(jobId, url, location)),
+  //   );
   //   const results = await Promise.allSettled(handles.map((handle) => handle.getResult()));
 
   //   const providers = results.flatMap((result) =>
@@ -80,7 +85,7 @@ async function agentWorkflow(jobId: string, messages: ModelMessage[]) {
   //   text = JSON.stringify({ providers });
   // }
 
-  const result = await runProviderScrape(jobId, workflowId, messages);
+  const result = await runProviderScrape(jobId, workflowId, messages, location);
   text = result.text;
 
   await DBOS.runStep(() => emit(jobId, { type: EventType.WorkflowCompleted, workflowId, output: text }), {

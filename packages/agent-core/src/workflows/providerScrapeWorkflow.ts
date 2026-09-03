@@ -3,18 +3,25 @@ import { emit } from "../bus";
 import { EventType } from "@in-need-of-time/types/agentEvents";
 import { runAgent, buildContext } from "./utils";
 import { ModelMessage } from "ai";
-import { ProviderResearchAgent, type ProviderResearchOutput } from "../agents/providerResearchAgent";
-import { ProviderExtractAgent } from "../agents/providerExtractAgent";
+import { createProviderResearchAgent, type ProviderResearchOutput } from "../agents/providerResearchAgent";
+import { createProviderExtractAgent } from "../agents/providerExtractAgent";
 import { ProviderFormatAgent } from "../agents/providerFormatAgent";
 
 export const PROVIDER_SCRAPE_PIPELINE_NAME = "provider scrape";
 
-export async function runProviderScrape(jobId: string, workflowId: string, messages: ModelMessage[]) {
+// `location` is the state the job was scoped to, e.g. "Oregon". It's threaded
+// down to the agents that search the web so their results are biased toward it.
+export async function runProviderScrape(
+  jobId: string,
+  workflowId: string,
+  messages: ModelMessage[],
+  location?: string,
+) {
   const research = await runAgent(
     jobId,
     workflowId,
     messages,
-    ProviderResearchAgent,
+    createProviderResearchAgent(location),
     "Researching websites with information about this provider",
   );
 
@@ -34,7 +41,7 @@ export async function runProviderScrape(jobId: string, workflowId: string, messa
     jobId,
     workflowId,
     extractionContext,
-    ProviderExtractAgent,
+    createProviderExtractAgent(location),
     "Extracting and vetting provider details from the researched websites",
   );
 
@@ -57,7 +64,7 @@ export async function runProviderScrape(jobId: string, workflowId: string, messa
 // Runs the provider pipeline for a single URL as its own durable workflow, so
 // a directory's fanned-out URLs can be started concurrently (see
 // agentWorkflow) and each one is independently resumable if it crashes.
-async function providerScrapeWorkflow(jobId: string, url: string) {
+async function providerScrapeWorkflow(jobId: string, url: string, location?: string) {
   const workflowId = DBOS.workflowID ?? "unknown";
 
   await DBOS.runStep(
@@ -73,7 +80,7 @@ async function providerScrapeWorkflow(jobId: string, url: string) {
   );
 
   try {
-    const result = await runProviderScrape(jobId, workflowId, [{ role: "user", content: url }]);
+    const result = await runProviderScrape(jobId, workflowId, [{ role: "user", content: url }], location);
     await DBOS.runStep(
       () =>
         emit(jobId, {

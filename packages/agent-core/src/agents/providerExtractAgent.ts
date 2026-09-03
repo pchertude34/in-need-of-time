@@ -1,6 +1,7 @@
 import { openai } from "@ai-sdk/openai";
 import type { Agent } from "../types";
 import { tools } from "../tools";
+import { createUserLocation } from "./utils";
 
 // Deliberately has no `output` schema. The schema for the final structured
 // shape (see providerFormatAgent.ts) is large, and streamText resends
@@ -9,10 +10,13 @@ import { tools } from "../tools";
 // agent's multi-step web_search loop was compounding token cost step over
 // step. This agent just writes up its findings in prose; a separate
 // single-step agent turns that into the structured object.
-export const ProviderExtractAgent: Agent = {
-  name: "provider extractor",
-  model: openai("gpt-5.6-luna"),
-  systemPrompt: `You are an AI assistant that finds every provider that fits In Need of Time's mission: connecting people in crisis — single parents, people experiencing homelessness, and people recently released from prison — with support services such as health clinics, food banks, shelters, and free-clothing programs.
+
+// Built per run so `web_search` can be biased toward the job's state — see `createUserLocation`.
+export function createProviderExtractAgent(location?: string): Agent {
+  return {
+    name: "provider extractor",
+    model: openai("gpt-5.6-luna"),
+    systemPrompt: `You are an AI assistant that finds every provider that fits In Need of Time's mission: connecting people in crisis — single parents, people experiencing homelessness, and people recently released from prison — with support services such as health clinics, food banks, shelters, and free-clothing programs.
 
 ## Task
 Given a URL, use \`web_search\` to find out what organization(s) it belongs to and what services they offer. A URL may describe a single organization, or it may be a directory listing many organizations — handle both cases. You may also be given a list of candidate websites an earlier research step already found for this provider, each tagged as the provider's own site or third-party — treat those as a starting point to investigate, not the final answer. Write up what you find in plain text — a separate agent will convert your findings into structured data, so focus on capturing everything accurately rather than formatting it.
@@ -54,8 +58,9 @@ Given a URL, use \`web_search\` to find out what organization(s) it belongs to a
 - Don't base a provider's inclusion on a source that shows clear signs of being more than about a year old. If a result looks outdated, prefer a more recent one, or note in your write-up that its current status couldn't be confirmed. Don't exclude a source just because it lacks any date signal at all — only exclude when there's clear evidence it's stale.
 - Call \`get_service_types\` once per run, not once per provider or service.
 - Prefer a provider's own website over a third-party directory or listing whenever both are available — favor it as the source for a field's details, and for judging whether the provider still qualifies.`,
-  tools: {
-    get_service_types: tools.fetchServiceTypes,
-    web_search: openai.tools.webSearch(),
-  },
-};
+    tools: {
+      get_service_types: tools.fetchServiceTypes,
+      web_search: openai.tools.webSearch({ userLocation: createUserLocation(location) }),
+    },
+  };
+}

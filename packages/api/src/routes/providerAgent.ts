@@ -14,13 +14,16 @@ export const providerAgentRouter = Router();
 
 // POST /provider-agent/jobs — create a new job on the provider agent and return the
 // job id to the client. Use the websocket endpoint to receive updates on the job's progress.
+//
+// `location` is the full state name the search is scoped to, e.g. "Oregon" — it
+// biases the agents' web searches toward that state.
 providerAgentRouter.post("/jobs", async (req, res) => {
-  const { message } = req.body as { message: ClientMessage };
+  const { message, location } = req.body as { message: ClientMessage; location?: string };
   const [agentJob] = await db.insert(agentJobsTable).values({ messages: [] }).returning();
 
   const messages: ModelMessage[] = [{ role: "user", content: message.input }];
   // Fire off the agent
-  await DBOS.startWorkflow(runAgentWorkflow)(agentJob.jobId, messages);
+  await DBOS.startWorkflow(runAgentWorkflow)(agentJob.jobId, messages, location);
   res.status(201).json({ jobId: agentJob.jobId });
 });
 
