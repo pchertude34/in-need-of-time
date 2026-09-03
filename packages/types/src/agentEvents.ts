@@ -45,7 +45,10 @@ export enum EventType {
 }
 
 export type EventInput =
-  | { type: EventType.WorkflowStarted; workflowId: string; input: string }
+  // `input` is the whole payload the job was submitted with — for the provider
+  // agent that's `{ message, location }`. Deliberately untyped: each agent
+  // decides its own input shape, and this event carries all of them.
+  | { type: EventType.WorkflowStarted; workflowId: string; input: any }
   | { type: EventType.WorkflowCompleted; workflowId: string; output: string }
   | { type: EventType.WorkflowFailed; workflowId: string; error: string }
   | { type: EventType.AgentStarted; workflowId: string; agent: string; task: string }

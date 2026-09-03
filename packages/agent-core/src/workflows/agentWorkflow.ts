@@ -13,9 +13,11 @@ import type { RoutableAgent } from "../agents/orchestratorAgent";
 async function agentWorkflow(jobId: string, messages: ModelMessage[], location?: string) {
   const workflowId = DBOS.workflowID ?? "unknown";
   const lastMessage = messages.at(-1);
-  const input = typeof lastMessage?.content === "string" ? lastMessage.content : JSON.stringify(lastMessage?.content);
+  const message = typeof lastMessage?.content === "string" ? lastMessage.content : JSON.stringify(lastMessage?.content);
 
-  await DBOS.runStep(() => emit(jobId, { type: EventType.WorkflowStarted, workflowId, input }), {
+  // The whole submitted payload goes on the event, so the UI can render what a
+  // job was asked to do without re-fetching the job itself.
+  await DBOS.runStep(() => emit(jobId, { type: EventType.WorkflowStarted, workflowId, input: { message, location } }), {
     name: "workflow-started",
   });
 

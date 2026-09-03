@@ -28,7 +28,7 @@ export function AddProviderPage() {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        message: { type: "submit_task", input: `Find information about ${providerName} in ${state}` },
+        message: { type: "submit_task", input: providerName },
         location: state,
       }),
     });
