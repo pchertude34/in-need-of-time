@@ -21,6 +21,8 @@ const buttonVariants = cva(
         "text-light": "text-white bg-transparent hover:text-slate-50 disabled:text-slate-100 focus:ring-white",
         "text-primary":
           "text-primary-500 bg-transparent hover:text-primary-600 disabled:text-primary-300 active:text-primary-700 focus:ring-primary-200",
+        "text-error":
+          "text-error-500 bg-transparent hover:bg-error-50 hover:text-error-600 disabled:text-error-300 active:text-error-700 focus:ring-error-200",
       },
       size: {
         sm: "px-4 py-2 text-sm leading-4 h-7 font-medium",

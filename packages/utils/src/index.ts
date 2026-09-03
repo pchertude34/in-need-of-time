@@ -25,6 +25,22 @@ export function getCurrentDay() {
   return (day + 6) % 7;
 }
 
+// "0900" -> "9:00 AM". Returns the raw value unchanged if it isn't the expected
+// four-digit, 24-hour shape used by the Google Places hours format.
+export function formatTimeAs12Hour(time: string) {
+  const match = /^(\d{2})(\d{2})$/.exec(time);
+
+  if (!match) {
+    return time;
+  }
+
+  const hours = Number(match[1]);
+  const suffix = hours < 12 ? "AM" : "PM";
+  const hours12 = hours % 12 === 0 ? 12 : hours % 12;
+
+  return `${hours12}:${match[2]} ${suffix}`;
+}
+
 export function formatPhoneNumberForHref(phoneNumber: string) {
   return `tel:+1${phoneNumber.replace(/\D/g, "")}`;
 }
