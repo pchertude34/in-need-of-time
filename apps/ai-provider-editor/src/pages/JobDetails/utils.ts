@@ -1,6 +1,15 @@
 import { EventType, type AgentEvent } from "@in-need-of-time/types/agentEvents";
 import type { ActivityStepItem } from "../../components/ActivityStepper/ActivityStepper";
 
+/**
+ * Whether the job is still working. A job is done only once it emits a terminal
+ * workflow event, so an empty stream — the moment before the socket has replayed
+ * anything — counts as running rather than briefly looking finished.
+ */
+export function isAgentRunning(events: AgentEvent[]) {
+  return !events.some((event) => event.type === EventType.WorkflowCompleted || event.type === EventType.WorkflowFailed);
+}
+
 // Agent names come off the wire in mixed conventions ("provider_research",
 // "provider extractor"), so even them out for display.
 function formatAgentName(agent: string) {

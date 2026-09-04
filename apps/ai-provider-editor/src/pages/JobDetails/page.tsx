@@ -6,7 +6,7 @@ import { MagnifyingGlassIcon, MapPinIcon } from "@heroicons/react/24/outline";
 import { EventType, type AgentEvent } from "@in-need-of-time/types/agentEvents";
 import { ActivityStepper } from "../../components/ActivityStepper/ActivityStepper";
 import { ProviderForm } from "../../components/ProviderForm/ProviderForm";
-import { buildActivitySteps } from "./utils";
+import { buildActivitySteps, isAgentRunning } from "./utils";
 
 // What the provider agent is submitted with — the payload `workflow.started`
 // carries on its (deliberately untyped) `input`.
@@ -27,6 +27,7 @@ export function JobDetailsPage() {
   );
   const { message, location } = (startedEvent?.input ?? {}) as ProviderJobInput;
   const activitySteps = useMemo(() => buildActivitySteps(events), [events]);
+  const agentRunning = isAgentRunning(events);
 
   return (
     <div className="flex min-h-full flex-col">
@@ -50,7 +51,7 @@ export function JobDetailsPage() {
       </div>
       <div className="mx-auto flex w-full">
         <div className="px-4 py-6 sm:px-6 lg:pl-8 xl:flex-1 xl:pl-6">
-          <ProviderForm />
+          <ProviderForm disabled={agentRunning} />
         </div>
         <div className="min-w-[400px] shrink-0 border-b border-slate-200 bg-slate-50 px-4 py-6 sm:px-6 lg:pl-8 xl:w-64 xl:border-b-0 xl:border-l xl:pl-6 dark:border-white/10">
           <ActivityStepper steps={activitySteps} />
