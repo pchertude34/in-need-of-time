@@ -1,11 +1,12 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { useParams } from "react-router-dom";
 import { useHarnessSocket } from "../../hooks/useHarnessSocket";
 import { Badge } from "@in-need-of-time/ui";
 import { MagnifyingGlassIcon, MapPinIcon } from "@heroicons/react/24/outline";
 import { EventType, type AgentEvent } from "@in-need-of-time/types/agentEvents";
-import { ActivityStep } from "../../components/ActivityStepper/ActivityStep";
+import { ActivityStepper } from "../../components/ActivityStepper/ActivityStepper";
 import { ProviderForm } from "../../components/ProviderForm/ProviderForm";
+import { buildActivitySteps } from "./utils";
 
 // What the provider agent is submitted with — the payload `workflow.started`
 // carries on its (deliberately untyped) `input`.
@@ -25,6 +26,7 @@ export function JobDetailsPage() {
       event.type === EventType.WorkflowStarted,
   );
   const { message, location } = (startedEvent?.input ?? {}) as ProviderJobInput;
+  const activitySteps = useMemo(() => buildActivitySteps(events), [events]);
 
   return (
     <div className="flex min-h-full flex-col">
@@ -51,26 +53,7 @@ export function JobDetailsPage() {
           <ProviderForm />
         </div>
         <div className="min-w-[400px] shrink-0 border-b border-slate-200 bg-slate-50 px-4 py-6 sm:px-6 lg:pl-8 xl:w-64 xl:border-b-0 xl:border-l xl:pl-6 dark:border-white/10">
-          <ActivityStep
-            status="completed"
-            title="Agent info"
-            description="Details about the agent. Super long description to see what happens"
-          />
-          <ActivityStep
-            status="completed"
-            title="Agent info"
-            description="Details about the agent. Super long description to see what happens"
-          />
-          <ActivityStep
-            status="completed"
-            title="Agent info"
-            description="Details about the agent. Super long description to see what happens"
-          />
-          <ActivityStep
-            status="completed"
-            title="Agent info"
-            description="Details about the agent. Super long description to see what happens"
-          />
+          <ActivityStepper steps={activitySteps} />
         </div>
       </div>
     </div>
