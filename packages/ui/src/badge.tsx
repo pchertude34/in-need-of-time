@@ -9,6 +9,8 @@ const badgeVariants = cva("inline-flex items-center rounded-full border font-sem
       default: "border-slate-200 bg-slate-100 text-slate-900",
       light: "border-slate-200 bg-white text-slate-900",
       primary: "border-primary-200 bg-primary-50 text-primary-700",
+      success: "border-success-200 bg-success-50 text-success-700",
+      error: "border-error-200 bg-error-50 text-error-700",
     },
     size: {
       sm: "px-2 py-0.5 text-[0.6875rem] leading-4",

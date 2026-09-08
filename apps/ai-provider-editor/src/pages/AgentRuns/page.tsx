@@ -1,42 +1,193 @@
-import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
-import { Card } from "@in-need-of-time/ui";
+import React, { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import {
+  columnFilteringFeature,
+  createColumnHelper,
+  createFilteredRowModel,
+  createSortedRowModel,
+  filterFn_includesString,
+  flexRender,
+  globalFilteringFeature,
+  rowSortingFeature,
+  sortFn_alphanumeric,
+  sortFn_text,
+  tableFeatures,
+  useTable,
+  type SortingState,
+} from "@tanstack/react-table";
+import { ArrowDownIcon, ArrowUpIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outline";
+import { Badge, Card, Input, InputGroup, InputLeftElement, Skeleton } from "@in-need-of-time/ui";
 import { SANITY_APP_PROVIDER_AGENT_API_URL } from "../../../env";
+import { formatTimestamp, getStatusVariant } from "./utils";
+import type { AgentJob } from "./types";
 
-type AgentJob = {
-  jobId: string;
-  timestamp: string;
-  status: "PENDING" | "COMPLETED" | "FAILED";
-};
+const DEFAULT_SORTING: SortingState = [{ id: "timestamp", desc: true }];
+
+// v9 stitches features in statically rather than exposing every row model on
+// every table — only sorting and filtering are needed here.
+const features = tableFeatures({
+  rowSortingFeature,
+  columnFilteringFeature,
+  globalFilteringFeature,
+  sortedRowModel: createSortedRowModel(),
+  filteredRowModel: createFilteredRowModel(),
+  // Timestamps are ISO strings, so lexicographic order is chronological order.
+  sortFns: { alphanumeric: sortFn_alphanumeric, text: sortFn_text },
+  filterFns: { includesString: filterFn_includesString },
+});
+
+const columnHelper = createColumnHelper<typeof features, AgentJob>();
+
+// `columnHelper.columns` keeps each column's value type while still typing the
+// array as a whole — a bare array widens to a mismatched ColumnDef union.
+const columns = columnHelper.columns([
+  columnHelper.accessor("status", {
+    header: "Status",
+    cell: (info) => <Badge variant={getStatusVariant(info.getValue())}>{info.getValue()}</Badge>,
+  }),
+  columnHelper.accessor("jobId", {
+    header: "Job",
+    cell: (info) => <span className="font-mono text-sm text-slate-900">{info.getValue()}</span>,
+  }),
+  columnHelper.accessor("timestamp", {
+    header: "Started",
+    cell: (info) => <span className="text-sm text-slate-500">{formatTimestamp(info.getValue())}</span>,
+  }),
+  columnHelper.accessor("error", {
+    header: "Error",
+    cell: (info) => <span className="line-clamp-2 text-sm text-slate-500">{info.getValue() ?? "—"}</span>,
+  }),
+]);
 
 export function AgentRunsPage() {
+  const navigate = useNavigate();
   const [jobs, setJobs] = useState<AgentJob[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
+  const [sorting, setSorting] = useState<SortingState>(DEFAULT_SORTING);
+  const [globalFilter, setGlobalFilter] = useState("");
 
   useEffect(() => {
     fetch(`${SANITY_APP_PROVIDER_AGENT_API_URL}/provider-agent/jobs`)
-      .then((response) => response.json())
-      .then(setJobs);
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`Request failed with ${response.status}`);
+        }
+
+        return response.json();
+      })
+      .then(setJobs)
+      .catch((error: unknown) => setLoadError(error instanceof Error ? error.message : String(error)))
+      .finally(() => setIsLoading(false));
   }, []);
+
+  const data = useMemo(() => jobs, [jobs]);
+
+  const table = useTable({
+    features,
+    data,
+    columns,
+    state: { sorting, globalFilter },
+    globalFilterFn: "includesString",
+    onSortingChange: setSorting,
+    onGlobalFilterChange: setGlobalFilter,
+  });
+
+  const rows = table.getRowModel().rows;
 
   return (
     <div className="flex justify-center">
-      <div className="flex max-w-[720px] flex-col space-y-6">
+      <div className="flex w-full max-w-5xl flex-col space-y-6">
         <div className="text-center">
           <h1 className="text-2xl font-bold text-slate-900">Agent Runs</h1>
-          <p className="text-center text-slate-600">Every job the provider agent has run.</p>
+          <p className="text-slate-600">Every job the provider agent has run.</p>
         </div>
-        <Card className="divide-y divide-slate-200 p-0">
-          {jobs.length === 0 && <p className="p-6 text-center text-sm text-slate-500">No runs yet.</p>}
-          {jobs.map((job) => (
-            <Link
-              key={job.jobId}
-              to={`/job/${job.jobId}`}
-              className="flex items-center justify-between p-4 hover:bg-slate-50"
-            >
-              <span className="font-mono text-sm text-slate-900">{job.jobId}</span>
-              <span className="text-sm text-slate-500">{job.status}</span>
-            </Link>
-          ))}
+
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <InputGroup className="w-full sm:max-w-xs">
+            <InputLeftElement>
+              <MagnifyingGlassIcon className="h-4 w-4 text-slate-400" />
+            </InputLeftElement>
+            <Input
+              size="sm"
+              className="pl-10"
+              placeholder="Filter runs"
+              aria-label="Filter runs"
+              value={globalFilter}
+              onChange={(event) => setGlobalFilter(event.target.value)}
+            />
+          </InputGroup>
+          <p className="text-sm text-slate-500">
+            {rows.length} of {jobs.length} runs
+          </p>
+        </div>
+
+        <Card className="overflow-hidden p-0">
+          <div className="overflow-x-auto">
+            <table className="w-full border-collapse text-left">
+              <thead className="border-b border-slate-200 bg-slate-50">
+                {table.getHeaderGroups().map((headerGroup) => (
+                  <tr key={headerGroup.id}>
+                    {headerGroup.headers.map((header) => {
+                      const sortDirection = header.column.getIsSorted();
+
+                      return (
+                        <th key={header.id} className="px-4 py-3 text-xs font-semibold text-slate-500 uppercase">
+                          <button
+                            type="button"
+                            className="flex items-center gap-1 hover:text-slate-900"
+                            onClick={header.column.getToggleSortingHandler()}
+                          >
+                            {flexRender(header.column.columnDef.header, header.getContext())}
+                            {sortDirection === "asc" && <ArrowUpIcon className="h-3 w-3" />}
+                            {sortDirection === "desc" && <ArrowDownIcon className="h-3 w-3" />}
+                          </button>
+                        </th>
+                      );
+                    })}
+                  </tr>
+                ))}
+              </thead>
+              <tbody className="divide-y divide-slate-200">
+                {isLoading &&
+                  [0, 1, 2].map((row) => (
+                    <tr key={row}>
+                      {columns.map((_column, index) => (
+                        <td key={index} className="px-4 py-4">
+                          <Skeleton className="h-4 w-24" />
+                        </td>
+                      ))}
+                    </tr>
+                  ))}
+                {!isLoading &&
+                  rows.map((row) => (
+                    // The whole row is the link target, so opening a run doesn't
+                    // depend on hitting one particular cell.
+                    <tr
+                      key={row.id}
+                      tabIndex={0}
+                      className="cursor-pointer hover:bg-slate-50 focus:bg-slate-50 focus:outline-none"
+                      onClick={() => navigate(`/job/${row.original.jobId}`)}
+                      onKeyDown={(event) => event.key === "Enter" && navigate(`/job/${row.original.jobId}`)}
+                    >
+                      {/* `getVisibleCells` belongs to the column visibility feature,
+                          which this table doesn't register. */}
+                      {row.getAllCells().map((cell) => (
+                        <td key={cell.id} className="px-4 py-3 align-top">
+                          {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                        </td>
+                      ))}
+                    </tr>
+                  ))}
+              </tbody>
+            </table>
+          </div>
+
+          {!isLoading && rows.length === 0 && (
+            <p className="p-6 text-center text-sm text-slate-500">
+              {loadError ?? (jobs.length === 0 ? "No runs yet." : "No runs match that filter.")}
+            </p>
+          )}
         </Card>
       </div>
     </div>
