@@ -30,7 +30,7 @@ export function AddProviderPage() {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        message: { type: "submit_task", input: providerName },
+        input: providerName,
         location: state,
         // Recorded on the job so the runs list can show who triggered it. Only
         // the fields that list renders — not the whole Sanity user.
