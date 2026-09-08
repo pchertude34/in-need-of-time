@@ -14,12 +14,10 @@
   },
   "dependencies": {
     "@in-need-of-time/agent-core": "file:../agent-core",
-    "@in-need-of-time/db": "file:../db",
     "@in-need-of-time/types": "file:../types",
     "@sanity/client": "^7.26.0",
     "ai": "^7.0.37",
     "cors": "^2.8.6",
-    "drizzle-orm": "^0.44.5",
     "express": "^5.2.1",
     "ws": "^8.19.0"
   },

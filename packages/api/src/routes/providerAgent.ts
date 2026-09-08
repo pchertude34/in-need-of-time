@@ -1,11 +1,7 @@
 import { Router } from "express";
 import type { Server } from "node:http";
 import { WebSocketServer, type WebSocket } from "ws";
-import { eq } from "drizzle-orm";
-import { DBOS } from "@dbos-inc/dbos-sdk";
-import { subscribe, runAgentWorkflow, history } from "@in-need-of-time/agent-core";
-import { db, agentJobsTable } from "@in-need-of-time/db";
-import type { ModelMessage } from "ai";
+import { subscribe, history, createJob, getJob, listJobs } from "@in-need-of-time/agent-core";
 import type { ClientMessage } from "@in-need-of-time/types/agentEvents";
 
 const WS_PATH = "/provider-agent/ws";
@@ -19,26 +15,22 @@ export const providerAgentRouter = Router();
 // biases the agents' web searches toward that state.
 providerAgentRouter.post("/jobs", async (req, res) => {
   const { message, location } = req.body as { message: ClientMessage; location?: string };
-  const [agentJob] = await db.insert(agentJobsTable).values({ messages: [] }).returning();
+  const agentJob = await createJob({ message: message.input, location });
 
-  const messages: ModelMessage[] = [{ role: "user", content: message.input }];
-  // Fire off the agent
-  await DBOS.startWorkflow(runAgentWorkflow)(agentJob.jobId, messages, location);
   res.status(201).json({ jobId: agentJob.jobId });
 });
 
 // GET /provider-agent/jobs — fetch all jobs.
 providerAgentRouter.get("/jobs", async (_req, res) => {
-  const agentJobs = await db.select().from(agentJobsTable);
-  res.json(agentJobs);
+  res.json(await listJobs());
 });
 
 // GET /provider-agent/jobs/:jobId — fetch a job's current status/result, for
 // polling clients or reconnecting after a dropped socket.
 providerAgentRouter.get("/jobs/:jobId", async (req, res) => {
   const { jobId } = req.params;
+  const agentJob = await getJob(jobId);
 
-  const [agentJob] = await db.select().from(agentJobsTable).where(eq(agentJobsTable.jobId, jobId));
   if (!agentJob) {
     res.status(404).json({ error: `Job ${jobId} not found` });
     return;
@@ -50,6 +42,10 @@ providerAgentRouter.get("/jobs/:jobId", async (req, res) => {
 // Attaches the /provider-agent/ws websocket endpoint to the given HTTP
 // server. Must be called after `createServer(app)` — `ws` upgrades the raw
 // HTTP server's connections, it isn't an Express route.
+//
+// The socket is one-way: it replays a job's timeline and streams what follows.
+// Submitting work goes through POST /jobs, which starts one workflow per job —
+// a second run on an existing job would be invisible to that job's run state.
 export function attachProviderAgentWebSocket(server: Server) {
   const wss = new WebSocketServer({ server, path: WS_PATH });
 
@@ -62,7 +58,7 @@ export function attachProviderAgentWebSocket(server: Server) {
       return;
     }
 
-    let [agentJob] = await db.select().from(agentJobsTable).where(eq(agentJobsTable.jobId, jobId));
+    const agentJob = await getJob(jobId);
     if (!agentJob) {
       socket.send(JSON.stringify({ type: "error", message: `Job ${jobId} not found` }));
       socket.close();
@@ -81,52 +77,11 @@ export function attachProviderAgentWebSocket(server: Server) {
     socket.on("close", unsubscribe);
 
     const pastEvents = await history(jobId);
-    console.log(pastEvents);
     for (const event of pastEvents) {
       socket.send(JSON.stringify(event));
     }
 
     socket.send(JSON.stringify({ type: "connected", jobId: agentJob.jobId }));
-
-    socket.on("message", async (raw) => {
-      let message: ClientMessage;
-      try {
-        message = JSON.parse(raw.toString());
-        console.log("message received :>> ", message);
-      } catch (err) {
-        console.error("Failed to parse message:", err);
-        return;
-      }
-
-      const messages: ModelMessage[] = [
-        ...((agentJob.messages as any[]) || []),
-        { role: "user", content: message.input },
-      ];
-
-      // Start the durable workflow in the background. It reports progress via
-      // the event stream; we don't wait for the result here — but we do
-      // attach to it so the conversation's history gets persisted once done.
-      const agentResult = await DBOS.startWorkflow(runAgentWorkflow)(agentJob.jobId, messages);
-
-      let result: any;
-      try {
-        result = await agentResult.getResult();
-        await db
-          .update(agentJobsTable)
-          .set({ output: result.text, messages: result.messages, status: "COMPLETED" })
-          .where(eq(agentJobsTable.jobId, agentJob.jobId));
-        // Keep the connection-scoped job in sync so the next message on this
-        // socket builds on this turn's history without re-fetching it.
-        agentJob = { ...agentJob, messages: result.messages, output: result.text, status: "COMPLETED" };
-      } catch (err) {
-        await db
-          .update(agentJobsTable)
-          .set({ status: "FAILED", error: err instanceof Error ? err.message : String(err) })
-          .where(eq(agentJobsTable.jobId, agentJob.jobId));
-      }
-
-      socket.send(JSON.stringify({ jobId: agentJob.jobId, result: result.text }));
-    });
   });
 
   return wss;
