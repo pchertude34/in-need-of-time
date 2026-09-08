@@ -7,8 +7,11 @@ export type AgentJobStatus = "PENDING" | "COMPLETED" | "FAILED";
 export type AgentJob = {
   jobId: string;
   timestamp: string;
-  /** What the job was submitted with, e.g. the provider name and the state. */
-  input: { message: string; location?: string };
+  /**
+   * What the job was submitted with. Null for runs created before the column
+   * existed, so treat it as missing rather than assuming it's there.
+   */
+  input: { message?: string; location?: string } | null;
   status: AgentJobStatus;
   error: string | null;
 };

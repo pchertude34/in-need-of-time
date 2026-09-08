@@ -16,7 +16,7 @@ import {
   type SortingState,
 } from "@tanstack/react-table";
 import { ArrowDownIcon, ArrowUpIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outline";
-import { Badge, Card, Input, InputGroup, InputLeftElement, Skeleton } from "@in-need-of-time/ui";
+import { Badge, Input, InputGroup, InputLeftElement, Skeleton } from "@in-need-of-time/ui";
 import { SANITY_APP_PROVIDER_AGENT_API_URL } from "../../../env";
 import { formatTimestamp, getStatusVariant } from "./utils";
 import type { AgentJob } from "./types";
@@ -44,6 +44,18 @@ const columns = columnHelper.columns([
   columnHelper.accessor("status", {
     header: "Status",
     cell: (info) => <Badge variant={getStatusVariant(info.getValue())}>{info.getValue()}</Badge>,
+  }),
+  // Accessor functions rather than "input.message" paths: `input` is null on
+  // runs created before the column existed.
+  columnHelper.accessor((row) => row.input?.message ?? "", {
+    id: "message",
+    header: "Search",
+    cell: (info) => <span className="line-clamp-2 text-sm text-slate-900">{info.getValue() || "—"}</span>,
+  }),
+  columnHelper.accessor((row) => row.input?.location ?? "", {
+    id: "location",
+    header: "Location",
+    cell: (info) => <span className="text-sm text-slate-500">{info.getValue() || "—"}</span>,
   }),
   columnHelper.accessor("jobId", {
     header: "Job",
@@ -122,10 +134,10 @@ export function AgentRunsPage() {
           </p>
         </div>
 
-        <Card className="overflow-hidden p-0">
+        <div>
           <div className="overflow-x-auto">
             <table className="w-full border-collapse text-left">
-              <thead className="border-b border-slate-200 bg-slate-50">
+              <thead className="border-b border-slate-200">
                 {table.getHeaderGroups().map((headerGroup) => (
                   <tr key={headerGroup.id}>
                     {headerGroup.headers.map((header) => {
@@ -188,7 +200,7 @@ export function AgentRunsPage() {
               {loadError ?? (jobs.length === 0 ? "No runs yet." : "No runs match that filter.")}
             </p>
           )}
-        </Card>
+        </div>
       </div>
     </div>
   );
