@@ -132,6 +132,29 @@ export async function listJobs(): Promise<AgentJobSummary[]> {
   return rows.map((row) => toAgentJobSummary(row, workflowsById.get(row.jobId)));
 }
 
+// A job's run lives in DBOS, so removing the row isn't enough — the workflow
+// record would outlive it, and a still-running agent would keep working on a
+// job nobody can see. A job whose workflow never started, or was already
+// removed, still deletes.
+async function removeWorkflow(jobId: string) {
+  try {
+    await DBOS.cancelWorkflow(jobId, { cancelChildren: true });
+    await DBOS.deleteWorkflow(jobId, true);
+  } catch (err) {
+    console.warn(`Could not remove workflow ${jobId}:`, err);
+  }
+}
+
+/** Deletes a job, its DBOS run, and its event log. Returns false if there was no such job. */
+export async function deleteJob(jobId: string): Promise<boolean> {
+  await removeWorkflow(jobId);
+
+  // The event log cascades from this row's foreign key.
+  const deleted = await db.delete(agentJobsTable).where(eq(agentJobsTable.jobId, jobId)).returning();
+
+  return deleted.length > 0;
+}
+
 export async function getJob(jobId: string): Promise<AgentJob | undefined> {
   const [row] = await db.select().from(agentJobsTable).where(eq(agentJobsTable.jobId, jobId));
 

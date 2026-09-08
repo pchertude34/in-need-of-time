@@ -1,121 +1,32 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-  columnFilteringFeature,
-  createColumnHelper,
-  createFilteredRowModel,
-  createSortedRowModel,
-  filterFn_includesString,
-  flexRender,
-  globalFilteringFeature,
-  rowSortingFeature,
-  sortFn_alphanumeric,
-  sortFn_text,
-  tableFeatures,
-  useTable,
-  type SortingState,
-} from "@tanstack/react-table";
-import { ArrowDownIcon, ArrowUpIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outline";
-import { Badge, Card, Input, InputGroup, InputLeftElement, Skeleton } from "@in-need-of-time/ui";
-import { SANITY_APP_PROVIDER_AGENT_API_URL } from "../../../env";
-import { formatTimestamp, getStatusVariant } from "./utils";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { AgentRunsTable } from "./AgentRunsTable";
+import { AGENT_JOBS_QUERY_KEY, agentJobsQuery, deleteAgentJob } from "../../queries";
 import type { AgentJob } from "./types";
 
-const DEFAULT_SORTING: SortingState = [{ id: "timestamp", desc: true }];
-
-// v9 stitches features in statically rather than exposing every row model on
-// every table — only sorting and filtering are needed here.
-const features = tableFeatures({
-  rowSortingFeature,
-  columnFilteringFeature,
-  globalFilteringFeature,
-  sortedRowModel: createSortedRowModel(),
-  filteredRowModel: createFilteredRowModel(),
-  // Timestamps are ISO strings, so lexicographic order is chronological order.
-  sortFns: { alphanumeric: sortFn_alphanumeric, text: sortFn_text },
-  filterFns: { includesString: filterFn_includesString },
-});
-
-const columnHelper = createColumnHelper<typeof features, AgentJob>();
-
-// `columnHelper.columns` keeps each column's value type while still typing the
-// array as a whole — a bare array widens to a mismatched ColumnDef union.
-const columns = columnHelper.columns([
-  // Accessor functions rather than "input.message" paths: `input` is null on
-  // runs created before the column existed.
-  columnHelper.accessor((row) => row.input?.message ?? "", {
-    id: "message",
-    header: "Search",
-    cell: (info) => <span className="line-clamp-2 text-sm text-slate-900">{info.getValue() || "—"}</span>,
-  }),
-  columnHelper.accessor((row) => row.input?.location ?? "", {
-    id: "location",
-    header: "Location",
-    cell: (info) => <span className="text-sm text-slate-500">{info.getValue() || "—"}</span>,
-  }),
-  columnHelper.accessor("timestamp", {
-    header: "Started",
-    cell: (info) => <span className="text-sm text-slate-500">{formatTimestamp(info.getValue())}</span>,
-  }),
-  columnHelper.accessor((row) => row.user?.name ?? row.user?.id ?? "", {
-    id: "user",
-    header: "Triggered by",
-    cell: (info) => {
-      const user = info.row.original.user;
-
-      if (!user) {
-        return <span className="text-sm text-slate-500">—</span>;
-      }
-
-      return (
-        <span className="flex items-center gap-2 text-sm text-slate-900">
-          {user.profileImage && <img src={user.profileImage} alt="" className="h-5 w-5 rounded-full" />}
-          {user.name ?? user.id}
-        </span>
-      );
-    },
-  }),
-  columnHelper.accessor("status", {
-    header: "Status",
-    cell: (info) => <Badge variant={getStatusVariant(info.getValue())}>{info.getValue()}</Badge>,
-  }),
-]);
+// A stable empty array, so the table isn't handed a new `data` reference on
+// every render before the query resolves.
+const NO_JOBS: AgentJob[] = [];
 
 export function AgentRunsPage() {
   const navigate = useNavigate();
-  const [jobs, setJobs] = useState<AgentJob[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [loadError, setLoadError] = useState<string | null>(null);
-  const [sorting, setSorting] = useState<SortingState>(DEFAULT_SORTING);
-  const [globalFilter, setGlobalFilter] = useState("");
+  const queryClient = useQueryClient();
 
-  useEffect(() => {
-    fetch(`${SANITY_APP_PROVIDER_AGENT_API_URL}/provider-agent/jobs`)
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error(`Request failed with ${response.status}`);
-        }
+  const { data, isPending, error } = useQuery(agentJobsQuery());
 
-        return response.json();
-      })
-      .then(setJobs)
-      .catch((error: unknown) => setLoadError(error instanceof Error ? error.message : String(error)))
-      .finally(() => setIsLoading(false));
-  }, []);
-
-  const data = useMemo(() => jobs, [jobs]);
-
-  const table = useTable({
-    features,
-    data,
-    columns,
-    state: { sorting, globalFilter },
-    globalFilterFn: "includesString",
-    onSortingChange: setSorting,
-    onGlobalFilterChange: setGlobalFilter,
+  const deleteJob = useMutation({
+    mutationFn: deleteAgentJob,
+    // Refetch rather than splicing the row out locally: a delete can also cancel
+    // a run in flight, so the rest of the list may have moved on too.
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: AGENT_JOBS_QUERY_KEY }),
   });
 
-  const rows = table.getRowModel().rows;
+  // `mutateAsync` is stable across renders; wrapping it keeps the table's
+  // columns from being rebuilt every time this page re-renders.
+  const { mutateAsync: deleteJobById } = deleteJob;
+  const onDelete = useCallback((job: AgentJob) => deleteJobById(job.jobId), [deleteJobById]);
+  const onSelect = useCallback((job: AgentJob) => navigate(`/job/${job.jobId}`), [navigate]);
 
   return (
     <div className="flex justify-center">
@@ -125,92 +36,15 @@ export function AgentRunsPage() {
           <p className="text-slate-600">Every job the provider agent has run.</p>
         </div>
 
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <InputGroup className="w-full sm:max-w-xs">
-            <InputLeftElement>
-              <MagnifyingGlassIcon className="h-4 w-4 text-slate-400" />
-            </InputLeftElement>
-            <Input
-              size="sm"
-              className="pl-10"
-              placeholder="Filter runs"
-              aria-label="Filter runs"
-              value={globalFilter}
-              onChange={(event) => setGlobalFilter(event.target.value)}
-            />
-          </InputGroup>
-          <p className="text-sm text-slate-500">
-            {rows.length} of {jobs.length} runs
-          </p>
-        </div>
+        {deleteJob.isError && <p className="text-error-600 text-sm">{(deleteJob.error as Error).message}</p>}
 
-        <Card className="overflow-hidden p-0">
-          <div className="overflow-x-auto">
-            <table className="w-full border-collapse text-left">
-              <thead className="border-b border-slate-200 bg-slate-50">
-                {table.getHeaderGroups().map((headerGroup) => (
-                  <tr key={headerGroup.id}>
-                    {headerGroup.headers.map((header) => {
-                      const sortDirection = header.column.getIsSorted();
-
-                      return (
-                        <th key={header.id} className="px-4 py-3 text-xs font-semibold text-slate-500 uppercase">
-                          <button
-                            type="button"
-                            className="flex items-center gap-1 hover:text-slate-900"
-                            onClick={header.column.getToggleSortingHandler()}
-                          >
-                            {flexRender(header.column.columnDef.header, header.getContext())}
-                            {sortDirection === "asc" && <ArrowUpIcon className="h-3 w-3" />}
-                            {sortDirection === "desc" && <ArrowDownIcon className="h-3 w-3" />}
-                          </button>
-                        </th>
-                      );
-                    })}
-                  </tr>
-                ))}
-              </thead>
-              <tbody className="divide-y divide-slate-200">
-                {isLoading &&
-                  [0, 1, 2].map((row) => (
-                    <tr key={row}>
-                      {columns.map((_column, index) => (
-                        <td key={index} className="px-4 py-4">
-                          <Skeleton className="h-4 w-24" />
-                        </td>
-                      ))}
-                    </tr>
-                  ))}
-                {!isLoading &&
-                  rows.map((row) => (
-                    // The whole row is the link target, so opening a run doesn't
-                    // depend on hitting one particular cell.
-                    <tr
-                      key={row.id}
-                      tabIndex={0}
-                      className="cursor-pointer hover:bg-slate-50 focus:bg-slate-50 focus:outline-none"
-                      onClick={() => navigate(`/job/${row.original.jobId}`)}
-                      onKeyDown={(event) => event.key === "Enter" && navigate(`/job/${row.original.jobId}`)}
-                    >
-                      {/* `getVisibleCells` belongs to the column visibility feature,
-                          which this table doesn't register. */}
-                      {row.getAllCells().map((cell) => (
-                        <td key={cell.id} className="px-4 py-3 align-top">
-                          {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                        </td>
-                      ))}
-                    </tr>
-                  ))}
-              </tbody>
-            </table>
-          </div>
-
-          {!isLoading && rows.length === 0 && (
-            <p className="p-6 text-center text-sm text-slate-500">
-              {loadError ?? (jobs.length === 0 ? "No runs yet." : "No runs match that filter.")}
-            </p>
-          )}
-        </Card>
+        <AgentRunsTable
+          data={data ?? NO_JOBS}
+          isLoading={isPending}
+          error={error?.message}
+          onSelect={onSelect}
+          onDelete={onDelete}
+        />
       </div>
     </div>
   );

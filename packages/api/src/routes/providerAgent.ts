@@ -1,7 +1,7 @@
 import { Router } from "express";
 import type { Server } from "node:http";
 import { WebSocketServer, type WebSocket } from "ws";
-import { subscribe, history, createJob, getJob, listJobs } from "@in-need-of-time/agent-core";
+import { subscribe, history, createJob, getJob, listJobs, deleteJob } from "@in-need-of-time/agent-core";
 import type { AgentJobUser } from "@in-need-of-time/agent-core";
 import type { ClientMessage } from "@in-need-of-time/types/agentEvents";
 
@@ -45,6 +45,19 @@ providerAgentRouter.get("/jobs/:jobId", async (req, res) => {
   }
 
   res.json(agentJob);
+});
+
+// DELETE /provider-agent/jobs/:jobId — permanently remove a job, its event
+// timeline, and its DBOS run. A run still in progress is cancelled first.
+providerAgentRouter.delete("/jobs/:jobId", async (req, res) => {
+  const { jobId } = req.params;
+
+  if (!(await deleteJob(jobId))) {
+    res.status(404).json({ error: `Job ${jobId} not found` });
+    return;
+  }
+
+  res.status(204).end();
 });
 
 // Attaches the /provider-agent/ws websocket endpoint to the given HTTP
