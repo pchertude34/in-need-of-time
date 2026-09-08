@@ -12,6 +12,8 @@ export type AgentJob = {
    * existed, so treat it as missing rather than assuming it's there.
    */
   input: { message?: string; location?: string } | null;
+  /** Who triggered the run, as reported by the client that submitted it. */
+  user: { id: string; name?: string; profileImage?: string } | null;
   status: AgentJobStatus;
   error: string | null;
 };

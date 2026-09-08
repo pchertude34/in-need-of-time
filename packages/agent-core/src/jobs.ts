@@ -26,10 +26,23 @@ export type AgentJobInput = {
   location?: string;
 };
 
+/**
+ * Who triggered a run, as reported by the Sanity app that submitted it.
+ *
+ * Nothing verifies this — the API has no auth, so it's the client's word. It's
+ * here to answer "who ran this?" among colleagues, not to be relied on as proof.
+ */
+export type AgentJobUser = {
+  id: string;
+  name?: string;
+  profileImage?: string;
+};
+
 export type AgentJobSummary = {
   jobId: string;
   timestamp: Date;
   input: AgentJobInput;
+  user: AgentJobUser | null;
   /** Derived from the job's DBOS workflow, not stored on the row. */
   status: AgentJobStatus;
   error: string | null;
@@ -64,13 +77,14 @@ function toJobStatus(workflow?: WorkflowStatus): AgentJobStatus {
 }
 
 function toAgentJobSummary(
-  row: { jobId: string; timestamp: Date; input: unknown },
+  row: { jobId: string; timestamp: Date; input: unknown; user: unknown },
   workflow?: WorkflowStatus,
 ): AgentJobSummary {
   return {
     jobId: row.jobId,
     timestamp: row.timestamp,
     input: row.input as AgentJobInput,
+    user: (row.user as AgentJobUser | null) ?? null,
     status: toJobStatus(workflow),
     error: toErrorMessage(workflow?.error),
   };
@@ -84,8 +98,11 @@ function toAgentJobSummary(
  * run idempotent per job: starting the same job twice returns the first run
  * rather than beginning a second.
  */
-export async function createJob(input: AgentJobInput): Promise<AgentJobSummary> {
-  const [row] = await db.insert(agentJobsTable).values({ input }).returning();
+export async function createJob(input: AgentJobInput, user?: AgentJobUser): Promise<AgentJobSummary> {
+  const [row] = await db
+    .insert(agentJobsTable)
+    .values({ input, user: user ?? null })
+    .returning();
   const messages: ModelMessage[] = [{ role: "user", content: input.message }];
 
   await DBOS.startWorkflow(runAgentWorkflow, { workflowID: row.jobId })(row.jobId, messages, input.location);
@@ -95,7 +112,12 @@ export async function createJob(input: AgentJobInput): Promise<AgentJobSummary> 
 
 export async function listJobs(): Promise<AgentJobSummary[]> {
   const rows = await db
-    .select({ jobId: agentJobsTable.jobId, timestamp: agentJobsTable.timestamp, input: agentJobsTable.input })
+    .select({
+      jobId: agentJobsTable.jobId,
+      timestamp: agentJobsTable.timestamp,
+      input: agentJobsTable.input,
+      user: agentJobsTable.user,
+    })
     .from(agentJobsTable)
     .orderBy(desc(agentJobsTable.timestamp));
 

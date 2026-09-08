@@ -2,6 +2,7 @@ import { Router } from "express";
 import type { Server } from "node:http";
 import { WebSocketServer, type WebSocket } from "ws";
 import { subscribe, history, createJob, getJob, listJobs } from "@in-need-of-time/agent-core";
+import type { AgentJobUser } from "@in-need-of-time/agent-core";
 import type { ClientMessage } from "@in-need-of-time/types/agentEvents";
 
 const WS_PATH = "/provider-agent/ws";
@@ -13,9 +14,16 @@ export const providerAgentRouter = Router();
 //
 // `location` is the full state name the search is scoped to, e.g. "Oregon" — it
 // biases the agents' web searches toward that state.
+//
+// `user` is who the client says triggered the run. There's no auth on this API,
+// so it's recorded as reported, not verified.
 providerAgentRouter.post("/jobs", async (req, res) => {
-  const { message, location } = req.body as { message: ClientMessage; location?: string };
-  const agentJob = await createJob({ message: message.input, location });
+  const { message, location, user } = req.body as {
+    message: ClientMessage;
+    location?: string;
+    user?: AgentJobUser;
+  };
+  const agentJob = await createJob({ message: message.input, location }, user);
 
   res.status(201).json({ jobId: agentJob.jobId });
 });

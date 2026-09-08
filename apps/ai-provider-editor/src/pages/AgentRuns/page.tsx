@@ -16,7 +16,7 @@ import {
   type SortingState,
 } from "@tanstack/react-table";
 import { ArrowDownIcon, ArrowUpIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outline";
-import { Badge, Input, InputGroup, InputLeftElement, Skeleton } from "@in-need-of-time/ui";
+import { Badge, Card, Input, InputGroup, InputLeftElement, Skeleton } from "@in-need-of-time/ui";
 import { SANITY_APP_PROVIDER_AGENT_API_URL } from "../../../env";
 import { formatTimestamp, getStatusVariant } from "./utils";
 import type { AgentJob } from "./types";
@@ -41,10 +41,6 @@ const columnHelper = createColumnHelper<typeof features, AgentJob>();
 // `columnHelper.columns` keeps each column's value type while still typing the
 // array as a whole — a bare array widens to a mismatched ColumnDef union.
 const columns = columnHelper.columns([
-  columnHelper.accessor("status", {
-    header: "Status",
-    cell: (info) => <Badge variant={getStatusVariant(info.getValue())}>{info.getValue()}</Badge>,
-  }),
   // Accessor functions rather than "input.message" paths: `input` is null on
   // runs created before the column existed.
   columnHelper.accessor((row) => row.input?.message ?? "", {
@@ -57,17 +53,31 @@ const columns = columnHelper.columns([
     header: "Location",
     cell: (info) => <span className="text-sm text-slate-500">{info.getValue() || "—"}</span>,
   }),
-  columnHelper.accessor("jobId", {
-    header: "Job",
-    cell: (info) => <span className="font-mono text-sm text-slate-900">{info.getValue()}</span>,
-  }),
   columnHelper.accessor("timestamp", {
     header: "Started",
     cell: (info) => <span className="text-sm text-slate-500">{formatTimestamp(info.getValue())}</span>,
   }),
-  columnHelper.accessor("error", {
-    header: "Error",
-    cell: (info) => <span className="line-clamp-2 text-sm text-slate-500">{info.getValue() ?? "—"}</span>,
+  columnHelper.accessor((row) => row.user?.name ?? row.user?.id ?? "", {
+    id: "user",
+    header: "Triggered by",
+    cell: (info) => {
+      const user = info.row.original.user;
+
+      if (!user) {
+        return <span className="text-sm text-slate-500">—</span>;
+      }
+
+      return (
+        <span className="flex items-center gap-2 text-sm text-slate-900">
+          {user.profileImage && <img src={user.profileImage} alt="" className="h-5 w-5 rounded-full" />}
+          {user.name ?? user.id}
+        </span>
+      );
+    },
+  }),
+  columnHelper.accessor("status", {
+    header: "Status",
+    cell: (info) => <Badge variant={getStatusVariant(info.getValue())}>{info.getValue()}</Badge>,
   }),
 ]);
 
@@ -134,10 +144,10 @@ export function AgentRunsPage() {
           </p>
         </div>
 
-        <div>
+        <Card className="overflow-hidden p-0">
           <div className="overflow-x-auto">
             <table className="w-full border-collapse text-left">
-              <thead className="border-b border-slate-200">
+              <thead className="border-b border-slate-200 bg-slate-50">
                 {table.getHeaderGroups().map((headerGroup) => (
                   <tr key={headerGroup.id}>
                     {headerGroup.headers.map((header) => {
@@ -200,7 +210,7 @@ export function AgentRunsPage() {
               {loadError ?? (jobs.length === 0 ? "No runs yet." : "No runs match that filter.")}
             </p>
           )}
-        </div>
+        </Card>
       </div>
     </div>
   );

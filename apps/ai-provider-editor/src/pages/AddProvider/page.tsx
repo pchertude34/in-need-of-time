@@ -15,11 +15,13 @@ import {
   InputLeftElement,
   Button,
 } from "@in-need-of-time/ui";
+import { useCurrentUser } from "@sanity/sdk-react";
 import { US_STATES } from "@in-need-of-time/utils";
 import { SANITY_APP_PROVIDER_AGENT_API_URL } from "../../../env";
 
 export function AddProviderPage() {
   const navigate = useNavigate();
+  const currentUser = useCurrentUser();
   const [providerName, setProviderName] = useState("");
   const [state, setState] = useState("");
 
@@ -30,6 +32,13 @@ export function AddProviderPage() {
       body: JSON.stringify({
         message: { type: "submit_task", input: providerName },
         location: state,
+        // Recorded on the job so the runs list can show who triggered it. Only
+        // the fields that list renders — not the whole Sanity user.
+        user: currentUser && {
+          id: currentUser.id,
+          name: currentUser.name,
+          profileImage: currentUser.profileImage,
+        },
       }),
     });
 
