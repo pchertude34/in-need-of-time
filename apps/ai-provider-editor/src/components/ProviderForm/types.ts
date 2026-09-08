@@ -3,8 +3,9 @@
 //
 // Two deliberate differences, both so the shape maps cleanly onto form inputs:
 //   - the agent's nullable strings are empty strings here (an input can't hold null)
-//   - `description` is plain text rather than Portable Text blocks; converting
-//     between the two happens when the form is wired up to real agent output.
+//   - `description` is plain text rather than Portable Text blocks
+//
+// `buildProviderFormValues` in pages/JobDetails/utils.ts does that conversion.
 
 export const CONFIDENCE_LEVELS = ["very_low", "low", "medium", "high", "very_high"] as const;
 

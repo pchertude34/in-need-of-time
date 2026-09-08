@@ -14,36 +14,8 @@ import {
 } from "@in-need-of-time/ui";
 import { ProviderField } from "./ProviderField";
 import { HoursOfOperationField } from "./HoursOfOperationField";
-import type { ProviderFormValues, WithConfidence } from "./types";
-
-// Placeholder list until the form is wired up to the service types the agent
-// resolves through `get_service_types` — the real `_id`s come from Sanity.
-const SERVICE_TYPE_OPTIONS = [
-  { _id: "food-bank", name: "Food Bank" },
-  { _id: "shelter", name: "Shelter" },
-  { _id: "health-clinic", name: "Health Clinic" },
-  { _id: "free-clothing", name: "Free Clothing" },
-  { _id: "job-assistance", name: "Job Assistance" },
-];
-
-const EMPTY_FIELD: WithConfidence<string> = { value: "", confidence: "very_low", sourceUrl: null };
-
-const EMPTY_PROVIDER_FORM_VALUES: ProviderFormValues = {
-  name: EMPTY_FIELD,
-  description: EMPTY_FIELD,
-  address: EMPTY_FIELD,
-  location: { value: { latitude: "", longitude: "" }, confidence: "very_low", sourceUrl: null },
-  serviceTypes: [],
-  hoursOfOperation: { value: null, confidence: "very_low", sourceUrl: null },
-  contact: { phone: EMPTY_FIELD, email: EMPTY_FIELD, website: EMPTY_FIELD },
-  url: EMPTY_FIELD,
-  reason: "",
-};
-
-const EMPTY_SERVICE_TYPE: ProviderFormValues["serviceTypes"][number] = {
-  _id: "",
-  hoursOfOperation: { value: null, confidence: "very_low", sourceUrl: null },
-};
+import { EMPTY_PROVIDER_FORM_VALUES, EMPTY_SERVICE_TYPE, SERVICE_TYPE_OPTIONS } from "./constants";
+import type { ProviderFormValues } from "./types";
 
 type ProviderFormProps = {
   /** The structured provider the details agent produced, once it has finished. */

@@ -1,5 +1,91 @@
 import { EventType, type AgentEvent } from "@in-need-of-time/types/agentEvents";
+import type { AgentProviderResult } from "@in-need-of-time/types";
+import type { PortableTextBlock } from "@portabletext/types";
 import type { ActivityStepItem } from "../../components/ActivityStepper/ActivityStepper";
+import { EMPTY_FIELD, EMPTY_PROVIDER_FORM_VALUES, EMPTY_SERVICE_TYPE } from "../../components/ProviderForm/constants";
+import type { ProviderFormValues, WithConfidence } from "../../components/ProviderForm/types";
+
+/** The `output` of the job's `workflow.completed` event, if it has finished. */
+export function findWorkflowOutput(events: AgentEvent[]): string | undefined {
+  const completed = events.find(
+    (event): event is Extract<AgentEvent, { type: EventType.WorkflowCompleted }> =>
+      event.type === EventType.WorkflowCompleted,
+  );
+
+  return completed?.output;
+}
+
+// A field the agent didn't find comes back null; inputs hold "" instead, but
+// keep the agent's confidence and source so the UI can still explain the gap.
+function toTextField(field?: WithConfidence<string | null>): WithConfidence<string> {
+  return field ? { ...field, value: field.value ?? "" } : EMPTY_FIELD;
+}
+
+// The agent writes descriptions as Portable Text so they can go straight into
+// Sanity; the form edits them as plain text, one paragraph per block.
+function toPlainText(blocks?: PortableTextBlock[] | null) {
+  if (!blocks) {
+    return "";
+  }
+
+  return blocks
+    .map((block) => ((block.children ?? []) as { text?: string }[]).map((child) => child.text ?? "").join(""))
+    .join("\n\n");
+}
+
+/**
+ * Maps the agent's structured provider onto the form's values. Returns undefined
+ * when the job hasn't finished, its output didn't parse, or no provider
+ * qualified — the form falls back to its own empty defaults in all three cases.
+ */
+export function buildProviderFormValues(output?: string): ProviderFormValues | undefined {
+  if (!output) {
+    return undefined;
+  }
+
+  let provider: AgentProviderResult | null | undefined;
+  try {
+    // `workflow.completed` carries the formatting agent's raw text, which for a
+    // structured-output agent is the JSON of `providerScrapeOutputSchema`.
+    provider = (JSON.parse(output) as { provider?: AgentProviderResult | null }).provider;
+  } catch {
+    return undefined;
+  }
+
+  if (!provider) {
+    return undefined;
+  }
+
+  const { description, location, contact } = provider;
+
+  return {
+    ...EMPTY_PROVIDER_FORM_VALUES,
+    name: toTextField(provider.name),
+    description: { ...(description ?? EMPTY_FIELD), value: toPlainText(description?.value) },
+    address: toTextField(provider.address),
+    location: {
+      ...(location ?? EMPTY_FIELD),
+      // Coordinates are numbers on the wire and strings in the inputs, so a
+      // cleared or partially typed coordinate stays representable.
+      value: {
+        latitude: location?.value ? String(location.value.latitude) : "",
+        longitude: location?.value ? String(location.value.longitude) : "",
+      },
+    },
+    serviceTypes: (provider.serviceTypes ?? []).map((serviceType) => ({
+      _id: serviceType._id,
+      hoursOfOperation: serviceType.hoursOfOperation ?? EMPTY_SERVICE_TYPE.hoursOfOperation,
+    })),
+    hoursOfOperation: provider.hoursOfOperation ?? EMPTY_PROVIDER_FORM_VALUES.hoursOfOperation,
+    contact: {
+      phone: toTextField(contact?.phone),
+      email: toTextField(contact?.email),
+      website: toTextField(contact?.website),
+    },
+    url: toTextField(provider.url),
+    reason: provider.reason ?? "",
+  };
+}
 
 /**
  * Whether the job is still working. A job is done only once it emits a terminal

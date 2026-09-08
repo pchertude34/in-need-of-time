@@ -12,5 +12,8 @@
   },
   "scripts": {
     "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@portabletext/types": "^2.0.15"
   }
 }
