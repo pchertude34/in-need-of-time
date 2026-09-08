@@ -11,8 +11,3 @@ export const SCHEMA = defineSchema({
   blockObjects: [],
   inlineObjects: [],
 });
-
-export const TOOLBAR_BUTTON_CLASSES =
-  "flex h-7 w-7 items-center justify-center rounded-md text-slate-600 hover:bg-slate-100 disabled:opacity-50";
-
-export const TOOLBAR_BUTTON_ACTIVE_CLASSES = "bg-slate-200 text-slate-900";

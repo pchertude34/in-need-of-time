@@ -5,7 +5,9 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@in-need-of-time/utils";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center border border-transparent whitespace-nowrap transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-100 disabled:pointer-events-none disabled:opacity-50",
+  // `disabled:pointer-events-none` is what keeps `cursor-pointer` from applying
+  // to a disabled button — it stops receiving pointer events entirely.
+  "inline-flex items-center justify-center border border-transparent whitespace-nowrap transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-100 disabled:pointer-events-none disabled:opacity-50",
   {
     variants: {
       variant: {
@@ -23,11 +25,18 @@ const buttonVariants = cva(
           "text-primary-500 bg-transparent hover:text-primary-600 disabled:text-primary-300 active:text-primary-700 focus:ring-primary-200",
         "text-error":
           "text-error-500 bg-transparent hover:bg-error-50 hover:text-error-600 disabled:text-error-300 active:text-error-700 focus:ring-error-200",
+        // For buttons that hold an on/off state, e.g. an editor toolbar's
+        // controls. The pressed look comes from `aria-pressed`, so a toggle only
+        // has to report its state once.
+        toggle:
+          "bg-transparent text-slate-600 hover:bg-slate-100 aria-pressed:bg-slate-200 aria-pressed:text-slate-900 focus:ring-slate-200",
       },
       size: {
+        xs: "px-2 py-1 text-xs leading-4 h-7 font-semibold",
         sm: "px-4 py-2 text-sm leading-4 h-7 font-medium",
         default: "px-6 py-3 text-base h-10 font-medium",
         lg: "px-8 py-4 text-lg leading-4 h-12 font-semibold",
+        "icon-xs": "p-1.5 h-7 w-7",
         "icon-sm": "p-2 h-8 w-8",
         icon: "p-3 h-10 w-10",
         "icon-lg": "p-4 h-12 w-12",

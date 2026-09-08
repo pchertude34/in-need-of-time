@@ -1,8 +1,7 @@
 import React from "react";
 import { useEditor, useEditorSelector } from "@portabletext/editor";
 import { isActiveListItem } from "@portabletext/editor/selectors";
-import { cn } from "@in-need-of-time/utils";
-import { TOOLBAR_BUTTON_ACTIVE_CLASSES, TOOLBAR_BUTTON_CLASSES } from "./constants";
+import { Button } from "@in-need-of-time/ui";
 
 type ListButtonProps = {
   /** A list type from the editor's schema, e.g. "bullet" or "number". */
@@ -17,15 +16,17 @@ export function ListButton(props: ListButtonProps) {
   const isActive = useEditorSelector(editor, isActiveListItem(listItem));
 
   return (
-    <button
+    <Button
       type="button"
+      variant="toggle"
+      size="icon-xs"
+      rounded="md"
       aria-label={label}
       aria-pressed={isActive}
-      className={cn(TOOLBAR_BUTTON_CLASSES, isActive && TOOLBAR_BUTTON_ACTIVE_CLASSES)}
       onMouseDown={(event) => event.preventDefault()}
       onClick={() => editor.send({ type: "list item.toggle", listItem })}
     >
       {children}
-    </button>
+    </Button>
   );
 }

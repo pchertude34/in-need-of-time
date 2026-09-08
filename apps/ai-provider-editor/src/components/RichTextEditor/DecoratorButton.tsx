@@ -1,8 +1,7 @@
 import React from "react";
 import { useEditor, useEditorSelector } from "@portabletext/editor";
 import { isActiveDecorator } from "@portabletext/editor/selectors";
-import { cn } from "@in-need-of-time/utils";
-import { TOOLBAR_BUTTON_ACTIVE_CLASSES, TOOLBAR_BUTTON_CLASSES } from "./constants";
+import { Button } from "@in-need-of-time/ui";
 
 type DecoratorButtonProps = {
   /** A decorator from the editor's schema, e.g. "strong" or "em". */
@@ -17,16 +16,19 @@ export function DecoratorButton(props: DecoratorButtonProps) {
   const isActive = useEditorSelector(editor, isActiveDecorator(decorator));
 
   return (
-    <button
+    <Button
       type="button"
+      variant="toggle"
+      size="icon-xs"
+      rounded="md"
       aria-label={label}
+      // The `toggle` variant styles its pressed state from this.
       aria-pressed={isActive}
-      className={cn(TOOLBAR_BUTTON_CLASSES, isActive && TOOLBAR_BUTTON_ACTIVE_CLASSES)}
       // The editor loses its selection if the button takes focus, so never let it.
       onMouseDown={(event) => event.preventDefault()}
       onClick={() => editor.send({ type: "decorator.toggle", decorator })}
     >
       {children}
-    </button>
+    </Button>
   );
 }
