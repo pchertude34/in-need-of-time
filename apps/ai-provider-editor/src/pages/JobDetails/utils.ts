@@ -3,7 +3,7 @@ import type { AgentProviderResult } from "@in-need-of-time/types";
 import type { PortableTextBlock } from "@portabletext/types";
 import type { ActivityStepItem } from "../../components/ActivityStepper/ActivityStepper";
 import { EMPTY_FIELD, EMPTY_PROVIDER_FORM_VALUES, EMPTY_SERVICE_TYPE } from "../../components/ProviderForm/constants";
-import type { ProviderFormValues, WithConfidence } from "../../components/ProviderForm/types";
+import type { ProviderFormValues, WithConfidence } from "../../types";
 
 /** The `output` of the job's `workflow.completed` event, if it has finished. */
 export function findWorkflowOutput(events: AgentEvent[]): string | undefined {
@@ -21,16 +21,27 @@ function toTextField(field?: WithConfidence<string | null>): WithConfidence<stri
   return field ? { ...field, value: field.value ?? "" } : EMPTY_FIELD;
 }
 
-// The agent writes descriptions as Portable Text so they can go straight into
-// Sanity; the form edits them as plain text, one paragraph per block.
-function toPlainText(blocks?: PortableTextBlock[] | null) {
+/**
+ * Portable Text requires a `_key` on every block and child, and the agent's
+ * blocks have none — its schema deliberately doesn't ask the model to invent
+ * unique ids. Without them the editor rejects the value as invalid and shows an
+ * empty document, so they're added here, where the agent's output becomes the
+ * form's.
+ */
+function withBlockKeys(blocks?: PortableTextBlock[] | null): PortableTextBlock[] {
   if (!blocks) {
-    return "";
+    return [];
   }
 
-  return blocks
-    .map((block) => ((block.children ?? []) as { text?: string }[]).map((child) => child.text ?? "").join(""))
-    .join("\n\n");
+  return blocks.map((block) => {
+    const children = block.children as PortableTextBlock["children"] | undefined;
+
+    return {
+      ...block,
+      _key: block._key ?? crypto.randomUUID(),
+      children: children?.map((child) => ({ ...child, _key: child._key ?? crypto.randomUUID() })),
+    } as PortableTextBlock;
+  });
 }
 
 /**
@@ -61,7 +72,9 @@ export function buildProviderFormValues(output?: string): ProviderFormValues | u
   return {
     ...EMPTY_PROVIDER_FORM_VALUES,
     name: toTextField(provider.name),
-    description: { ...(description ?? EMPTY_FIELD), value: toPlainText(description?.value) },
+    // Portable Text keeps its shape all the way to the editor — no flattening,
+    // nothing to reconstruct on the way back out. Only the keys are added.
+    description: { ...(description ?? EMPTY_FIELD), value: withBlockKeys(description?.value) },
     address: toTextField(provider.address),
     location: {
       ...(location ?? EMPTY_FIELD),

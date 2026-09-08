@@ -1,7 +1,7 @@
 import React from "react";
 import { Badge } from "@in-need-of-time/ui";
 import { cn } from "@in-need-of-time/utils";
-import type { ConfidenceLevel } from "./types";
+import type { ConfidenceLevel } from "../../types";
 
 const CONFIDENCE_DISPLAY: Record<ConfidenceLevel, { label: string; className: string }> = {
   very_low: { label: "Not found", className: "border-slate-200 bg-slate-100 text-slate-600" },

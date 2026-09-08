@@ -14,8 +14,9 @@ import {
 } from "@in-need-of-time/ui";
 import { ProviderField } from "./ProviderField";
 import { HoursOfOperationField } from "./HoursOfOperationField";
+import { RichTextEditor } from "../RichTextEditor/RichTextEditor";
 import { EMPTY_PROVIDER_FORM_VALUES, EMPTY_SERVICE_TYPE, SERVICE_TYPE_OPTIONS } from "./constants";
-import type { ProviderFormValues } from "./types";
+import type { ProviderFormValues } from "../../types";
 
 type ProviderFormProps = {
   /** The structured provider the details agent produced, once it has finished. */
@@ -65,16 +66,22 @@ export function ProviderForm(props: ProviderFormProps) {
           </ProviderField>
           <ProviderField
             label="Description"
-            htmlFor="provider-description"
             confidence={values.description.confidence}
             sourceUrl={values.description.sourceUrl}
             description="1-5 sentences on mission, services, population served, requirements, and upcoming schedule changes."
           >
-            <Textarea
-              id="provider-description"
-              rows={5}
-              placeholder="What this organization does and who it serves"
-              {...register("description.value")}
+            <Controller
+              control={control}
+              name="description.value"
+              render={({ field: descriptionField }) => (
+                // A contenteditable isn't a form control, so the surrounding
+                // disabled fieldset can't reach it — pass `disabled` through.
+                <RichTextEditor
+                  value={descriptionField.value}
+                  onChange={descriptionField.onChange}
+                  disabled={disabled}
+                />
+              )}
             />
           </ProviderField>
           <ProviderField

@@ -1,4 +1,4 @@
-import type { ProviderFormValues, ProviderServiceTypeValues, WithConfidence } from "./types";
+import type { ProviderFormValues, ProviderServiceTypeValues, WithConfidence } from "../../types";
 
 // `very_low` is the agent's own marker for "not found", so it's also the right
 // starting point for a field nothing has filled in yet.
@@ -11,7 +11,7 @@ export const EMPTY_SERVICE_TYPE: ProviderServiceTypeValues = {
 
 export const EMPTY_PROVIDER_FORM_VALUES: ProviderFormValues = {
   name: EMPTY_FIELD,
-  description: EMPTY_FIELD,
+  description: { value: [], confidence: "very_low", sourceUrl: null },
   address: EMPTY_FIELD,
   location: { value: { latitude: "", longitude: "" }, confidence: "very_low", sourceUrl: null },
   serviceTypes: [],

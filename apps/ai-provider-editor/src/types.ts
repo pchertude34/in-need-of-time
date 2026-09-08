@@ -1,11 +1,14 @@
 // Mirrors the structured provider shape produced by the provider details agent
 // (`providerSchema` in packages/agent-core/src/agents/providerFormatAgent.ts).
 //
-// Two deliberate differences, both so the shape maps cleanly onto form inputs:
-//   - the agent's nullable strings are empty strings here (an input can't hold null)
-//   - `description` is plain text rather than Portable Text blocks
+// One deliberate difference, so the shape maps cleanly onto form inputs: the
+// agent's nullable strings are empty strings here (an input can't hold null).
+// `description` stays as Portable Text — the editor edits it in that shape.
 //
-// `buildProviderFormValues` in pages/JobDetails/utils.ts does that conversion.
+// `buildProviderFormValues` in pages/JobDetails/utils.ts does that conversion,
+// and `components/ProviderForm/constants.ts` holds the empty values for it.
+
+import type { PortableTextBlock } from "@portabletext/types";
 
 export const CONFIDENCE_LEVELS = ["very_low", "low", "medium", "high", "very_high"] as const;
 
@@ -35,7 +38,7 @@ export type ProviderServiceTypeValues = {
 
 export type ProviderFormValues = {
   name: WithConfidence<string>;
-  description: WithConfidence<string>;
+  description: WithConfidence<PortableTextBlock[]>;
   address: WithConfidence<string>;
   /** Kept as strings so the inputs can hold a partially typed or empty coordinate. */
   location: WithConfidence<{ latitude: string; longitude: string }>;

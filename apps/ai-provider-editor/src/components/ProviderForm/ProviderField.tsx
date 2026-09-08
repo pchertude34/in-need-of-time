@@ -2,7 +2,7 @@ import React from "react";
 import { ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline";
 import { Field, FieldDescription, FieldLabel } from "@in-need-of-time/ui";
 import { ConfidenceBadge } from "./ConfidenceBadge";
-import type { ConfidenceLevel } from "./types";
+import type { ConfidenceLevel } from "../../types";
 
 type ProviderFieldProps = {
   label: string;

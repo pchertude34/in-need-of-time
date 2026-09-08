@@ -2,7 +2,7 @@ import React from "react";
 import { LockClosedIcon } from "@heroicons/react/24/outline";
 import { formatTimeAs12Hour } from "@in-need-of-time/utils";
 import { ProviderField } from "./ProviderField";
-import type { ConfidenceLevel, HoursOfOperation } from "./types";
+import type { ConfidenceLevel, HoursOfOperation } from "../../types";
 
 const DAY_LABELS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
