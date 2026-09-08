@@ -9,7 +9,7 @@
     ".": "./src/index.ts"
   },
   "scripts": {
-    "dev": "NODE_ENV=development tsx src/index.ts",
+    "dev": "NODE_ENV=development tsx watch --clear-screen=false src/index.ts",
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
