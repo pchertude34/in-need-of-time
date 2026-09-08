@@ -20,9 +20,16 @@ const JOB_STATUS_BY_WORKFLOW_STATUS: Record<string, AgentJobStatus> = {
 
 export type AgentJobStatus = "PENDING" | "COMPLETED" | "FAILED";
 
+/** What a job was submitted with. Stored as-is on the row and echoed back to clients. */
+export type AgentJobInput = {
+  message: string;
+  location?: string;
+};
+
 export type AgentJobSummary = {
   jobId: string;
   timestamp: Date;
+  input: AgentJobInput;
   /** Derived from the job's DBOS workflow, not stored on the row. */
   status: AgentJobStatus;
   error: string | null;
@@ -56,10 +63,14 @@ function toJobStatus(workflow?: WorkflowStatus): AgentJobStatus {
   return JOB_STATUS_BY_WORKFLOW_STATUS[workflow.status] ?? "PENDING";
 }
 
-function toAgentJobSummary(row: { jobId: string; timestamp: Date }, workflow?: WorkflowStatus): AgentJobSummary {
+function toAgentJobSummary(
+  row: { jobId: string; timestamp: Date; input: unknown },
+  workflow?: WorkflowStatus,
+): AgentJobSummary {
   return {
     jobId: row.jobId,
     timestamp: row.timestamp,
+    input: row.input as AgentJobInput,
     status: toJobStatus(workflow),
     error: toErrorMessage(workflow?.error),
   };
@@ -73,8 +84,8 @@ function toAgentJobSummary(row: { jobId: string; timestamp: Date }, workflow?: W
  * run idempotent per job: starting the same job twice returns the first run
  * rather than beginning a second.
  */
-export async function createJob(input: { message: string; location?: string }): Promise<AgentJobSummary> {
-  const [row] = await db.insert(agentJobsTable).values({ messages: [] }).returning();
+export async function createJob(input: AgentJobInput): Promise<AgentJobSummary> {
+  const [row] = await db.insert(agentJobsTable).values({ input }).returning();
   const messages: ModelMessage[] = [{ role: "user", content: input.message }];
 
   await DBOS.startWorkflow(runAgentWorkflow, { workflowID: row.jobId })(row.jobId, messages, input.location);
@@ -84,7 +95,7 @@ export async function createJob(input: { message: string; location?: string }): 
 
 export async function listJobs(): Promise<AgentJobSummary[]> {
   const rows = await db
-    .select({ jobId: agentJobsTable.jobId, timestamp: agentJobsTable.timestamp })
+    .select({ jobId: agentJobsTable.jobId, timestamp: agentJobsTable.timestamp, input: agentJobsTable.input })
     .from(agentJobsTable)
     .orderBy(desc(agentJobsTable.timestamp));
 

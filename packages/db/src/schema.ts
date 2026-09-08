@@ -8,8 +8,11 @@ export const agentJobsTable = pgTable("agent_jobs", {
   jobId: uuid().primaryKey().defaultRandom(),
   timestamp: timestamp("timestamp").notNull().defaultNow(),
   user_id: varchar(),
+  // What the user submitted, e.g. `{ message, location }`. Untyped for the same
+  // reason the `workflow.started` event's input is: each agent decides its own
+  // input shape, and this column holds all of them.
+  input: jsonb(),
   output: jsonb(),
-  messages: jsonb(),
 });
 
 export const agentEventLog = pgTable(

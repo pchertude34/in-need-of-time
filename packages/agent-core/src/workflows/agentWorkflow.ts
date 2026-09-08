@@ -9,10 +9,11 @@ import { runAgent } from "./utils";
 import type { ModelMessage } from "ai";
 import type { RoutableAgent } from "../agents/orchestratorAgent";
 
-// Only the job's application data is written back — its status, error and
-// timing are DBOS's own record of this workflow, read back by `getJob`.
-async function saveJobResult(jobId: string, output: string, messages: ModelMessage[]) {
-  await db.update(agentJobsTable).set({ output, messages }).where(eq(agentJobsTable.jobId, jobId));
+// Only the agent's result is written back — the job's input was stored when it
+// was created, and its status, error and timing are DBOS's own record of this
+// workflow, read back by `getJob`.
+async function saveJobResult(jobId: string, output: string) {
+  await db.update(agentJobsTable).set({ output }).where(eq(agentJobsTable.jobId, jobId));
 }
 
 // `location` is the state the job was scoped to, e.g. "Oregon". It's optional
@@ -103,7 +104,7 @@ async function agentWorkflow(jobId: string, messages: ModelMessage[], location?:
       name: "workflow-completed",
     });
 
-    await DBOS.runStep(() => saveJobResult(jobId, text, messages), { name: "job-result-saved" });
+    await DBOS.runStep(() => saveJobResult(jobId, text), { name: "job-result-saved" });
 
     return { text, messages };
   } catch (err) {
