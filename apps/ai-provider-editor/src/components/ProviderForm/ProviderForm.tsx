@@ -13,7 +13,7 @@ import {
   Textarea,
 } from "@in-need-of-time/ui";
 import { ProviderField } from "./ProviderField";
-import { HoursOfOperationField } from "./HoursOfOperationField";
+import { HoursOfOperationInput } from "./HoursOfOperationInput";
 import { RichTextEditor } from "../RichTextEditor/RichTextEditor";
 import { EMPTY_PROVIDER_FORM_VALUES, EMPTY_SERVICE_TYPE, SERVICE_TYPE_OPTIONS } from "./constants";
 import type { ProviderFormValues } from "../../types";
@@ -117,13 +117,20 @@ export function ProviderForm(props: ProviderFormProps) {
               />
             </div>
           </ProviderField>
-          <HoursOfOperationField
+          <ProviderField
             label="Hours of operation"
-            hours={values.hoursOfOperation.value}
             confidence={values.hoursOfOperation.confidence}
             sourceUrl={values.hoursOfOperation.sourceUrl}
             description="The provider's overall hours, used when every service shares the same schedule."
-          />
+          >
+            <Controller
+              control={control}
+              name="hoursOfOperation.value"
+              render={({ field: hoursField }) => (
+                <HoursOfOperationInput value={hoursField.value} onChange={hoursField.onChange} />
+              )}
+            />
+          </ProviderField>
         </Card>
 
         <Card className="space-y-5 p-6">
@@ -175,12 +182,20 @@ export function ProviderForm(props: ProviderFormProps) {
                     <TrashIcon className="h-4 w-4" />
                   </Button>
                 </div>
-                <HoursOfOperationField
+                <ProviderField
                   label="Service hours"
-                  hours={serviceType?.hoursOfOperation.value ?? null}
                   confidence={serviceType?.hoursOfOperation.confidence}
                   sourceUrl={serviceType?.hoursOfOperation.sourceUrl}
-                />
+                  description="Only needed when this service's hours differ from the provider's."
+                >
+                  <Controller
+                    control={control}
+                    name={`serviceTypes.${index}.hoursOfOperation.value`}
+                    render={({ field: hoursField }) => (
+                      <HoursOfOperationInput value={hoursField.value} onChange={hoursField.onChange} />
+                    )}
+                  />
+                </ProviderField>
               </div>
             );
           })}
