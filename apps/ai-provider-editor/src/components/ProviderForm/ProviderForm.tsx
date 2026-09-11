@@ -1,5 +1,7 @@
 import React, { useEffect } from "react";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
+import { useQuery } from "@tanstack/react-query";
+import { useSanityInstance } from "@sanity/sdk-react";
 import { PlusIcon, TrashIcon } from "@heroicons/react/24/outline";
 import {
   Button,
@@ -15,8 +17,21 @@ import {
 import { ProviderField } from "./ProviderField";
 import { HoursOfOperationInput } from "./HoursOfOperationInput";
 import { RichTextEditor } from "../RichTextEditor/RichTextEditor";
-import { EMPTY_PROVIDER_FORM_VALUES, EMPTY_SERVICE_TYPE, SERVICE_TYPE_OPTIONS } from "./constants";
-import type { ProviderFormValues } from "../../types";
+import { EMPTY_PROVIDER_FORM_VALUES, EMPTY_SERVICE_TYPE } from "./constants";
+import { serviceTypesQuery } from "../../queries";
+import type { ProviderFormValues, ServiceType } from "../../types";
+
+// A stable fallback, so the options list isn't a new array on every render
+// before the query resolves.
+const NO_SERVICE_TYPES: ServiceType[] = [];
+
+function getServiceTypePlaceholder(isLoading: boolean, hasOptions: boolean) {
+  if (isLoading) {
+    return "Loading service types…";
+  }
+
+  return hasOptions ? "Select a service type" : "No service types found";
+}
 
 type ProviderFormProps = {
   /** The structured provider the details agent produced, once it has finished. */
@@ -32,6 +47,13 @@ export function ProviderForm(props: ProviderFormProps) {
     defaultValues: provider ?? EMPTY_PROVIDER_FORM_VALUES,
   });
   const { fields, append, remove } = useFieldArray({ control, name: "serviceTypes" });
+
+  // Fetched once for the whole form rather than per row — every service type
+  // picker offers the same list.
+  const instance = useSanityInstance();
+  const { data: serviceTypeOptions = NO_SERVICE_TYPES, isPending: isLoadingServiceTypes } = useQuery(
+    serviceTypesQuery(instance),
+  );
 
   // The agent fills the form in asynchronously, so re-seed it whenever a new
   // provider arrives rather than only on first render.
@@ -147,6 +169,13 @@ export function ProviderForm(props: ProviderFormProps) {
           )}
           {fields.map((field, index) => {
             const serviceType = values.serviceTypes?.[index];
+            // A saved id the list doesn't contain would otherwise render as an
+            // empty trigger — the id stays in form state but nothing shows it,
+            // and a save would write a reference nobody could see in the form.
+            const isUnknownServiceType =
+              Boolean(serviceType?._id) &&
+              !isLoadingServiceTypes &&
+              !serviceTypeOptions.some((option) => option._id === serviceType?._id);
 
             return (
               <div key={field.id} className="space-y-4 rounded-xl border border-slate-200 p-4">
@@ -156,14 +185,30 @@ export function ProviderForm(props: ProviderFormProps) {
                       control={control}
                       name={`serviceTypes.${index}._id`}
                       render={({ field: selectField }) => (
-                        <Select value={selectField.value} onValueChange={selectField.onChange}>
+                        // Disabled rather than hidden while the options load, so
+                        // the control keeps its place and stays paired with its label.
+                        <Select
+                          value={selectField.value}
+                          onValueChange={selectField.onChange}
+                          disabled={isLoadingServiceTypes || serviceTypeOptions.length === 0}
+                        >
                           <SelectTrigger id={`service-type-${index}`} ref={selectField.ref} onBlur={selectField.onBlur}>
-                            <SelectValue placeholder="Select a service type" />
+                            <SelectValue
+                              placeholder={getServiceTypePlaceholder(
+                                isLoadingServiceTypes,
+                                serviceTypeOptions.length > 0,
+                              )}
+                            />
                           </SelectTrigger>
                           <SelectContent>
-                            {SERVICE_TYPE_OPTIONS.map((option) => (
+                            {isUnknownServiceType && (
+                              <SelectItem value={selectField.value}>
+                                Unknown service type ({selectField.value})
+                              </SelectItem>
+                            )}
+                            {serviceTypeOptions.map((option) => (
                               <SelectItem key={option._id} value={option._id}>
-                                {option.name}
+                                {option.name ?? option._id}
                               </SelectItem>
                             ))}
                           </SelectContent>

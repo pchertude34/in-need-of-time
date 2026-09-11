@@ -30,6 +30,12 @@ export type HoursOfOperation = {
   weekdayText: string[];
 };
 
+/** A service type document, as the provider form's picker needs it. */
+export type ServiceType = {
+  _id: string;
+  name?: string;
+};
+
 export type ProviderServiceTypeValues = {
   _id: string;
   /** This service's own hours, only when they differ from the provider's overall hours. */
