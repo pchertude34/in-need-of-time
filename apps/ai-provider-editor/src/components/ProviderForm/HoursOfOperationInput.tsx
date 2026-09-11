@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useId } from "react";
 import { PlusIcon, TrashIcon } from "@heroicons/react/24/outline";
-import { Button, Input } from "@in-need-of-time/ui";
+import { Button, Input, Textarea } from "@in-need-of-time/ui";
 import type { HoursOfOperation } from "../../types";
 
 // Index is the day number the data uses: 0 (Sunday) through 6 (Saturday).
@@ -27,10 +27,21 @@ function isEmpty(hours: HoursOfOperation) {
   return hours.periods.length === 0 && hours.weekdayText.length === 0;
 }
 
+// The notes are one string per line on the wire — Google Places shape puts one
+// entry per weekday — but a single field to edit. An empty box is no notes at
+// all rather than one blank one; every other split is kept verbatim, so a blank
+// line mid-text survives being typed.
+function toWeekdayText(notes: string) {
+  return notes === "" ? [] : notes.split("\n");
+}
+
 export function HoursOfOperationInput(props: HoursOfOperationInputProps) {
   const { value, onChange } = props;
   const periods = value?.periods ?? [];
   const weekdayText = value?.weekdayText ?? [];
+  // Generated, because this input renders once per service type as well as for
+  // the provider — a fixed id would collide across those copies.
+  const notesId = useId();
 
   // Hours that are neither scheduled nor described are simply not known, which
   // is what null means to the agent and to Sanity.
@@ -123,46 +134,23 @@ export function HoursOfOperationInput(props: HoursOfOperationInputProps) {
       </div>
 
       <div className="space-y-2 border-t border-slate-200 pt-4">
-        <p className="text-sm font-medium text-slate-700">Notes</p>
+        <label className="block text-sm font-medium text-slate-700" htmlFor={notesId}>
+          Notes
+        </label>
         {/* The agent puts what a weekly grid can't hold in here — "2nd and 4th
             Friday of each month", or that sources disagree and someone should
             call. Editable rather than regenerated, so none of that is lost. */}
         <p className="text-sm text-slate-400">
-          Anything the schedule above can't say — recurrence, exceptions, or which details need confirming.
+          Anything the schedule above can't say — recurrence, exceptions, or which details need confirming. One per
+          line.
         </p>
-        {weekdayText.map((note, index) => (
-          <div key={index} className="flex items-center gap-2">
-            <Input
-              size="sm"
-              className="flex-1"
-              aria-label={`Note ${index + 1}`}
-              value={note}
-              onChange={(event) =>
-                setWeekdayText(weekdayText.map((existing, i) => (i === index ? event.target.value : existing)))
-              }
-            />
-            <Button
-              type="button"
-              variant="text-error"
-              size="icon-xs"
-              rounded="md"
-              aria-label={`Remove note ${index + 1}`}
-              onClick={() => setWeekdayText(weekdayText.filter((_existing, i) => i !== index))}
-            >
-              <TrashIcon className="h-4 w-4" />
-            </Button>
-          </div>
-        ))}
-        <Button
-          type="button"
-          variant="text-dark"
-          size="xs"
-          rounded="md"
-          onClick={() => setWeekdayText([...weekdayText, ""])}
-        >
-          <PlusIcon className="mr-1 h-3.5 w-3.5" />
-          Add note
-        </Button>
+        <Textarea
+          id={notesId}
+          size="sm"
+          rows={3}
+          value={weekdayText.join("\n")}
+          onChange={(event) => setWeekdayText(toWeekdayText(event.target.value))}
+        />
       </div>
     </div>
   );
