@@ -1,6 +1,5 @@
 import { defineField, defineType } from "sanity";
 import baseProviderFields from "./baseProvider";
-import PlaceInput from "../../components/PlaceInput/PlaceInput";
 import { groq } from "next-sanity";
 import { client } from "../../lib/client";
 
@@ -48,7 +47,8 @@ const providerSchema = defineType({
       name: "place",
       title: "Place",
       type: "object",
-
+      description: "Legacy Google Place data, kept for existing providers. Being phased out.",
+      hidden: true,
       fields: [
         { name: "name", title: "Name", type: "string" },
         { name: "address", title: "Address", type: "string" },
@@ -60,14 +60,11 @@ const providerSchema = defineType({
         { name: "location", title: "Location", type: "geopoint" },
         { name: "type", title: "Type", type: "string" },
       ],
-      components: {
-        input: PlaceInput,
-      },
       validation: (Rule) =>
         Rule.custom(async (value: any, context) => {
-          // This validation runs whenever a change is detected which can cause alot of API calls.
-          // Don't run the query if we don't have a placeId to save on API calls.
-          if (!value || !value.placeId) return "Place is required.";
+          // Place is optional. Only enforce placeId uniqueness when one is present, since running
+          // this query on every change can cause a lot of API calls.
+          if (!value || !value.placeId) return true;
 
           const isUnique = await isUniquePlace(value.placeId, context);
 
@@ -123,7 +120,7 @@ const providerSchema = defineType({
   preview: {
     select: {
       title: "title",
-      subtitle: "place.address",
+      subtitle: "address",
     },
   },
 });
