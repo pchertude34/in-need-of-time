@@ -38,11 +38,13 @@ type ProviderFormProps = {
   provider?: ProviderFormValues;
   /** Locks every field — used while the agent is still filling the form in. */
   disabled?: boolean;
+  /** Locks every field and swaps the submit button's label — used while the save itself is in flight. */
+  isSaving?: boolean;
   onSubmit?: (values: ProviderFormValues) => void;
 };
 
 export function ProviderForm(props: ProviderFormProps) {
-  const { provider, disabled = false, onSubmit } = props;
+  const { provider, disabled = false, isSaving = false, onSubmit } = props;
   const { register, control, handleSubmit, watch, reset } = useForm<ProviderFormValues>({
     defaultValues: provider ?? EMPTY_PROVIDER_FORM_VALUES,
   });
@@ -69,7 +71,7 @@ export function ProviderForm(props: ProviderFormProps) {
     <form onSubmit={handleSubmit((formValues) => onSubmit?.(formValues))}>
       {/* One disabled fieldset locks every control inside it — inputs, textareas,
           the select triggers and the buttons — without threading a prop through each. */}
-      <fieldset className="space-y-6" disabled={disabled}>
+      <fieldset className="space-y-6" disabled={disabled || isSaving}>
         {disabled && (
           <p className="text-sm text-slate-500">The agent is still working. Fields unlock when it finishes.</p>
         )}
@@ -310,7 +312,7 @@ export function ProviderForm(props: ProviderFormProps) {
           <Button type="button" variant="light" onClick={() => reset(provider ?? EMPTY_PROVIDER_FORM_VALUES)}>
             Reset
           </Button>
-          <Button type="submit">Save provider</Button>
+          <Button type="submit">{isSaving ? "Saving…" : "Save provider"}</Button>
         </div>
       </fieldset>
     </form>

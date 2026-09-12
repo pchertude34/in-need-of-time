@@ -7,6 +7,7 @@ import { EventType, type AgentEvent } from "@in-need-of-time/types/agentEvents";
 import { ActivityStepper } from "../../components/ActivityStepper/ActivityStepper";
 import { ProviderForm } from "../../components/ProviderForm/ProviderForm";
 import { buildActivitySteps, buildProviderFormValues, findWorkflowOutput, isAgentRunning } from "./utils";
+import { useSaveProviderDraft } from "../../hooks/useSaveProviderDraft";
 
 // What the provider agent is submitted with — the payload `workflow.started`
 // carries on its (deliberately untyped) `input`.
@@ -35,6 +36,8 @@ export function JobDetailsPage() {
   const workflowOutput = findWorkflowOutput(events);
   const provider = useMemo(() => buildProviderFormValues(workflowOutput), [workflowOutput]);
 
+  const { saveDraft, state: saveState } = useSaveProviderDraft();
+
   return (
     <div className="flex min-h-full flex-col">
       <div className="relative shrink-0 border-b border-purple-200 bg-purple-50 px-4 py-4">
@@ -57,7 +60,22 @@ export function JobDetailsPage() {
       </div>
       <div className="mx-auto flex w-full">
         <div className="px-4 py-6 sm:px-6 lg:pl-8 xl:flex-1 xl:pl-6">
-          <ProviderForm provider={provider} disabled={agentRunning} />
+          {saveState.status === "saved" && (
+            <p className="mb-4 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
+              Saved as a draft. Review it in Sanity Studio, then publish it from there.
+            </p>
+          )}
+          {saveState.status === "error" && (
+            <p className="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
+              {saveState.message}
+            </p>
+          )}
+          <ProviderForm
+            provider={provider}
+            disabled={agentRunning}
+            isSaving={saveState.status === "saving"}
+            onSubmit={saveDraft}
+          />
         </div>
         <div className="min-w-[400px] shrink-0 border-b border-slate-200 bg-slate-50 px-4 py-6 sm:px-6 lg:pl-8 xl:w-64 xl:border-b-0 xl:border-l xl:pl-6 dark:border-white/10">
           <ActivityStepper steps={activitySteps} />

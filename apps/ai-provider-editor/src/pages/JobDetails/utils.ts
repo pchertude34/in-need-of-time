@@ -1,9 +1,28 @@
 import { EventType, type AgentEvent } from "@in-need-of-time/types/agentEvents";
 import type { AgentProviderResult } from "@in-need-of-time/types";
 import type { PortableTextBlock } from "@portabletext/types";
+// Pulled from the generated provider schema (studio/sanity.types.ts) rather than
+// redeclared here, so a schema change can't quietly drift out of step with what
+// this form saves. `HoursOfOperation` is aliased — the form's own type of the
+// same name (imported below) has the same shape but non-optional fields.
+import type { Provider, HoursOfOperation as ProviderHoursOfOperationDoc } from "@in-need-of-time/types/sanity";
 import type { ActivityStepItem } from "../../components/ActivityStepper/ActivityStepper";
 import { EMPTY_FIELD, EMPTY_PROVIDER_FORM_VALUES, EMPTY_SERVICE_TYPE } from "../../components/ProviderForm/constants";
-import type { ProviderFormValues, WithConfidence } from "../../types";
+import type { HoursOfOperation, ProviderFormValues, WithConfidence } from "../../types";
+
+/**
+ * The fields a new provider document is created with. Picked straight from the
+ * generated provider schema so this can't drift out of step with `provider.ts`
+ * — except `description`: the rich text editor and the agent's output both deal
+ * in the more permissive `PortableTextBlock` shape, not Sanity's exact generated
+ * block type, so that one field is typed separately.
+ */
+export type ProviderDraftFields = Pick<
+  Provider,
+  "title" | "address" | "location" | "hoursOfOperation" | "serviceTypes" | "publicContact" | "url"
+> & {
+  description: PortableTextBlock[];
+};
 
 /** The `output` of the job's `workflow.completed` event, if it has finished. */
 export function findWorkflowOutput(events: AgentEvent[]): string | undefined {
@@ -165,4 +184,58 @@ export function buildActivitySteps(events: AgentEvent[]): ActivityStepItem[] {
   }
 
   return steps;
+}
+
+function toHoursOfOperationDoc(hours: HoursOfOperation | null): ProviderHoursOfOperationDoc | undefined {
+  if (!hours) return undefined;
+
+  return {
+    periods: hours.periods.map((period) => ({ ...period, _key: crypto.randomUUID() })),
+    weekdayText: hours.weekdayText,
+  };
+}
+
+// Empty strings survive to here so an input can hold a cleared field, but they
+// shouldn't be written to the document as if someone had filled them in.
+function toOptionalString(value: string): string | undefined {
+  return value.trim() ? value : undefined;
+}
+
+function toGeopoint(location: { latitude: string; longitude: string }): ProviderDraftFields["location"] {
+  const lat = Number.parseFloat(location.latitude);
+  const lng = Number.parseFloat(location.longitude);
+
+  if (Number.isNaN(lat) || Number.isNaN(lng)) return undefined;
+
+  return { _type: "geopoint", lat, lng };
+}
+
+/**
+ * Converts the provider form's values into the fields a new provider document
+ * is created with. `reason` and every field's `confidence`/`sourceUrl` are
+ * form-only, there to guide the reviewer — neither is part of the provider
+ * schema, so neither is saved.
+ */
+export function buildProviderDocumentFields(values: ProviderFormValues): ProviderDraftFields {
+  return {
+    title: values.name.value,
+    description: values.description.value,
+    address: values.address.value,
+    location: toGeopoint(values.location.value),
+    hoursOfOperation: toHoursOfOperationDoc(values.hoursOfOperation.value),
+    serviceTypes: values.serviceTypes
+      .filter((serviceType) => serviceType._id)
+      .map((serviceType) => ({
+        _type: "providerServiceType" as const,
+        _key: crypto.randomUUID(),
+        serviceType: { _type: "reference" as const, _ref: serviceType._id },
+        hoursOfOperation: toHoursOfOperationDoc(serviceType.hoursOfOperation.value),
+      })),
+    publicContact: {
+      phone: toOptionalString(values.contact.phone.value),
+      email: toOptionalString(values.contact.email.value),
+      website: toOptionalString(values.contact.website.value),
+    },
+    url: toOptionalString(values.url.value),
+  };
 }
