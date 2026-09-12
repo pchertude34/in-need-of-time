@@ -15,6 +15,25 @@
 export declare const internalGroqTypeReferenceTo: unique symbol;
 
 // Source: schema.json
+export type HoursOfOperation = {
+  periods?: Array<{
+    open?: Open;
+    close?: Close;
+    _key: string;
+  }>;
+  weekdayText?: Array<string>;
+};
+
+export type Open = {
+  day?: number;
+  time?: string;
+};
+
+export type Close = {
+  day?: number;
+  time?: string;
+};
+
 export type PublicContact = {
   phone?: string;
   website?: string;
@@ -74,29 +93,6 @@ export type Slug = {
   source?: string;
 };
 
-export type ServiceCategoryReference = {
-  _ref: string;
-  _type: "reference";
-  _weak?: boolean;
-  [internalGroqTypeReferenceTo]?: "serviceCategory";
-};
-
-export type ServiceType = {
-  _id: string;
-  _type: "serviceType";
-  _createdAt: string;
-  _updatedAt: string;
-  _rev: string;
-  name?: string;
-  slug?: Slug;
-  description?: string;
-  serviceCategory?: Array<
-    {
-      _key: string;
-    } & ServiceCategoryReference
-  >;
-};
-
 export type ServiceTypeReference = {
   _ref: string;
   _type: "reference";
@@ -116,11 +112,12 @@ export type RegionalProvider = {
     distanceRadius?: number;
     isNational?: boolean;
   };
-  serviceTypes: Array<
-    {
-      _key: string;
-    } & ServiceTypeReference
-  >;
+  serviceTypes: Array<{
+    serviceType: ServiceTypeReference;
+    hoursOfOperation?: HoursOfOperation;
+    _type: "providerServiceType";
+    _key: string;
+  }>;
   publicContact?: PublicContact;
   description?: Array<{
     children?: Array<{
@@ -167,22 +164,21 @@ export type Provider = {
   };
   address?: string;
   location?: Geopoint;
-  hoursOfOperation?: Array<{
-    open?: {
-      day?: number;
-      time?: string;
-    };
-    close?: {
-      day?: number;
-      time?: string;
-    };
+  hoursOfOperation?: {
+    periods?: Array<{
+      open?: Open;
+      close?: Close;
+      _key: string;
+    }>;
+    weekdayText?: Array<string>;
+  };
+  url?: string;
+  serviceTypes: Array<{
+    serviceType: ServiceTypeReference;
+    hoursOfOperation?: HoursOfOperation;
+    _type: "providerServiceType";
     _key: string;
   }>;
-  serviceTypes: Array<
-    {
-      _key: string;
-    } & ServiceTypeReference
-  >;
   publicContact?: PublicContact;
   description?: Array<{
     children?: Array<{
@@ -203,6 +199,29 @@ export type Provider = {
     _key: string;
   }>;
   internalContact?: InternalContact;
+};
+
+export type ServiceCategoryReference = {
+  _ref: string;
+  _type: "reference";
+  _weak?: boolean;
+  [internalGroqTypeReferenceTo]?: "serviceCategory";
+};
+
+export type ServiceType = {
+  _id: string;
+  _type: "serviceType";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  name?: string;
+  slug?: Slug;
+  description?: string;
+  serviceCategory?: Array<
+    {
+      _key: string;
+    } & ServiceCategoryReference
+  >;
 };
 
 export type GeopointRadius = {
@@ -304,6 +323,9 @@ export type SanityImageAsset = {
 };
 
 export type AllSanitySchemaTypes =
+  | HoursOfOperation
+  | Open
+  | Close
   | PublicContact
   | InternalContact
   | SanityImageAssetReference
@@ -311,12 +333,12 @@ export type AllSanitySchemaTypes =
   | SanityImageCrop
   | SanityImageHotspot
   | Slug
-  | ServiceCategoryReference
-  | ServiceType
   | ServiceTypeReference
   | RegionalProvider
   | Geopoint
   | Provider
+  | ServiceCategoryReference
+  | ServiceType
   | GeopointRadius
   | SanityImagePaletteSwatch
   | SanityImagePalette
@@ -325,3 +347,16 @@ export type AllSanitySchemaTypes =
   | SanityFileAsset
   | SanityAssetSourceData
   | SanityImageAsset;
+
+// Source: src/schemas/provider/provider.ts
+// Variable: query
+// Query: !defined(*[    _type == "provider" &&    !(_id in [$draft, $published]) &&    place.placeId == $placeId  ][0]._id)
+export type QueryResult = false | true;
+
+// Query TypeMap
+import "@sanity/client";
+declare module "@sanity/client" {
+  interface SanityQueries {
+    '!defined(*[\n    _type == "provider" &&\n    !(_id in [$draft, $published]) &&\n    place.placeId == $placeId\n  ][0]._id)': QueryResult;
+  }
+}

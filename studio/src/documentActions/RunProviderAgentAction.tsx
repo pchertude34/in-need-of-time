@@ -47,14 +47,20 @@ export function RunProviderAgentAction(props: DocumentActionProps) {
             location: agentResponse.location || doc?.location,
             serviceTypes:
               agentResponse.serviceTypes?.map((serviceType) => ({
-                _type: "reference",
-                _ref: serviceType._id,
+                _type: "providerServiceType",
                 _key: nanoid(),
+                serviceType: {
+                  _type: "reference",
+                  _ref: serviceType._id,
+                },
               })) || doc?.serviceTypes,
             publicContact: agentResponse.contact || doc?.publicContact,
-            hoursOfOperation:
-              agentResponse.hoursOfOperation.periods.map((period) => ({ ...period, _key: nanoid() })) ||
-              doc?.hoursOfOperation,
+            hoursOfOperation: agentResponse.hoursOfOperation
+              ? {
+                  periods: agentResponse.hoursOfOperation.periods.map((period) => ({ ...period, _key: nanoid() })),
+                  weekdayText: agentResponse.hoursOfOperation.weekdayText,
+                }
+              : doc?.hoursOfOperation,
           },
         },
       ]);

@@ -1,5 +1,6 @@
 import { defineField, defineType } from "sanity";
 import baseProviderFields from "./baseProvider";
+import hoursOfOperationFields from "./hoursOfOperationFields";
 import { groq } from "next-sanity";
 import { client } from "../../lib/client";
 
@@ -88,32 +89,15 @@ const providerSchema = defineType({
     defineField({
       name: "hoursOfOperation",
       title: "Hours of Operation",
-      type: "array",
-      of: [
-        {
-          type: "object",
-          fields: [
-            {
-              name: "open",
-              title: "Open",
-              type: "object",
-              fields: [
-                { name: "day", title: "Day", type: "number", description: "0 = Sunday, 6 = Saturday" },
-                { name: "time", title: "Time", type: "string", description: "Format: HH:mm (24-hour format)" },
-              ],
-            },
-            {
-              name: "close",
-              title: "Close",
-              type: "object",
-              fields: [
-                { name: "day", title: "Day", type: "number", description: "0 = Sunday, 6 = Saturday" },
-                { name: "time", title: "Time", type: "string", description: "Format: HH:mm (24-hour format)" },
-              ],
-            },
-          ],
-        },
-      ],
+      type: "object",
+      description: "The provider's overall hours, used when every service shares the same schedule.",
+      fields: hoursOfOperationFields,
+    }),
+    defineField({
+      name: "url",
+      title: "Provider Page URL",
+      type: "url",
+      description: "A direct link to this provider's own page on the source site, if there is one.",
     }),
     ...baseProviderFields,
   ],

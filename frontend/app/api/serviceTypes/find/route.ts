@@ -21,7 +21,7 @@ export async function GET(request: Request) {
 
   const query = groq`*[ _type == "provider" && defined(serviceTypes) &&
     geo::distance(geo::latLng(place.location.lat, place.location.lng), geo::latLng(${lat}, ${lng})) < ${distance}]{
-    'services': serviceTypes[]->{name, description, slug}  
+    'services': serviceTypes[].serviceType->{name, description, slug}
 }`;
 
   const providerServiceTypes: GROQResponse[] = await client.fetch(query);

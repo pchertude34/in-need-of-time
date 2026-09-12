@@ -12,24 +12,24 @@ type SearchProvidersParamsType = {
 export function searchProviders(params: SearchProvidersParamsType): Promise<Provider[]> {
   const { lat, lng, radius, serviceTypeSlug } = params;
 
-  const query = groq`*[_type == "provider" && 
-    geo::distance(geo::latLng(place.location.lat, place.location.lng), geo::latLng(${lat}, ${lng})) < ${radius} && 
-    "${serviceTypeSlug}" in (serviceTypes[]->slug.current)] {
+  const query = groq`*[_type == "provider" &&
+    geo::distance(geo::latLng(place.location.lat, place.location.lng), geo::latLng(${lat}, ${lng})) < ${radius} &&
+    "${serviceTypeSlug}" in (serviceTypes[].serviceType->slug.current)] {
       _id,
       title,
       place,
       description,
       publicContact,
-      serviceTypes[(@->slug.current == "${serviceTypeSlug}")]->{
-        name, 
-        description, 
+      serviceTypes[(serviceType->slug.current == "${serviceTypeSlug}")].serviceType->{
+        name,
+        description,
         'slug': slug.current
       }
     }`;
 
   // filter out provider service types that don't match the queried service type
   // In the future when we want to support queries with multiple service types, we can use the following:
-  // serviceTypes[(@->slug.current in ${serviceTypeSlugs})]->{name, desctiption, 'slug': slug.current}
+  // serviceTypes[(serviceType->slug.current in ${serviceTypeSlugs})].serviceType->{name, desctiption, 'slug': slug.current}
 
   return client.fetch(query);
 }
@@ -45,7 +45,7 @@ export function getProvider(params: GetProviderParams): Promise<Provider> {
     place,
     description,
     publicContact,
-    serviceTypes[]->{name, desctiption, 'slug': slug.current},
+    serviceTypes[].serviceType->{name, desctiption, 'slug': slug.current},
   }[0]`;
 
   return client.fetch(query);
