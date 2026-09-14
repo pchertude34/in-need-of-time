@@ -1,27 +1,17 @@
-import { useCallback, useState } from "react";
+import { useCallback } from "react";
 import { createDocument, createDocumentHandle, editDocument } from "@sanity/sdk";
 import { useApplyDocumentActions } from "@sanity/sdk-react";
 import { buildProviderDocumentFields } from "../pages/JobDetails/utils";
 import type { ProviderFormValues } from "../types";
 
-export type SaveProviderDraftState =
-  | { status: "idle" }
-  | { status: "saving" }
-  | { status: "saved"; documentId: string }
-  | { status: "error"; message: string };
+export type SaveProviderDraftResult = { success: true; documentId: string } | { success: false; message: string };
 
 /** Creates a new, unpublished provider document from the form's values. */
 export function useSaveProviderDraft() {
   const apply = useApplyDocumentActions();
-  const [state, setState] = useState<SaveProviderDraftState>({ status: "idle" });
 
-  // Returns whether the save succeeded, so a caller that needs to chain work
-  // after saving (e.g. deleting the job the draft came from) doesn't have to
-  // infer it back out of `state`.
   const saveDraft = useCallback(
-    async (values: ProviderFormValues): Promise<boolean> => {
-      setState({ status: "saving" });
-
+    async (values: ProviderFormValues): Promise<SaveProviderDraftResult> => {
       const providerHandle = createDocumentHandle({ documentId: crypto.randomUUID(), documentType: "provider" });
 
       try {
@@ -33,15 +23,14 @@ export function useSaveProviderDraft() {
           createDocument(providerHandle),
           editDocument(providerHandle, { set: buildProviderDocumentFields(values) }),
         ]);
-        setState({ status: "saved", documentId: providerHandle.documentId });
-        return true;
+        return { success: true, documentId: providerHandle.documentId };
       } catch (error) {
-        setState({ status: "error", message: error instanceof Error ? error.message : "Failed to save the provider." });
-        return false;
+        const message = error instanceof Error ? error.message : "Failed to save the provider.";
+        return { success: false, message };
       }
     },
     [apply],
   );
 
-  return { saveDraft, state };
+  return { saveDraft };
 }

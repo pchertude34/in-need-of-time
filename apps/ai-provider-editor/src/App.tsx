@@ -8,6 +8,7 @@ import { JobDetailsPage } from "./pages/JobDetails/page";
 import { SanityApp } from "@sanity/sdk-react";
 import { type SanityConfig } from "@sanity/sdk";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { Toaster } from "@in-need-of-time/ui";
 // import { SANITY_APP_DATASET, SANITY_APP_PROJECT_ID } from '../env';
 // console.log('process.env :>> ', process.env);
 
@@ -33,6 +34,7 @@ export default function App() {
               <Route path="/job/:jobId" element={<JobDetailsPage />} />
             </Routes>
           </main>
+          <Toaster />
         </BrowserRouter>
       </QueryClientProvider>
     </SanityApp>

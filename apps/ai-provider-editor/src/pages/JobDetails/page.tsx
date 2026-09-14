@@ -1,6 +1,7 @@
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 import { useHarnessSocket } from "../../hooks/useHarnessSocket";
 import { Badge } from "@in-need-of-time/ui";
 import { MagnifyingGlassIcon, MapPinIcon } from "@heroicons/react/24/outline";
@@ -41,24 +42,32 @@ export function JobDetailsPage() {
   const workflowOutput = findWorkflowOutput(events);
   const provider = useMemo(() => buildProviderFormValues(workflowOutput), [workflowOutput]);
 
-  const { saveDraft, state: saveState } = useSaveProviderDraft();
+  const { saveDraft } = useSaveProviderDraft();
+  const [isSaving, setIsSaving] = useState(false);
 
   const submitForm = useCallback(
     async (values: ProviderFormValues) => {
-      const saved = await saveDraft(values);
-
-      if (!saved || !jobId) {
+      if (!jobId) {
         return;
       }
 
+      setIsSaving(true);
+      const result = await saveDraft(values);
+      setIsSaving(false);
+
+      if (!result.success) {
+        toast.error(result.message);
+        return;
+      }
+
+      toast.success("Saved as a draft. Review it in Sanity Studio, then publish it from there.");
+
       // Once the provider is saved as a draft, this job has done its job —
-      // remove it so it doesn't linger in the runs list. A failed cleanup here
-      // isn't worth surfacing: the draft is already safely saved, and the job
-      // can still be deleted manually from the Agent Runs page.
+      // remove it so it doesn't linger in the runs list.
       try {
         await deleteAgentJob(jobId);
       } catch {
-        // ignore
+        toast.error("Failed to delete the agent job. Try deleting it manually.");
       }
 
       queryClient.invalidateQueries({ queryKey: AGENT_JOBS_QUERY_KEY });
@@ -89,22 +98,7 @@ export function JobDetailsPage() {
       </div>
       <div className="mx-auto flex w-full">
         <div className="px-4 py-6 sm:px-6 lg:pl-8 xl:flex-1 xl:pl-6">
-          {saveState.status === "saved" && (
-            <p className="mb-4 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
-              Saved as a draft. Review it in Sanity Studio, then publish it from there.
-            </p>
-          )}
-          {saveState.status === "error" && (
-            <p className="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
-              {saveState.message}
-            </p>
-          )}
-          <ProviderForm
-            provider={provider}
-            disabled={agentRunning}
-            isSaving={saveState.status === "saving"}
-            onSubmit={submitForm}
-          />
+          <ProviderForm provider={provider} disabled={agentRunning} isSaving={isSaving} onSubmit={submitForm} />
         </div>
         <div className="min-w-[400px] shrink-0 border-b border-slate-200 bg-slate-50 px-4 py-6 sm:px-6 lg:pl-8 xl:w-64 xl:border-b-0 xl:border-l xl:pl-6 dark:border-white/10">
           <ActivityStepper steps={activitySteps} />
