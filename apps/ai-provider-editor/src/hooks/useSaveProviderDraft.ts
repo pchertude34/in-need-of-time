@@ -15,8 +15,11 @@ export function useSaveProviderDraft() {
   const apply = useApplyDocumentActions();
   const [state, setState] = useState<SaveProviderDraftState>({ status: "idle" });
 
+  // Returns whether the save succeeded, so a caller that needs to chain work
+  // after saving (e.g. deleting the job the draft came from) doesn't have to
+  // infer it back out of `state`.
   const saveDraft = useCallback(
-    async (values: ProviderFormValues) => {
+    async (values: ProviderFormValues): Promise<boolean> => {
       setState({ status: "saving" });
 
       const providerHandle = createDocumentHandle({ documentId: crypto.randomUUID(), documentType: "provider" });
@@ -31,8 +34,10 @@ export function useSaveProviderDraft() {
           editDocument(providerHandle, { set: buildProviderDocumentFields(values) }),
         ]);
         setState({ status: "saved", documentId: providerHandle.documentId });
+        return true;
       } catch (error) {
         setState({ status: "error", message: error instanceof Error ? error.message : "Failed to save the provider." });
+        return false;
       }
     },
     [apply],

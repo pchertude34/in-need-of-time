@@ -1,5 +1,6 @@
-import React, { useMemo } from "react";
-import { useParams } from "react-router-dom";
+import React, { useCallback, useMemo } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { useQueryClient } from "@tanstack/react-query";
 import { useHarnessSocket } from "../../hooks/useHarnessSocket";
 import { Badge } from "@in-need-of-time/ui";
 import { MagnifyingGlassIcon, MapPinIcon } from "@heroicons/react/24/outline";
@@ -8,6 +9,8 @@ import { ActivityStepper } from "../../components/ActivityStepper/ActivitySteppe
 import { ProviderForm } from "../../components/ProviderForm/ProviderForm";
 import { buildActivitySteps, buildProviderFormValues, findWorkflowOutput, isAgentRunning } from "./utils";
 import { useSaveProviderDraft } from "../../hooks/useSaveProviderDraft";
+import { AGENT_JOBS_QUERY_KEY, deleteAgentJob } from "../../queries";
+import type { ProviderFormValues } from "../../types";
 
 // What the provider agent is submitted with — the payload `workflow.started`
 // carries on its (deliberately untyped) `input`.
@@ -18,6 +21,8 @@ type ProviderJobInput = {
 
 export function JobDetailsPage() {
   const { jobId } = useParams<{ jobId: string }>();
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const { events, connected } = useHarnessSocket(jobId);
 
   // The event stream is the only thing this page reads, so the job's original
@@ -37,6 +42,30 @@ export function JobDetailsPage() {
   const provider = useMemo(() => buildProviderFormValues(workflowOutput), [workflowOutput]);
 
   const { saveDraft, state: saveState } = useSaveProviderDraft();
+
+  const submitForm = useCallback(
+    async (values: ProviderFormValues) => {
+      const saved = await saveDraft(values);
+
+      if (!saved || !jobId) {
+        return;
+      }
+
+      // Once the provider is saved as a draft, this job has done its job —
+      // remove it so it doesn't linger in the runs list. A failed cleanup here
+      // isn't worth surfacing: the draft is already safely saved, and the job
+      // can still be deleted manually from the Agent Runs page.
+      try {
+        await deleteAgentJob(jobId);
+      } catch {
+        // ignore
+      }
+
+      queryClient.invalidateQueries({ queryKey: AGENT_JOBS_QUERY_KEY });
+      navigate("/runs");
+    },
+    [saveDraft, jobId, queryClient, navigate],
+  );
 
   return (
     <div className="flex min-h-full flex-col">
@@ -74,7 +103,7 @@ export function JobDetailsPage() {
             provider={provider}
             disabled={agentRunning}
             isSaving={saveState.status === "saving"}
-            onSubmit={saveDraft}
+            onSubmit={submitForm}
           />
         </div>
         <div className="min-w-[400px] shrink-0 border-b border-slate-200 bg-slate-50 px-4 py-6 sm:px-6 lg:pl-8 xl:w-64 xl:border-b-0 xl:border-l xl:pl-6 dark:border-white/10">
