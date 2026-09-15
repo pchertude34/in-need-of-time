@@ -1,6 +1,8 @@
 import { queryOptions } from "@tanstack/react-query";
 import { resolveQuery, type SanityInstance } from "@sanity/sdk";
 import { SANITY_APP_PROVIDER_AGENT_API_URL } from "../env";
+import type { Location } from "@in-need-of-time/types";
+import type { DuplicateProviderCandidate } from "@in-need-of-time/utils";
 import type { AgentJob } from "./pages/AgentRuns/types";
 import type { ServiceType } from "./types";
 
@@ -9,6 +11,16 @@ import type { ServiceType } from "./types";
 export const AGENT_JOBS_QUERY_KEY = ["agent-jobs"];
 
 export const SERVICE_TYPES_QUERY_KEY = ["service-types"];
+
+// ~150ft — close enough to be the same building, not just the same block.
+// Checks both the current location field and the legacy `place.location` one,
+// since older providers (pre-dating this app) only have the latter.
+const DUPLICATE_ADDRESS_RADIUS_METERS = 45;
+
+const DUPLICATE_PROVIDERS_GROQ = `*[_type == "provider" && (
+  (defined(location) && geo::distance(geo::latLng(location.lat, location.lng), geo::latLng($lat, $lng)) < $radius) ||
+  (defined(place.location) && geo::distance(geo::latLng(place.location.lat, place.location.lng), geo::latLng($lat, $lng)) < $radius)
+)] {_id, title, "address": coalesce(address, place.address)}`;
 
 // The same service types the agent chooses from — `get_service_types` reads this
 // list too, so the ids it returns line up with the ones offered in the form.
@@ -32,6 +44,22 @@ export function serviceTypesQuery(instance: SanityInstance) {
     queryKey: SERVICE_TYPES_QUERY_KEY,
     queryFn: () => resolveQuery<ServiceType[]>(instance, { query: SERVICE_TYPES_GROQ }),
     staleTime: SERVICE_TYPES_STALE_TIME_MS,
+  });
+}
+
+/**
+ * Existing providers within `DUPLICATE_ADDRESS_RADIUS_METERS` of the given
+ * point. A plain fetch rather than a cached query — callers decide exactly
+ * when this reruns (see `checkForDuplicateProvider`), so nothing should serve
+ * a stale cached result out from under that.
+ */
+export function fetchDuplicateProviders(
+  instance: SanityInstance,
+  coordinates: Location,
+): Promise<DuplicateProviderCandidate[]> {
+  return resolveQuery<DuplicateProviderCandidate[]>(instance, {
+    query: DUPLICATE_PROVIDERS_GROQ,
+    params: { lat: coordinates.lat, lng: coordinates.lng, radius: DUPLICATE_ADDRESS_RADIUS_METERS },
   });
 }
 
