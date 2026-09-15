@@ -9,6 +9,7 @@
     ".": "./src/index.ts"
   },
   "dependencies": {
+    "@in-need-of-time/types": "file:../types",
     "clsx": "^2.1.1",
     "tailwind-merge": "^2.6.1"
   },

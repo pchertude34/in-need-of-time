@@ -1,8 +1,10 @@
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
+import type { Location } from "@in-need-of-time/types";
 
 export * from "./geocoder";
 export * from "./states";
+export * from "./duplicateMatching";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -18,6 +20,15 @@ export function convertMetersToMiles(meters: number) {
 export function convertMilesToMeters(miles: number | string) {
   const meters = Number(miles) * METERS_PER_MILE;
   return Number(meters.toFixed(2));
+}
+
+// Returns undefined rather than a NaN-holding coordinate, so callers can treat
+// "not parseable" and "not entered yet" the same way.
+export function parseCoordinates(latitude: string, longitude: string): Location | undefined {
+  const lat = Number.parseFloat(latitude);
+  const lng = Number.parseFloat(longitude);
+
+  return Number.isNaN(lat) || Number.isNaN(lng) ? undefined : { lat, lng };
 }
 
 export function getCurrentDay() {
