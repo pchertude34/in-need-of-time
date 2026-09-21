@@ -39,7 +39,7 @@ Every workspace also has its own `type-check` script (`npm run type-check -w <pa
 - **Linting**: no root ESLint config. `frontend/` and `studio/` each have their own `.eslintrc`; other packages have none.
 - **TypeScript**: root `tsconfig.json` sets `strict: true`; every workspace extends it.
 - **Env vars**: copy `.env.example` → `.env.local`. Variables are grouped by domain — `NEXT_PUBLIC_*`/`OPENAI_API_KEY`/`FIRECRAWL_API_KEY` for the frontend, `DATABASE_URL` for `packages/db`, `SANITY_STUDIO_*` for studio, `SANITY_APP_*` for `apps/*`. New variables should follow this grouping: add a placeholder to `.env.example` alongside the real value in `.env.local`.
-- **Local Postgres**: `npm run db:start` spins up an ephemeral Neon branch via Docker (`neon-local`), not a plain Postgres container. `npm run db:reset` destroys and recreates it — anything not migrated/persisted in Neon itself is lost.
+- **Local Postgres**: `docker-compose.yml` defines two interchangeable databases, both on port 5432 with the same credentials, selected by compose profile. `npm run db:start` (profile `local`) runs a plain `postgres:17-alpine` container whose data persists in the `pg_data` volume across restarts; `npm run db:reset` drops that volume. `npm run db:start:neon` (profile `neon`) instead runs `neon-local`, a proxy onto an ephemeral Neon branch that is deleted on stop — use it to verify behavior against real Neon. Run only one profile at a time, and note `DATABASE_URL` is identical either way.
 
 ## Contributing as an agent
 

@@ -30,15 +30,19 @@ In time of need uses a database to audit AI agent calls and potentially other an
 npm run db:start
 ```
 
-This will create a new ephemeral branch off of the main database, copying the existing data. Your database branch will persist for as long as your local container is running.
+This starts a plain Postgres container. It needs no Neon account, and its data persists across `db:stop`/`db:start` cycles. After starting it for the first time, run `npm run db:push` to create the tables.
 
 There are a few more helpful database related commands:
 
 - `npm run db:stop` - Kill your local database
-- `npm run db:reset` - Refresh your local database, creating a new branch from main and resetting the data
+- `npm run db:reset` - Wipe your local database and start it fresh (you'll need to `db:push` again)
 - `npm run db:push` - Run schema updates against your local database
 - `npm run db:studio` - Start the local database viewer, available at [https://local.drizzle.studio](https://local.drizzle.studio)
 - `npm run db:migrate` - Run any unran database migrations against your local database
+
+#### Running against a real Neon branch instead
+
+If you need to verify something against Neon itself, `npm run db:start:neon` swaps the plain Postgres container for `neon-local`, which proxies to an ephemeral branch off of the main database, copying the existing data. That branch is deleted when you `npm run db:stop:neon`, and it requires `NEON_PROJECT_ID`, `NEON_API_KEY`, and `PARENT_BRANCH_ID` in your `.env.local`. Both databases listen on port 5432 with the same credentials, so `DATABASE_URL` doesn't change — but only run one at a time.
 
 ### Running locally
 

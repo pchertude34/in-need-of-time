@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { Suspense, useEffect, useState } from "react";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
 import { useQuery } from "@tanstack/react-query";
 import { useSanityInstance } from "@sanity/sdk-react";
+import { parseCoordinates } from "@in-need-of-time/utils";
 import { PlusIcon, TrashIcon } from "@heroicons/react/24/outline";
 import {
   Button,
@@ -17,17 +18,22 @@ import {
 import { ProviderField } from "./ProviderField";
 import { HoursOfOperationInput } from "./HoursOfOperationInput";
 import { DuplicateProviderBanner } from "./DuplicateProviderBanner";
+import { DuplicateProviderCheck, IDLE_DUPLICATE_CHECK, type DuplicateCheckState } from "./DuplicateProviderCheck";
 import { DuplicateSaveConfirmDialog } from "./DuplicateSaveConfirmDialog";
 import { RichTextEditor } from "../RichTextEditor/RichTextEditor";
 import { EMPTY_PROVIDER_FORM_VALUES, EMPTY_SERVICE_TYPE } from "./constants";
 import { serviceTypesQuery } from "../../queries";
-import { checkForDuplicateProvider, NO_DUPLICATE_RESULT } from "../../lib/checkForDuplicateProvider";
+import { useDebouncedValue } from "../../hooks/useDebouncedValue";
 import type { ProviderFormValues, ServiceType } from "../../types";
 import type { DuplicateCheckResult } from "@in-need-of-time/utils";
 
 // A stable fallback, so the options list isn't a new array on every render
 // before the query resolves.
 const NO_SERVICE_TYPES: ServiceType[] = [];
+
+// Long enough that typing out a name or a coordinate doesn't fire a query per
+// keystroke, short enough that the warning still feels tied to the edit.
+const DUPLICATE_CHECK_DEBOUNCE_MS = 500;
 
 function getServiceTypePlaceholder(isLoading: boolean, hasOptions: boolean) {
   if (isLoading) {
@@ -49,14 +55,7 @@ type ProviderFormProps = {
 
 export function ProviderForm(props: ProviderFormProps) {
   const { provider, disabled = false, isSaving = false, onSubmit } = props;
-  const {
-    register,
-    control,
-    handleSubmit,
-    watch,
-    reset,
-    formState: { isSubmitting: isCheckingDuplicate },
-  } = useForm<ProviderFormValues>({
+  const { register, control, handleSubmit, watch, reset } = useForm<ProviderFormValues>({
     defaultValues: provider ?? EMPTY_PROVIDER_FORM_VALUES,
   });
   const { fields, append, remove } = useFieldArray({ control, name: "serviceTypes" });
@@ -68,37 +67,42 @@ export function ProviderForm(props: ProviderFormProps) {
     serviceTypesQuery(instance),
   );
 
-  const [duplicateCheck, setDuplicateCheck] = useState<DuplicateCheckResult>(NO_DUPLICATE_RESULT);
-
   // The agent fills the form in asynchronously, so re-seed it whenever a new
-  // provider arrives rather than only on first render. The duplicate check
-  // also only runs here, once, against what the agent found — not on every
-  // hand-edit; see `onFormSubmit` for the other point it reruns.
+  // provider arrives rather than only on first render.
   useEffect(() => {
     reset(provider ?? EMPTY_PROVIDER_FORM_VALUES);
-
-    if (!provider) {
-      setDuplicateCheck(NO_DUPLICATE_RESULT);
-      return;
-    }
-
-    let ignore = false;
-    checkForDuplicateProvider(instance, {
-      name: provider.name.value,
-      latitude: provider.location.value.latitude,
-      longitude: provider.location.value.longitude,
-    }).then((result) => {
-      if (!ignore) setDuplicateCheck(result);
-    });
-
-    return () => {
-      ignore = true;
-    };
-  }, [provider, reset, instance]);
+  }, [provider, reset]);
 
   // Confidence and source URL aren't editable — they're read back out of form
   // state purely so each field can show where its value came from.
   const values = watch();
+
+  // The duplicate lookup follows the name and the coordinates, debounced so a
+  // keystroke doesn't cost a query. The address field isn't watched directly:
+  // only the agent geocodes, so the coordinates are what actually move the
+  // lookup, and editing the address alone can't change which providers are near.
+  const debouncedName = useDebouncedValue(values.name.value, DUPLICATE_CHECK_DEBOUNCE_MS);
+  const debouncedLatitude = useDebouncedValue(values.location.value.latitude, DUPLICATE_CHECK_DEBOUNCE_MS);
+  const debouncedLongitude = useDebouncedValue(values.location.value.longitude, DUPLICATE_CHECK_DEBOUNCE_MS);
+  const debouncedCoordinates = parseCoordinates(debouncedLatitude, debouncedLongitude);
+
+  const [duplicateCheck, setDuplicateCheck] = useState<DuplicateCheckState>(IDLE_DUPLICATE_CHECK);
+
+  // Nothing renders the lookup without coordinates, so clear the last result
+  // rather than leaving a warning up for a location the form no longer has.
+  useEffect(() => {
+    if (!parseCoordinates(debouncedLatitude, debouncedLongitude)) {
+      setDuplicateCheck(IDLE_DUPLICATE_CHECK);
+    }
+  }, [debouncedLatitude, debouncedLongitude]);
+
+  // A settled result is what the save gate checks, so treat "still debouncing"
+  // and "query in flight" the same way: not ready to be trusted yet.
+  const isCheckingDuplicates =
+    duplicateCheck.isPending ||
+    debouncedName !== values.name.value ||
+    debouncedLatitude !== values.location.value.latitude ||
+    debouncedLongitude !== values.location.value.longitude;
 
   // Set only while a same-address/similar-name match is found and the user
   // hasn't confirmed past it yet. The duplicate check's result is captured
@@ -110,15 +114,10 @@ export function ProviderForm(props: ProviderFormProps) {
     matches: DuplicateCheckResult["matches"];
   } | null>(null);
 
-  async function onFormSubmit(formValues: ProviderFormValues) {
-    // Re-checked right before saving, rather than trusting whatever the form
-    // last showed — the values about to be saved are the ones that matter.
-    const result = await checkForDuplicateProvider(instance, {
-      name: formValues.name.value,
-      latitude: formValues.location.value.latitude,
-      longitude: formValues.location.value.longitude,
-    });
-    setDuplicateCheck(result);
+  function onFormSubmit(formValues: ProviderFormValues) {
+    // The lookup already tracks the form, and the submit button stays disabled
+    // until it settles, so the current result describes these exact values.
+    const { result } = duplicateCheck;
 
     if (result.status === "none") {
       onSubmit?.(formValues);
@@ -130,12 +129,25 @@ export function ProviderForm(props: ProviderFormProps) {
 
   return (
     <>
+      {/* Renders nothing. Mounted only with coordinates to look up, and behind its
+          own boundary because `useQuery` suspends on its first load. */}
+      {debouncedCoordinates && (
+        <Suspense fallback={null}>
+          <DuplicateProviderCheck
+            coordinates={debouncedCoordinates}
+            name={debouncedName}
+            onChange={setDuplicateCheck}
+          />
+        </Suspense>
+      )}
       <form onSubmit={handleSubmit(onFormSubmit)}>
         {/* One disabled fieldset locks every control inside it — inputs, textareas,
-          the select triggers and the buttons — without threading a prop through each. */}
-        <fieldset className="space-y-6" disabled={disabled || isSaving || isCheckingDuplicate}>
-          {duplicateCheck.status !== "none" && (
-            <DuplicateProviderBanner status={duplicateCheck.status} matches={duplicateCheck.matches} />
+          the select triggers and the buttons — without threading a prop through each.
+          Deliberately not disabled while the duplicate check runs: typing is what
+          makes it run, so that would lock the field mid-edit. */}
+        <fieldset className="space-y-6" disabled={disabled || isSaving}>
+          {duplicateCheck.result.status !== "none" && (
+            <DuplicateProviderBanner status={duplicateCheck.result.status} matches={duplicateCheck.result.matches} />
           )}
           {disabled && (
             <p className="text-sm text-slate-500">The agent is still working. Fields unlock when it finishes.</p>
@@ -391,7 +403,11 @@ export function ProviderForm(props: ProviderFormProps) {
             <Button type="button" variant="light" onClick={() => reset(provider ?? EMPTY_PROVIDER_FORM_VALUES)}>
               Reset
             </Button>
-            <Button type="submit">{isCheckingDuplicate ? "Checking…" : isSaving ? "Saving…" : "Save provider"}</Button>
+            {/* Held until the check settles, so a save can't slip past a warning
+                that was still resolving. */}
+            <Button type="submit" disabled={isCheckingDuplicates}>
+              {isCheckingDuplicates ? "Checking…" : isSaving ? "Saving…" : "Save provider"}
+            </Button>
           </div>
         </fieldset>
       </form>
