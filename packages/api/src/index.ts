@@ -4,6 +4,7 @@ import { createServer } from "node:http";
 import type { WebSocketServer } from "ws";
 import { DBOS } from "@dbos-inc/dbos-sdk";
 import { providerAgentRouter, attachProviderAgentWebSocket } from "./routes/providerAgent";
+import { geocodeRouter } from "./routes/geocode";
 
 // Not just `PORT` — every workspace's dev script loads the same repo-wide
 // .env.local (via `dotenv -e ./.env.local --`), and Next.js's own dev server
@@ -43,6 +44,7 @@ async function main() {
   });
 
   app.use("/provider-agent", providerAgentRouter);
+  app.use("/geocode", geocodeRouter);
 
   server = createServer(app);
   wss = attachProviderAgentWebSocket(server);

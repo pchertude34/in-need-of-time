@@ -1,8 +1,12 @@
 import { queryOptions } from "@tanstack/react-query";
 import { resolveQuery, type SanityInstance } from "@sanity/sdk";
 import { SANITY_APP_PROVIDER_AGENT_API_URL } from "../env";
+import type { GeocodeResult } from "@in-need-of-time/utils";
 import type { AgentJob } from "./pages/AgentRuns/types";
 import type { ServiceType } from "./types";
+
+/** The coordinates `GET /geocode` returns — the geocoder's result, without its raw match. */
+export type GeocodedAddress = Pick<GeocodeResult, "latitude" | "longitude" | "matchedAddress">;
 
 // Every query's key starts here, so a mutation can invalidate one job's data or
 // the whole agent-jobs cache without guessing at key shapes.
@@ -58,6 +62,25 @@ async function fetchAgentJobs(): Promise<AgentJob[]> {
 /** Every job the provider agent has run, newest first. */
 export function agentJobsQuery() {
   return queryOptions({ queryKey: AGENT_JOBS_QUERY_KEY, queryFn: fetchAgentJobs });
+}
+
+/**
+ * The coordinates of a free-form US address, or null if the geocoder couldn't
+ * match it. Goes through the API rather than calling the Census geocoder from
+ * the browser, so the form resolves an address exactly the way the provider
+ * agent's `geocode_address` tool does.
+ */
+export async function geocodeAddress(address: string): Promise<GeocodedAddress | null> {
+  const url = new URL(`${SANITY_APP_PROVIDER_AGENT_API_URL}/geocode`);
+  url.searchParams.set("address", address);
+
+  const response = await fetch(url);
+
+  if (!response.ok) {
+    throw new Error(`Could not look up coordinates: request failed with ${response.status}`);
+  }
+
+  return response.json();
 }
 
 /** Permanently removes a job, its timeline, and its run. Cancels the run if it's still going. */

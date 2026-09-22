@@ -1,7 +1,8 @@
-import React, { Suspense, useEffect, useState } from "react";
+import React, { Suspense, useEffect, useRef, useState } from "react";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useSanityInstance } from "@sanity/sdk-react";
+import { toast } from "sonner";
 import { parseCoordinates } from "@in-need-of-time/utils";
 import { PlusIcon, TrashIcon } from "@heroicons/react/24/outline";
 import {
@@ -22,7 +23,7 @@ import { DuplicateProviderCheck, IDLE_DUPLICATE_CHECK, type DuplicateCheckState 
 import { DuplicateSaveConfirmDialog } from "./DuplicateSaveConfirmDialog";
 import { RichTextEditor } from "../RichTextEditor/RichTextEditor";
 import { EMPTY_PROVIDER_FORM_VALUES, EMPTY_SERVICE_TYPE } from "./constants";
-import { serviceTypesQuery } from "../../queries";
+import { geocodeAddress, serviceTypesQuery } from "../../queries";
 import { useDebouncedValue } from "../../hooks/useDebouncedValue";
 import type { ProviderFormValues, ServiceType } from "../../types";
 import type { DuplicateCheckResult } from "@in-need-of-time/utils";
@@ -55,7 +56,7 @@ type ProviderFormProps = {
 
 export function ProviderForm(props: ProviderFormProps) {
   const { provider, disabled = false, isSaving = false, onSubmit } = props;
-  const { register, control, handleSubmit, watch, reset } = useForm<ProviderFormValues>({
+  const { register, control, handleSubmit, watch, reset, setValue } = useForm<ProviderFormValues>({
     defaultValues: provider ?? EMPTY_PROVIDER_FORM_VALUES,
   });
   const { fields, append, remove } = useFieldArray({ control, name: "serviceTypes" });
@@ -67,20 +68,88 @@ export function ProviderForm(props: ProviderFormProps) {
     serviceTypesQuery(instance),
   );
 
+  // The address the coordinates in the form were geocoded from, so blurring the
+  // address field without having changed it doesn't cost a lookup. A ref rather
+  // than state: nothing renders it, and it must be readable by the blur handler
+  // of the same render that set it.
+  const geocodedAddress = useRef("");
+
   // The agent fills the form in asynchronously, so re-seed it whenever a new
   // provider arrives rather than only on first render.
   useEffect(() => {
     reset(provider ?? EMPTY_PROVIDER_FORM_VALUES);
+    // The agent geocoded the address it found, so the coordinates arriving with
+    // it already match — only an edit to the address should trigger a lookup.
+    geocodedAddress.current = provider?.address.value.trim() ?? "";
   }, [provider, reset]);
 
   // Confidence and source URL aren't editable — they're read back out of form
   // state purely so each field can show where its value came from.
   const values = watch();
 
+  const geocode = useMutation({ mutationFn: geocodeAddress });
+
+  // Registered up here rather than inline, so the input can wrap the field's own
+  // blur handler with the geocode lookup below.
+  const addressField = register("address.value");
+
+  // The coordinates can't be typed in, so whenever the address stops yielding
+  // any — cleared, or no longer matching — they have to go too. Leaving them
+  // would save the provider at wherever the previous address was.
+  function clearLocation() {
+    setValue("location.value.latitude", "", { shouldDirty: true });
+    setValue("location.value.longitude", "", { shouldDirty: true });
+    setValue("location.confidence", "very_low");
+    setValue("location.sourceUrl", null);
+  }
+
+  // Brings the coordinates back in step with the address the user just finished
+  // editing. Runs on blur rather than debounced-on-change like the duplicate
+  // check below: every lookup hits the Census geocoder, and a half-typed
+  // address won't match.
+  async function updateLocationFromAddress(address: string) {
+    const trimmedAddress = address.trim();
+
+    if (trimmedAddress === geocodedAddress.current) {
+      return;
+    }
+
+    // Nothing left to geocode — an emptied address means no location at all.
+    if (!trimmedAddress) {
+      geocodedAddress.current = "";
+      clearLocation();
+      return;
+    }
+
+    try {
+      const match = await geocode.mutateAsync(trimmedAddress);
+
+      // The geocoder answered for this address either way — only a failed
+      // request (below) is worth retrying on the next blur.
+      geocodedAddress.current = trimmedAddress;
+
+      if (!match) {
+        clearLocation();
+        toast.warning("No coordinates found for that address. Check the address — the coordinates come from it.");
+        return;
+      }
+
+      setValue("location.value.latitude", String(match.latitude), { shouldDirty: true });
+      setValue("location.value.longitude", String(match.longitude), { shouldDirty: true });
+      // Location is derived from the address, so it inherits how much that
+      // address is trusted and where it came from — the same rule the format
+      // agent follows when it geocodes.
+      setValue("location.confidence", values.address.confidence);
+      setValue("location.sourceUrl", values.address.sourceUrl);
+    } catch {
+      toast.error("Couldn't look up coordinates for that address. Leave the field again to retry.");
+    }
+  }
+
   // The duplicate lookup follows the name and the coordinates, debounced so a
   // keystroke doesn't cost a query. The address field isn't watched directly:
-  // only the agent geocodes, so the coordinates are what actually move the
-  // lookup, and editing the address alone can't change which providers are near.
+  // the coordinates are what actually move the lookup, and they already follow
+  // the address — editing it re-geocodes on blur, which lands here anyway.
   const debouncedName = useDebouncedValue(values.name.value, DUPLICATE_CHECK_DEBOUNCE_MS);
   const debouncedLatitude = useDebouncedValue(values.location.value.latitude, DUPLICATE_CHECK_DEBOUNCE_MS);
   const debouncedLongitude = useDebouncedValue(values.location.value.longitude, DUPLICATE_CHECK_DEBOUNCE_MS);
@@ -194,27 +263,43 @@ export function ProviderForm(props: ProviderFormProps) {
               <Input
                 id="provider-address"
                 placeholder="Street address, city, state, ZIP"
-                {...register("address.value")}
+                {...addressField}
+                // Composed rather than replaced: react-hook-form's own onBlur is
+                // what marks the field touched and runs its validation.
+                onBlur={(event) => {
+                  addressField.onBlur(event);
+                  void updateLocationFromAddress(event.target.value);
+                }}
               />
             </ProviderField>
             <ProviderField
               label="Location"
               confidence={values.location.confidence}
               sourceUrl={values.location.sourceUrl}
-              description="Geocoded from the address above."
+              description={
+                geocode.isPending
+                  ? "Looking up coordinates…"
+                  : "Not editable — geocoded from the address above. Change the address to change these."
+              }
             >
+              {/* Read-only on purpose: coordinates come from the agent or from
+                  geocoding the address, never typed in. `disabled` as a prop
+                  rather than a `register` option — the option would strip the
+                  value out of form state, and these still have to be saved. */}
               <div className="flex flex-wrap gap-4">
                 <Input
                   className="flex-1"
                   aria-label="Latitude"
                   placeholder="Latitude"
                   {...register("location.value.latitude")}
+                  disabled
                 />
                 <Input
                   className="flex-1"
                   aria-label="Longitude"
                   placeholder="Longitude"
                   {...register("location.value.longitude")}
+                  disabled
                 />
               </div>
             </ProviderField>
@@ -404,9 +489,16 @@ export function ProviderForm(props: ProviderFormProps) {
               Reset
             </Button>
             {/* Held until the check settles, so a save can't slip past a warning
-                that was still resolving. */}
-            <Button type="submit" disabled={isCheckingDuplicates}>
-              {isCheckingDuplicates ? "Checking…" : isSaving ? "Saving…" : "Save provider"}
+                that was still resolving — and until a geocode in flight lands,
+                since clicking Save is itself what blurs the address field. */}
+            <Button type="submit" disabled={geocode.isPending || isCheckingDuplicates}>
+              {geocode.isPending
+                ? "Locating…"
+                : isCheckingDuplicates
+                  ? "Checking…"
+                  : isSaving
+                    ? "Saving…"
+                    : "Save provider"}
             </Button>
           </div>
         </fieldset>

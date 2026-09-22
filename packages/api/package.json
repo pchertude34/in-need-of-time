@@ -15,7 +15,7 @@
   "dependencies": {
     "@in-need-of-time/agent-core": "file:../agent-core",
     "@in-need-of-time/types": "file:../types",
-    "@sanity/client": "^7.26.0",
+    "@in-need-of-time/utils": "file:../utils",
     "ai": "^7.0.37",
     "cors": "^2.8.6",
     "express": "^5.2.1",
