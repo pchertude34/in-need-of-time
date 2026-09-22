@@ -35,6 +35,7 @@ const providerSchema = defineType({
       name: "title",
       title: "Provider Name",
       type: "string",
+      validation: (Rule) => Rule.required(),
     }),
     defineField({
       name: "agentRequest",
@@ -79,12 +80,14 @@ const providerSchema = defineType({
       name: "address",
       title: "Address",
       type: "string",
+      validation: (Rule) => Rule.required(),
     }),
     defineField({
       name: "location",
       title: "Location",
       type: "geopoint",
       description: "The location of the provider on the map.",
+      validation: (Rule) => Rule.required(),
     }),
     defineField({
       name: "hoursOfOperation",

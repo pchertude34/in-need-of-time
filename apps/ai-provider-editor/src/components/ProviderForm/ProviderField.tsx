@@ -1,6 +1,6 @@
 import React from "react";
 import { ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline";
-import { Field, FieldDescription, FieldLabel } from "@in-need-of-time/ui";
+import { Field, FieldDescription, FieldError, FieldLabel } from "@in-need-of-time/ui";
 import { ConfidenceBadge } from "./ConfidenceBadge";
 import type { ConfidenceLevel } from "../../types";
 
@@ -10,6 +10,8 @@ type ProviderFieldProps = {
   confidence?: ConfidenceLevel;
   sourceUrl?: string | null;
   description?: string;
+  /** A validation message for this field. Rendered below it, and colours the label. */
+  error?: string;
   className?: string;
   children: React.ReactNode;
 };
@@ -19,10 +21,10 @@ type ProviderFieldProps = {
  * every value it extracts: how confident it is, and the page it came from.
  */
 export function ProviderField(props: ProviderFieldProps) {
-  const { label, htmlFor, confidence, sourceUrl, description, className, children } = props;
+  const { label, htmlFor, confidence, sourceUrl, description, error, className, children } = props;
 
   return (
-    <Field className={className}>
+    <Field className={className} data-invalid={error ? "true" : undefined}>
       <div className="flex flex-wrap items-center gap-2">
         <FieldLabel htmlFor={htmlFor}>{label}</FieldLabel>
         {confidence && <ConfidenceBadge confidence={confidence} />}
@@ -40,6 +42,7 @@ export function ProviderField(props: ProviderFieldProps) {
       </div>
       {children}
       {description && <FieldDescription className="text-slate-400">{description}</FieldDescription>}
+      <FieldError>{error}</FieldError>
     </Field>
   );
 }

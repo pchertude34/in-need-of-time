@@ -36,6 +36,12 @@ const NO_SERVICE_TYPES: ServiceType[] = [];
 // keystroke, short enough that the warning still feels tied to the edit.
 const DUPLICATE_CHECK_DEBOUNCE_MS = 500;
 
+// The provider schema requires a name, an address and a location (see
+// studio/src/schemas/provider/provider.ts), so the form holds a draft to the
+// same bar rather than letting a save through that can never be published.
+// Coordinates aren't typed in, so their message points at the address instead.
+const LOCATION_REQUIRED_MESSAGE = "Coordinates are required. Enter an address the geocoder can match.";
+
 function getServiceTypePlaceholder(isLoading: boolean, hasOptions: boolean) {
   if (isLoading) {
     return "Loading service types…";
@@ -56,8 +62,20 @@ type ProviderFormProps = {
 
 export function ProviderForm(props: ProviderFormProps) {
   const { provider, disabled = false, isSaving = false, onSubmit } = props;
-  const { register, control, handleSubmit, watch, reset, setValue } = useForm<ProviderFormValues>({
+  const {
+    register,
+    control,
+    handleSubmit,
+    watch,
+    reset,
+    setValue,
+    formState: { errors },
+  } = useForm<ProviderFormValues>({
     defaultValues: provider ?? EMPTY_PROVIDER_FORM_VALUES,
+    // "onTouched" rather than "onBlur": a field is checked when it's first left,
+    // so a problem surfaces there instead of at submit, and from then on it
+    // re-checks as the user types, so the message clears as soon as it's fixed.
+    mode: "onTouched",
   });
   const { fields, append, remove } = useFieldArray({ control, name: "serviceTypes" });
 
@@ -91,14 +109,22 @@ export function ProviderForm(props: ProviderFormProps) {
 
   // Registered up here rather than inline, so the input can wrap the field's own
   // blur handler with the geocode lookup below.
-  const addressField = register("address.value");
+  const addressField = register("address.value", { required: "An address is required." });
+
+  // Both coordinates carry the same message, and only one of them is ever shown
+  // — they're filled in and cleared as a pair, so a second copy says nothing new.
+  const locationError = errors.location?.value?.latitude ?? errors.location?.value?.longitude;
 
   // The coordinates can't be typed in, so whenever the address stops yielding
   // any — cleared, or no longer matching — they have to go too. Leaving them
   // would save the provider at wherever the previous address was.
+  // `shouldValidate` here and on the filled-in coordinates below is what puts the
+  // location's own error on screen at the right moment: the inputs are disabled,
+  // so they never fire a blur of their own to be validated by — leaving the
+  // address is the only point at which the coordinates can change.
   function clearLocation() {
-    setValue("location.value.latitude", "", { shouldDirty: true });
-    setValue("location.value.longitude", "", { shouldDirty: true });
+    setValue("location.value.latitude", "", { shouldDirty: true, shouldValidate: true });
+    setValue("location.value.longitude", "", { shouldDirty: true, shouldValidate: true });
     setValue("location.confidence", "very_low");
     setValue("location.sourceUrl", null);
   }
@@ -134,8 +160,8 @@ export function ProviderForm(props: ProviderFormProps) {
         return;
       }
 
-      setValue("location.value.latitude", String(match.latitude), { shouldDirty: true });
-      setValue("location.value.longitude", String(match.longitude), { shouldDirty: true });
+      setValue("location.value.latitude", String(match.latitude), { shouldDirty: true, shouldValidate: true });
+      setValue("location.value.longitude", String(match.longitude), { shouldDirty: true, shouldValidate: true });
       // Location is derived from the address, so it inherits how much that
       // address is trusted and where it came from — the same rule the format
       // agent follows when it geocodes.
@@ -231,8 +257,14 @@ export function ProviderForm(props: ProviderFormProps) {
               htmlFor="provider-name"
               confidence={values.name.confidence}
               sourceUrl={values.name.sourceUrl}
+              error={errors.name?.value?.message}
             >
-              <Input id="provider-name" placeholder="e.g. St. Austin's Day Care" {...register("name.value")} />
+              <Input
+                id="provider-name"
+                placeholder="e.g. St. Austin's Day Care"
+                aria-invalid={Boolean(errors.name?.value)}
+                {...register("name.value", { required: "A name is required." })}
+              />
             </ProviderField>
             <ProviderField
               label="Description"
@@ -259,10 +291,12 @@ export function ProviderForm(props: ProviderFormProps) {
               htmlFor="provider-address"
               confidence={values.address.confidence}
               sourceUrl={values.address.sourceUrl}
+              error={errors.address?.value?.message}
             >
               <Input
                 id="provider-address"
                 placeholder="Street address, city, state, ZIP"
+                aria-invalid={Boolean(errors.address?.value)}
                 {...addressField}
                 // Composed rather than replaced: react-hook-form's own onBlur is
                 // what marks the field touched and runs its validation.
@@ -281,6 +315,7 @@ export function ProviderForm(props: ProviderFormProps) {
                   ? "Looking up coordinates…"
                   : "Not editable — geocoded from the address above. Change the address to change these."
               }
+              error={locationError?.message}
             >
               {/* Read-only on purpose: coordinates come from the agent or from
                   geocoding the address, never typed in. `disabled` as a prop
@@ -291,14 +326,16 @@ export function ProviderForm(props: ProviderFormProps) {
                   className="flex-1"
                   aria-label="Latitude"
                   placeholder="Latitude"
-                  {...register("location.value.latitude")}
+                  aria-invalid={Boolean(locationError)}
+                  {...register("location.value.latitude", { required: LOCATION_REQUIRED_MESSAGE })}
                   disabled
                 />
                 <Input
                   className="flex-1"
                   aria-label="Longitude"
                   placeholder="Longitude"
-                  {...register("location.value.longitude")}
+                  aria-invalid={Boolean(locationError)}
+                  {...register("location.value.longitude", { required: LOCATION_REQUIRED_MESSAGE })}
                   disabled
                 />
               </div>
