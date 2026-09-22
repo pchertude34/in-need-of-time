@@ -14,7 +14,6 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-  Textarea,
 } from "@in-need-of-time/ui";
 import { ProviderField } from "./ProviderField";
 import { HoursOfOperationInput } from "./HoursOfOperationInput";
@@ -514,11 +513,23 @@ export function ProviderForm(props: ProviderFormProps) {
           <Card className="space-y-5 p-6">
             <div>
               <h2 className="text-lg font-semibold text-slate-900">Why this provider qualifies</h2>
-              <p className="text-sm text-slate-500">The agent's justification for including this provider.</p>
+              <p className="text-sm text-slate-500">
+                The agent's justification for including this provider — context for your review. It isn't part of the
+                provider schema, so it isn't saved.
+              </p>
             </div>
-            <ProviderField label="Reason" htmlFor="provider-reason">
-              <Textarea id="provider-reason" rows={3} {...register("reason")} />
-            </ProviderField>
+            {/* Read-only: editing it would change nothing, since the reason is
+                never written to the document. `whitespace-pre-line` so the
+                agent's own line breaks survive. */}
+            {values.reason ? (
+              <p className="rounded-xl bg-slate-50 px-3.5 py-3 text-sm whitespace-pre-line text-slate-700">
+                {values.reason}
+              </p>
+            ) : (
+              <p className="rounded-xl border border-dashed border-slate-300 px-3.5 py-6 text-center text-sm text-slate-500">
+                The agent didn't give a reason
+              </p>
+            )}
           </Card>
 
           <div className="flex justify-end gap-3">
