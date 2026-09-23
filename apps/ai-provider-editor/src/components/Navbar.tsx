@@ -96,16 +96,18 @@ export function Navbar() {
               <NavigationMenuList className="flex-col items-stretch">
                 {navigation.map((item) => (
                   <NavigationMenuItem key={item.href}>
-                    <NavigationMenuLink
-                      asChild
-                      data-active={pathname === item.href ? true : null}
-                      className={`${navigationMenuTriggerStyle()} w-max-w w-full`}
-                    >
-                      <Link to={item.href}>
-                        <item.icon className="mr-2 h-4 w-4" />
-                        {item.name}
-                      </Link>
-                    </NavigationMenuLink>
+                    <DrawerClose asChild>
+                      <NavigationMenuLink
+                        asChild
+                        data-active={pathname === item.href ? true : null}
+                        className={`${navigationMenuTriggerStyle()} w-max-w w-full`}
+                      >
+                        <Link to={item.href}>
+                          <item.icon className="mr-2 h-4 w-4" />
+                          {item.name}
+                        </Link>
+                      </NavigationMenuLink>
+                    </DrawerClose>
                   </NavigationMenuItem>
                 ))}
               </NavigationMenuList>
