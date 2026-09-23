@@ -1,9 +1,7 @@
 {
   "extends": "../tsconfig.json",
   "compilerOptions": {
-    "lib": ["dom", "dom.iterable", "esnext"],
     "incremental": true,
-    "jsx": "react-jsx",
     "plugins": [
       {
         "name": "next"

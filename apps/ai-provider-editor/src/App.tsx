@@ -9,8 +9,7 @@ import { SanityApp } from "@sanity/sdk-react";
 import { type SanityConfig } from "@sanity/sdk";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@in-need-of-time/ui";
-// import { SANITY_APP_DATASET, SANITY_APP_PROJECT_ID } from '../env';
-// console.log('process.env :>> ', process.env);
+import { SANITY_APP_DATASET, SANITY_APP_PROJECT_ID } from "../env";
 
 // Created once, outside the component, so a re-render never throws away the cache.
 const queryClient = new QueryClient();
@@ -18,8 +17,8 @@ const queryClient = new QueryClient();
 export default function App() {
   const config: SanityConfig[] = [
     {
-      projectId: process.env.SANITY_APP_PROJECT_ID,
-      dataset: process.env.SANITY_APP_DATASET,
+      projectId: SANITY_APP_PROJECT_ID,
+      dataset: SANITY_APP_DATASET,
     },
   ];
   return (
