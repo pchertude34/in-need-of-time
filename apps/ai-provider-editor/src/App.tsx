@@ -27,13 +27,11 @@ export default function App() {
       <QueryClientProvider client={queryClient}>
         <BrowserRouter>
           <Navbar />
-          <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <Routes>
-              <Route path="/" element={<AddProviderPage />} />
-              <Route path="/runs" element={<AgentRunsPage />} />
-              <Route path="/job/:jobId" element={<JobDetailsPage />} />
-            </Routes>
-          </main>
+          <Routes>
+            <Route path="/" element={<AddProviderPage />} />
+            <Route path="/runs" element={<AgentRunsPage />} />
+            <Route path="/job/:jobId" element={<JobDetailsPage />} />
+          </Routes>
           <Toaster />
         </BrowserRouter>
       </QueryClientProvider>

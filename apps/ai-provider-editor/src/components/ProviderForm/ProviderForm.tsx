@@ -246,7 +246,7 @@ export function ProviderForm(props: ProviderFormProps) {
           {disabled && (
             <p className="text-sm text-slate-500">The agent is still working. Fields unlock when it finishes.</p>
           )}
-          <Card className="space-y-5 p-6">
+          <Card className="space-y-5 p-4 md:p-6">
             <div>
               <h2 className="text-lg font-semibold text-slate-900">Provider</h2>
               <p className="text-sm text-slate-500">Review what the agent found and correct anything that looks off.</p>

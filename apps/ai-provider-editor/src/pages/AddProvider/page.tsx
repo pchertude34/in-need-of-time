@@ -47,7 +47,7 @@ export function AddProviderPage() {
   }
 
   return (
-    <div className="flex justify-center">
+    <main className="mx-auto flex max-w-7xl justify-center px-4 sm:px-6 lg:px-8">
       <div className="flex max-w-5xl flex-col items-center space-y-6">
         <div className="max-w-[520px] text-center">
           <h1 className="text-2xl font-bold text-slate-900">Add a provider</h1>
@@ -100,6 +100,6 @@ export function AddProviderPage() {
           </div>
         </Card>
       </div>
-    </div>
+    </main>
   );
 }

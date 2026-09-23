@@ -29,7 +29,7 @@ export function AgentRunsPage() {
   const onSelect = useCallback((job: AgentJob) => navigate(`/job/${job.jobId}`), [navigate]);
 
   return (
-    <div className="flex justify-center">
+    <main className="mx-auto flex max-w-7xl justify-center px-4 sm:px-6 lg:px-8">
       <div className="flex w-full max-w-5xl flex-col space-y-6">
         <div className="text-center">
           <h1 className="text-2xl font-bold text-slate-900">Agent Runs</h1>
@@ -46,6 +46,6 @@ export function AgentRunsPage() {
           onDelete={onDelete}
         />
       </div>
-    </div>
+    </main>
   );
 }

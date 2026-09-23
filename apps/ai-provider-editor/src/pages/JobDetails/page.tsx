@@ -77,7 +77,7 @@ export function JobDetailsPage() {
   );
 
   return (
-    <div className="flex min-h-full flex-col">
+    <main className="">
       <div className="relative shrink-0 border-b border-purple-200 bg-purple-50 px-4 py-4">
         <div className="flex flex-wrap items-center gap-3">
           {message ? (
@@ -96,14 +96,16 @@ export function JobDetailsPage() {
           )}
         </div>
       </div>
-      <div className="mx-auto flex w-full">
-        <div className="px-4 py-6 sm:px-6 lg:pl-8 xl:flex-1 xl:pl-6">
+      <div className="mx-auto flex w-full flex-col xl:flex-row">
+        <div className="px-2 py-6 sm:px-6 lg:pl-8 xl:flex-1 xl:pl-6">
           <ProviderForm provider={provider} disabled={agentRunning} isSaving={isSaving} onSubmit={submitForm} />
         </div>
-        <div className="min-w-[400px] shrink-0 border-b border-slate-200 bg-slate-50 px-4 py-6 sm:px-6 lg:pl-8 xl:w-64 xl:border-b-0 xl:border-l xl:pl-6 dark:border-white/10">
+        {/* Above the form on small screens, beside it from xl up — the form is the
+            primary content, so it stays first in the DOM either way. */}
+        <div className="order-first shrink-0 border-b border-slate-200 bg-slate-50 px-4 py-6 sm:px-6 lg:pl-8 xl:order-none xl:w-64 xl:min-w-[400px] xl:border-b-0 xl:border-l xl:pl-6 dark:border-white/10">
           <ActivityStepper steps={activitySteps} />
         </div>
       </div>
-    </div>
+    </main>
   );
 }
