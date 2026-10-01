@@ -5,6 +5,8 @@ import type { WebSocketServer } from "ws";
 import { DBOS } from "@dbos-inc/dbos-sdk";
 import { providerAgentRouter, attachProviderAgentWebSocket } from "./routes/providerAgent";
 import { geocodeRouter } from "./routes/geocode";
+import { authRouter } from "./routes/auth";
+import { requireSession } from "./middleware/requireSession";
 
 // Not just `PORT` — every workspace's dev script loads the same repo-wide
 // .env.local (via `dotenv -e ./.env.local --`), and Next.js's own dev server
@@ -39,12 +41,19 @@ async function main() {
   app.use(cors({ origin: allowedOrigins }));
   app.use(express.json());
 
+  // Open: the platform's health check runs before anything has a session, and
+  // the response says nothing a caller couldn't learn by connecting at all.
   app.get("/health", (_req, res) => {
     res.json({ status: "ok" });
   });
 
-  app.use("/provider-agent", providerAgentRouter);
-  app.use("/geocode", geocodeRouter);
+  // Open by definition — this is where a session comes from.
+  app.use("/auth", authRouter);
+
+  // Everything else is members-only. CORS is not an access control (browsers
+  // honour it, `curl` doesn't); `requireSession` is.
+  app.use("/provider-agent", requireSession, providerAgentRouter);
+  app.use("/geocode", requireSession, geocodeRouter);
 
   server = createServer(app);
   wss = attachProviderAgentWebSocket(server);

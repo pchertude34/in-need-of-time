@@ -6,9 +6,11 @@ import { AddProviderPage } from "./pages/AddProvider/page";
 import { AgentRunsPage } from "./pages/AgentRuns/page";
 import { JobDetailsPage } from "./pages/JobDetails/page";
 import { SanityApp } from "@sanity/sdk-react";
-import { type SanityConfig } from "@sanity/sdk";
+import { type SanityConfig } from "@sanity/sdk-react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@in-need-of-time/ui";
+import { SessionProvider } from "./hooks/useSession";
+
 import { SANITY_APP_DATASET, SANITY_APP_PROJECT_ID } from "../env";
 
 // Created once, outside the component, so a re-render never throws away the cache.
@@ -25,13 +27,15 @@ export default function App() {
     <SanityApp config={config} fallback={<p>Loading...</p>}>
       <QueryClientProvider client={queryClient}>
         <BrowserRouter>
-          <Navbar />
-          <Routes>
-            <Route path="/" element={<AddProviderPage />} />
-            <Route path="/runs" element={<AgentRunsPage />} />
-            <Route path="/job/:jobId" element={<JobDetailsPage />} />
-          </Routes>
-          <Toaster />
+          <SessionProvider>
+            <Navbar />
+            <Routes>
+              <Route path="/" element={<AddProviderPage />} />
+              <Route path="/runs" element={<AgentRunsPage />} />
+              <Route path="/job/:jobId" element={<JobDetailsPage />} />
+            </Routes>
+            <Toaster />
+          </SessionProvider>
         </BrowserRouter>
       </QueryClientProvider>
     </SanityApp>

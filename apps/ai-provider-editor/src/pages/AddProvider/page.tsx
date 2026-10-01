@@ -15,34 +15,19 @@ import {
   InputLeftElement,
   Button,
 } from "@in-need-of-time/ui";
-import { useCurrentUser } from "@sanity/sdk-react";
 import { US_STATES } from "@in-need-of-time/utils";
-import { SANITY_APP_PROVIDER_AGENT_API_URL } from "../../../env";
+import { useSession } from "../../hooks/useSession";
+import { createAgentJob } from "../../queries";
 
 export function AddProviderPage() {
   const navigate = useNavigate();
-  const currentUser = useCurrentUser();
+  const { sessionToken } = useSession();
   const [providerName, setProviderName] = useState("");
   const [state, setState] = useState("");
 
   async function onSubmit() {
-    const response = await fetch(`${SANITY_APP_PROVIDER_AGENT_API_URL}/provider-agent/jobs`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        input: providerName,
-        location: state,
-        // Recorded on the job so the runs list can show who triggered it. Only
-        // the fields that list renders — not the whole Sanity user.
-        user: currentUser && {
-          id: currentUser.id,
-          name: currentUser.name,
-          profileImage: currentUser.profileImage,
-        },
-      }),
-    });
+    const jobId = await createAgentJob(sessionToken, providerName, state);
 
-    const { jobId } = await response.json();
     navigate(`/job/${jobId}`);
   }
 

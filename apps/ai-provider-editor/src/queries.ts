@@ -1,5 +1,5 @@
 import { queryOptions } from "@tanstack/react-query";
-import { resolveQuery, type SanityInstance } from "@sanity/sdk";
+import { resolveQuery, type SanityInstance } from "@sanity/sdk-react";
 import { SANITY_APP_PROVIDER_AGENT_API_URL } from "../env";
 import type { GeocodeResult } from "@in-need-of-time/utils";
 import type { AgentJob } from "./pages/AgentRuns/types";
@@ -49,8 +49,32 @@ export function serviceTypesQuery(instance: SanityInstance) {
   });
 }
 
-async function fetchAgentJobs(): Promise<AgentJob[]> {
-  const response = await fetch(`${SANITY_APP_PROVIDER_AGENT_API_URL}/provider-agent/jobs`);
+/**
+ * `fetch` against the provider-agent API, carrying the session.
+ *
+ * The token is a parameter rather than something this module reaches for: it
+ * lives in React state, owned by `useSession()`. Callers pass it in and gate
+ * their query on `enabled: !!sessionToken`, so a request never fires before
+ * there's a session to make it with.
+ *
+ * Throwing on a missing token is deliberate — a mis-gated caller should fail
+ * loudly here rather than send an unauthenticated request and get a 401 that
+ * looks like an expired session.
+ */
+async function apiFetch(token: string | undefined, path: string, init: RequestInit = {}): Promise<Response> {
+  if (!token) {
+    throw new Error("No session token provided");
+  }
+
+  return fetch(`${SANITY_APP_PROVIDER_AGENT_API_URL}${path}`, {
+    ...init,
+    headers: { ...init.headers, Authorization: `Bearer ${token}` },
+  });
+}
+
+/** Every job the provider agent has run, newest first. */
+export async function fetchAgentJobs(token?: string): Promise<AgentJob[]> {
+  const response = await apiFetch(token, "/provider-agent/jobs");
 
   if (!response.ok) {
     throw new Error(`Could not load runs: request failed with ${response.status}`);
@@ -59,9 +83,26 @@ async function fetchAgentJobs(): Promise<AgentJob[]> {
   return response.json();
 }
 
-/** Every job the provider agent has run, newest first. */
-export function agentJobsQuery() {
-  return queryOptions({ queryKey: AGENT_JOBS_QUERY_KEY, queryFn: fetchAgentJobs });
+/**
+ * Starts a provider research run and returns its job id.
+ *
+ * Who triggered it isn't sent — the API takes that from the session, so the name
+ * on a job is the one the token proves rather than one the client claims.
+ */
+export async function createAgentJob(token: string | undefined, input: string, location: string): Promise<string> {
+  const response = await apiFetch(token, "/provider-agent/jobs", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ input, location }),
+  });
+
+  if (!response.ok) {
+    throw new Error(`Could not start a run: request failed with ${response.status}`);
+  }
+
+  const { jobId } = (await response.json()) as { jobId: string };
+
+  return jobId;
 }
 
 /**
@@ -70,11 +111,8 @@ export function agentJobsQuery() {
  * the browser, so the form resolves an address exactly the way the provider
  * agent's `geocode_address` tool does.
  */
-export async function geocodeAddress(address: string): Promise<GeocodedAddress | null> {
-  const url = new URL(`${SANITY_APP_PROVIDER_AGENT_API_URL}/geocode`);
-  url.searchParams.set("address", address);
-
-  const response = await fetch(url);
+export async function geocodeAddress(token: string | undefined, address: string): Promise<GeocodedAddress | null> {
+  const response = await apiFetch(token, `/geocode?address=${encodeURIComponent(address)}`);
 
   if (!response.ok) {
     throw new Error(`Could not look up coordinates: request failed with ${response.status}`);
@@ -84,12 +122,28 @@ export async function geocodeAddress(address: string): Promise<GeocodedAddress |
 }
 
 /** Permanently removes a job, its timeline, and its run. Cancels the run if it's still going. */
-export async function deleteAgentJob(jobId: string) {
-  const response = await fetch(`${SANITY_APP_PROVIDER_AGENT_API_URL}/provider-agent/jobs/${jobId}`, {
-    method: "DELETE",
-  });
+export async function deleteAgentJob(token: string | undefined, jobId: string) {
+  const response = await apiFetch(token, `/provider-agent/jobs/${jobId}`, { method: "DELETE" });
 
   if (!response.ok) {
     throw new Error(`Could not delete run: request failed with ${response.status}`);
   }
+}
+
+/**
+ * The websocket URL for a job's event stream, and the subprotocols that
+ * authenticate it.
+ *
+ * A browser can't set headers on `new WebSocket()`, so the session token rides
+ * in `Sec-WebSocket-Protocol` instead of the query string — a URL ends up in
+ * access logs, and a token shouldn't.
+ */
+export function getSocketArgs(token: string, jobId: string): [string, string[]] {
+  const url = new URL(`${SANITY_APP_PROVIDER_AGENT_API_URL}/provider-agent/ws`);
+
+  // Same origin as the API, just the websocket scheme for it.
+  url.protocol = url.protocol === "https:" ? "wss:" : "ws:";
+  url.searchParams.set("jobId", jobId);
+
+  return [url.toString(), ["bearer", token]];
 }

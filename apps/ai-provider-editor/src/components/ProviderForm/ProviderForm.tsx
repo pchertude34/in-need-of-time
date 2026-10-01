@@ -3,6 +3,7 @@ import { Controller, useFieldArray, useForm } from "react-hook-form";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useSanityInstance } from "@sanity/sdk-react";
 import { toast } from "sonner";
+import { useSession } from "../../hooks/useSession";
 import { parseCoordinates } from "@in-need-of-time/utils";
 import { PlusIcon, TrashIcon } from "@heroicons/react/24/outline";
 import {
@@ -78,8 +79,11 @@ export function ProviderForm(props: ProviderFormProps) {
   });
   const { fields, append, remove } = useFieldArray({ control, name: "serviceTypes" });
 
+  const { sessionToken } = useSession();
+
   // Fetched once for the whole form rather than per row — every service type
-  // picker offers the same list.
+  // picker offers the same list. This one reads Sanity directly, so it takes the
+  // SDK instance rather than an API session.
   const instance = useSanityInstance();
   const { data: serviceTypeOptions = NO_SERVICE_TYPES, isPending: isLoadingServiceTypes } = useQuery(
     serviceTypesQuery(instance),
@@ -104,7 +108,7 @@ export function ProviderForm(props: ProviderFormProps) {
   // state purely so each field can show where its value came from.
   const values = watch();
 
-  const geocode = useMutation({ mutationFn: geocodeAddress });
+  const geocode = useMutation({ mutationFn: (address: string) => geocodeAddress(sessionToken, address) });
 
   // Registered up here rather than inline, so the input can wrap the field's own
   // blur handler with the geocode lookup below.

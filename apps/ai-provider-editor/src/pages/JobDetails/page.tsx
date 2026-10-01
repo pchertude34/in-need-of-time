@@ -2,6 +2,7 @@ import React, { useCallback, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { useSession } from "../../hooks/useSession";
 import { useHarnessSocket } from "../../hooks/useHarnessSocket";
 import { Badge } from "@in-need-of-time/ui";
 import { MagnifyingGlassIcon, MapPinIcon } from "@heroicons/react/24/outline";
@@ -24,6 +25,7 @@ export function JobDetailsPage() {
   const { jobId } = useParams<{ jobId: string }>();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const { sessionToken } = useSession();
   const { events, connected } = useHarnessSocket(jobId);
 
   // The event stream is the only thing this page reads, so the job's original
@@ -65,7 +67,7 @@ export function JobDetailsPage() {
       // Once the provider is saved as a draft, this job has done its job —
       // remove it so it doesn't linger in the runs list.
       try {
-        await deleteAgentJob(jobId);
+        await deleteAgentJob(sessionToken, jobId);
       } catch {
         toast.error("Failed to delete the agent job. Try deleting it manually.");
       }
@@ -73,7 +75,7 @@ export function JobDetailsPage() {
       queryClient.invalidateQueries({ queryKey: AGENT_JOBS_QUERY_KEY });
       navigate("/runs");
     },
-    [saveDraft, jobId, queryClient, navigate],
+    [saveDraft, jobId, queryClient, navigate, sessionToken],
   );
 
   return (

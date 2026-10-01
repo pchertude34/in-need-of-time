@@ -1,29 +1,39 @@
 import { Router } from "express";
-import type { Server } from "node:http";
+import type { IncomingMessage, Server } from "node:http";
 import { WebSocketServer, type WebSocket } from "ws";
 import { subscribe, history, createJob, getJob, listJobs, deleteJob } from "@in-need-of-time/agent-core";
-import type { AgentJobUser } from "@in-need-of-time/agent-core";
+import { readSession } from "../auth/session";
 
 const WS_PATH = "/provider-agent/ws";
+
+/**
+ * Subprotocol carrying the session token on a websocket connection.
+ *
+ * A browser can't set headers on `new WebSocket()`, so the token has to travel
+ * some other way. `Sec-WebSocket-Protocol` is the one route that doesn't put a
+ * credential in the URL, where it would land in every access log along the way.
+ * The client offers `["bearer", "<token>"]`; the server echoes back "bearer".
+ */
+const WS_AUTH_PROTOCOL = "bearer";
 
 export const providerAgentRouter = Router();
 
 // POST /provider-agent/jobs — create a new job on the provider agent and return the
 // job id to the client. Use the websocket endpoint to receive updates on the job's progress.
 //
-// Body: `{ input, location, user }`.
+// Body: `{ input, location }`.
 //   `input`    — what to research, e.g. a provider's name.
 //   `location` — the full state name the search is scoped to, e.g. "Oregon". It
 //                biases the agents' web searches toward that state.
-//   `user`     — who the client says triggered the run. There's no auth on this
-//                API, so it's recorded as reported, not verified.
+//
+// Who triggered the run comes from the session, not the body — the client can
+// say what it likes about itself, but only the token decides who it is.
 providerAgentRouter.post("/jobs", async (req, res) => {
-  const { input, location, user } = req.body as {
+  const { input, location } = req.body as {
     input: string;
     location?: string;
-    user?: AgentJobUser;
   };
-  const agentJob = await createJob({ message: input, location }, user);
+  const agentJob = await createJob({ message: input, location }, req.user);
 
   res.status(201).json({ jobId: agentJob.jobId });
 });
@@ -68,7 +78,39 @@ providerAgentRouter.delete("/jobs/:jobId", async (req, res) => {
 // Submitting work goes through POST /jobs, which starts one workflow per job —
 // a second run on an existing job would be invisible to that job's run state.
 export function attachProviderAgentWebSocket(server: Server) {
-  const wss = new WebSocketServer({ server, path: WS_PATH });
+  // `noServer` rather than handing `ws` the server: the session has to be
+  // checked *during* the upgrade, so an unauthenticated client is refused a
+  // connection instead of being given one and told off over it.
+  const wss = new WebSocketServer({
+    noServer: true,
+    handleProtocols: (protocols) => (protocols.has(WS_AUTH_PROTOCOL) ? WS_AUTH_PROTOCOL : false),
+  });
+
+  server.on("upgrade", async (request, socket, head) => {
+    const { pathname } = new URL(request.url ?? "", "http://localhost");
+
+    // This is the only websocket on the server, so anything else is a mistake.
+    // Answering closes the socket rather than leaving the client hanging.
+    if (pathname !== WS_PATH) {
+      rejectUpgrade(socket, 404, "Not Found");
+      return;
+    }
+
+    try {
+      const token = readSocketToken(request);
+      const user = token ? await readSession(token) : null;
+
+      if (!user) {
+        rejectUpgrade(socket, 401, "Unauthorized");
+        return;
+      }
+
+      wss.handleUpgrade(request, socket, head, (ws) => wss.emit("connection", ws, request));
+    } catch (error) {
+      console.error("Error authenticating a websocket connection:", error);
+      rejectUpgrade(socket, 500, "Internal Server Error");
+    }
+  });
 
   wss.on("connection", async (socket: WebSocket, request) => {
     const jobId = new URL(request.url ?? "", "http://localhost").searchParams.get("jobId");
@@ -106,4 +148,22 @@ export function attachProviderAgentWebSocket(server: Server) {
   });
 
   return wss;
+}
+
+/**
+ * The session token a client offered as a websocket subprotocol.
+ *
+ * The header is a comma-separated list, and the client sends the marker first
+ * so the token is unambiguously the second entry: `bearer, <token>`.
+ */
+function readSocketToken(request: IncomingMessage): string | null {
+  const offered = (request.headers["sec-websocket-protocol"] ?? "").split(",").map((protocol) => protocol.trim());
+
+  return offered[0] === WS_AUTH_PROTOCOL && offered[1] ? offered[1] : null;
+}
+
+/** Turns away an upgrade before the handshake completes. */
+function rejectUpgrade(socket: { write: (data: string) => void; destroy: () => void }, status: number, reason: string) {
+  socket.write(`HTTP/1.1 ${status} ${reason}\r\nConnection: close\r\n\r\n`);
+  socket.destroy();
 }

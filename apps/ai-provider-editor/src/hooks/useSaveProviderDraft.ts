@@ -1,5 +1,5 @@
 import { useCallback } from "react";
-import { createDocument, createDocumentHandle, editDocument } from "@sanity/sdk";
+import { createDocument, createDocumentHandle, editDocument } from "@sanity/sdk-react";
 import { useApplyDocumentActions } from "@sanity/sdk-react";
 import { buildProviderDocumentFields } from "../pages/JobDetails/utils";
 import type { ProviderFormValues } from "../types";

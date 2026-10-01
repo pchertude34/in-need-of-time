@@ -1,8 +1,9 @@
 import React, { useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useSession } from "../../hooks/useSession";
 import { AgentRunsTable } from "./AgentRunsTable";
-import { AGENT_JOBS_QUERY_KEY, agentJobsQuery, deleteAgentJob } from "../../queries";
+import { AGENT_JOBS_QUERY_KEY, fetchAgentJobs, deleteAgentJob } from "../../queries";
 import type { AgentJob } from "./types";
 
 // A stable empty array, so the table isn't handed a new `data` reference on
@@ -12,11 +13,16 @@ const NO_JOBS: AgentJob[] = [];
 export function AgentRunsPage() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const { sessionToken } = useSession();
 
-  const { data, isPending, error } = useQuery(agentJobsQuery());
+  const { data, isPending, error } = useQuery({
+    queryKey: AGENT_JOBS_QUERY_KEY,
+    queryFn: () => fetchAgentJobs(sessionToken),
+    enabled: !!sessionToken,
+  });
 
   const deleteJob = useMutation({
-    mutationFn: deleteAgentJob,
+    mutationFn: (jobId: string) => deleteAgentJob(sessionToken, jobId),
     // Refetch rather than splicing the row out locally: a delete can also cancel
     // a run in flight, so the rest of the list may have moved on too.
     onSuccess: () => queryClient.invalidateQueries({ queryKey: AGENT_JOBS_QUERY_KEY }),
