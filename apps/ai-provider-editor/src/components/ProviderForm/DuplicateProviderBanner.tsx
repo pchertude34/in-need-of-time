@@ -1,7 +1,9 @@
 import React from "react";
 import { ExclamationTriangleIcon } from "@heroicons/react/24/solid";
+import { ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline";
 import { Alert, AlertDescription, AlertTitle, type AlertProps } from "@in-need-of-time/ui";
 import type { DuplicateCheckStatus, DuplicateProviderMatch } from "@in-need-of-time/utils";
+import { getStudioProviderUrl } from "../../utils";
 
 const BANNER_VARIANT: Record<Exclude<DuplicateCheckStatus, "none">, AlertProps["variant"]> = {
   likely: "error",
@@ -29,7 +31,15 @@ export function DuplicateProviderBanner(props: DuplicateProviderBannerProps) {
         <ul className="space-y-0.5">
           {matches.map((match) => (
             <li key={match._id}>
-              <span className="font-medium">{match.title}</span>
+              <a
+                href={getStudioProviderUrl(match._id)}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-1 font-medium underline underline-offset-4 hover:no-underline"
+              >
+                {match.title}
+                <ArrowTopRightOnSquareIcon className="h-3 w-3" />
+              </a>
               {match.address && ` — ${match.address}`}
             </li>
           ))}

@@ -281,11 +281,11 @@ export function ProviderForm(props: ProviderFormProps) {
                 control={control}
                 name="description.value"
                 render={({ field: descriptionField }) => (
-                  // A contenteditable isn't a form control, so the surrounding
-                  // disabled fieldset can't reach it — pass `disabled` through.
                   <RichTextEditor
                     value={descriptionField.value}
                     onChange={descriptionField.onChange}
+                    // A contenteditable isn't a form control, so the surrounding
+                    // disabled fieldset can't reach it — pass `disabled` through.
                     disabled={disabled}
                   />
                 )}

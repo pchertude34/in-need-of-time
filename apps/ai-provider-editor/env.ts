@@ -3,6 +3,11 @@ export const SANITY_APP_API_VERSION = process.env.SANITY_APP_API_VERSION || "202
 export const SANITY_APP_PROVIDER_AGENT_API_URL =
   process.env.SANITY_APP_PROVIDER_AGENT_API_URL || "http://localhost:4011";
 
+// Where Sanity Studio is served, so the app can link into documents it finds.
+// Defaults to the Studio dev server (`npm run studio`); point it at the
+// deployed Studio everywhere else.
+export const SANITY_APP_STUDIO_URL = process.env.SANITY_APP_STUDIO_URL || "http://localhost:3333";
+
 export const SANITY_APP_DATASET = assertValue(
   process.env.SANITY_APP_DATASET,
   "Missing environment variable: SANITY_APP_DATASET",
