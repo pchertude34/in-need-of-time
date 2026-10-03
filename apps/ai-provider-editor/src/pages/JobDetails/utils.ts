@@ -129,9 +129,14 @@ export function isAgentRunning(events: AgentEvent[]) {
 }
 
 // Agent names come off the wire in mixed conventions ("provider_research",
-// "provider extractor"), so even them out for display.
+// "provider extractor"), so even them out for display: underscores become
+// spaces and every word is capitalized, giving "Provider Research" either way.
 function formatAgentName(agent: string) {
-  return agent.replace(/_/g, " ");
+  return agent
+    .split(/[\s_]+/)
+    .filter(Boolean)
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
 }
 
 /**

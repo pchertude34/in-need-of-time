@@ -238,7 +238,9 @@ export function ProviderForm(props: ProviderFormProps) {
           />
         </Suspense>
       )}
-      <form onSubmit={handleSubmit(onFormSubmit)}>
+      {/* Capped at 1024px: the fields are single-column, so a wider form just
+          stretches the inputs past a comfortable reading width. */}
+      <form className="mx-auto w-full max-w-5xl" onSubmit={handleSubmit(onFormSubmit)}>
         {/* One disabled fieldset locks every control inside it — inputs, textareas,
           the select triggers and the buttons — without threading a prop through each.
           Deliberately not disabled while the duplicate check runs: typing is what

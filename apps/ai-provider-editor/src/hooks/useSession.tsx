@@ -1,4 +1,4 @@
-import React, { useContext, createContext, useState, useEffect } from "react";
+import React, { useContext, createContext } from "react";
 import { useSanityInstance, getTokenState } from "@sanity/sdk-react";
 import { useQuery, queryOptions } from "@tanstack/react-query";
 import { SANITY_APP_PROVIDER_AGENT_API_URL } from "../../env";

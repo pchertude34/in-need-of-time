@@ -32,9 +32,13 @@ export function ActivityStep(props: ActivityStepProps) {
         </div>
         {!isLast && <div className="mx-auto mt-2 h-full flex-1 border-l border-slate-200"></div>}
       </div>
-      <div className="flex-1 pb-4">
-        <h4 className="font-medium">{title}</h4>
-        <p className="text-sm text-gray-500">{description}</p>
+      {/* `min-w-0` so this column can shrink below its content: a flex item's
+          default `min-width: auto` would otherwise let a long task string or a
+          failure message with a URL in it push past the panel. `break-words`
+          covers the tokens that have no space to wrap at. */}
+      <div className="min-w-0 flex-1 pb-4">
+        <h4 className="font-medium break-words">{title}</h4>
+        <p className="text-sm break-words text-gray-500">{description}</p>
       </div>
     </div>
   );

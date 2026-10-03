@@ -99,12 +99,16 @@ export function JobDetailsPage() {
         </div>
       </div>
       <div className="mx-auto flex w-full flex-col xl:flex-row">
-        <div className="px-2 py-6 sm:px-6 lg:pl-8 xl:flex-1 xl:pl-6">
+        {/* Two thirds / one third from xl up, so the sidebar keeps roughly the
+            proportion it had at the xl breakpoint and then grows with the
+            viewport instead of staying pinned to a fixed width. `min-w-0` so a
+            wide field can't expand this column past its share of the row. */}
+        <div className="px-2 py-6 sm:px-6 lg:pl-8 xl:min-w-0 xl:basis-2/3 xl:pl-6">
           <ProviderForm provider={provider} disabled={agentRunning} isSaving={isSaving} onSubmit={submitForm} />
         </div>
         {/* Above the form on small screens, beside it from xl up — the form is the
             primary content, so it stays first in the DOM either way. */}
-        <div className="order-first shrink-0 border-b border-slate-200 bg-slate-50 px-4 py-6 sm:px-6 lg:pl-8 xl:order-none xl:w-64 xl:min-w-[400px] xl:border-b-0 xl:border-l xl:pl-6 dark:border-white/10">
+        <div className="order-first shrink-0 border-b border-slate-200 bg-slate-50 px-4 py-6 sm:px-6 lg:pl-8 xl:order-none xl:basis-1/3 xl:border-b-0 xl:border-l xl:pl-6 dark:border-white/10">
           <ActivityStepper steps={activitySteps} />
         </div>
       </div>
