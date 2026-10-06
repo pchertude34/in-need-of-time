@@ -10,4 +10,10 @@ export default defineCliConfig({
     projectId: SANITY_STUDIO_PROJECT_ID,
     dataset: SANITY_STUDIO_DATASET,
   },
+  // `sanity dev`'s default, pinned explicitly: the apps in `apps/*` are moved
+  // off this port so they can run alongside the Studio, and one of them links
+  // back here at exactly this URL in development.
+  server: {
+    port: 3333,
+  },
 });

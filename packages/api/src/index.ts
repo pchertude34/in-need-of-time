@@ -7,14 +7,7 @@ import { providerAgentRouter, attachProviderAgentWebSocket } from "./routes/prov
 import { geocodeRouter } from "./routes/geocode";
 import { authRouter } from "./routes/auth";
 import { requireSession } from "./middleware/requireSession";
-
-// Not just `PORT` — every workspace's dev script loads the same repo-wide
-// .env.local (via `dotenv -e ./.env.local --`), and Next.js's own dev server
-// also reads a bare `PORT`, so that name collides across workspaces.
-const port = process.env.API_PORT ?? 4011;
-// Defaults cover this repo's local dev servers: the Next.js frontend (3000)
-// and the ai-provider-editor Sanity app (3333).
-const allowedOrigins = (process.env.CORS_ALLOWED_ORIGINS ?? "http://localhost:3000,http://localhost:3333").split(",");
+import { API_PORT, CORS_ALLOWED_ORIGINS, DATABASE_URL } from "./env";
 
 let server: ReturnType<typeof createServer> | undefined;
 let wss: WebSocketServer | undefined;
@@ -34,11 +27,11 @@ async function main() {
   // adminPort must differ from the Express `port` below — DBOS's admin
   // server also defaults to 3001, which silently wins the port and makes
   // this app's own routes unreachable.
-  DBOS.setConfig({ name: "harness", systemDatabaseUrl: process.env.DATABASE_URL, adminPort: 3011 });
+  DBOS.setConfig({ name: "harness", systemDatabaseUrl: DATABASE_URL, adminPort: 3011 });
   await DBOS.launch();
 
   const app = express();
-  app.use(cors({ origin: allowedOrigins }));
+  app.use(cors({ origin: CORS_ALLOWED_ORIGINS }));
   app.use(express.json());
 
   // Open: the platform's health check runs before anything has a session, and
@@ -62,8 +55,8 @@ async function main() {
   // async 'error' event instead — so wrap it in a promise the caller can await/catch.
   await new Promise<void>((resolve, reject) => {
     server!.once("error", reject);
-    server!.listen(port, () => {
-      console.log(`API listening on port ${port}`);
+    server!.listen(API_PORT, () => {
+      console.log(`API listening on port ${API_PORT}`);
       resolve();
     });
   });
