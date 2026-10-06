@@ -80,24 +80,3 @@ export type AgentProviderResult = {
   url?: WithConfidence<string | null>;
   reason?: string;
 };
-
-export type ProviderAgentResponse = {
-  description: PortableTextBlock[];
-  address: string;
-  location: Location;
-  contact: PublicContact;
-  serviceTypes: { _id: string }[];
-  hoursOfOperation: {
-    periods: {
-      open: {
-        day: number; // 0 = Sunday, 6 = Saturday
-        time: string; // Format: HH:mm (24-hour format)
-      };
-      close: {
-        day: number; // 0 = Sunday, 6 = Saturday
-        time: string; // Format: HH:mm (24-hour format)
-      };
-    }[];
-    weekdayText: string[];
-  };
-};

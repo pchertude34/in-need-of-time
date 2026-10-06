@@ -20,11 +20,6 @@ export const SANITY_STUDIO_GOOGLE_MAPS_ID = assertValue(
   "Missing environment variable: SANITY_STUDIO_GOOGLE_MAPS_ID",
 );
 
-export const SANITY_STUDIO_LOCAL_API_KEY = assertValue(
-  process.env.SANITY_STUDIO_LOCAL_API_KEY,
-  "Missing environment variable: SANITY_STUDIO_LOCAL_API_KEY",
-);
-
 export const useCdn = false;
 
 function assertValue<T>(v: T | undefined, errorMessage: string): T {
