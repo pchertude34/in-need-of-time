@@ -154,7 +154,6 @@ export type Provider = {
   _updatedAt: string;
   _rev: string;
   title?: string;
-  agentRequest?: string;
   place?: {
     name?: string;
     address?: string;

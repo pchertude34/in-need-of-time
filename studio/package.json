@@ -9,6 +9,7 @@
     "dev": "sanity dev",
     "extract-types": "sanity schema extract --enforce-required-fields",
     "typegen": "sanity typegen generate",
+    "migration": "sanity migration",
     "generate-types": "npm run extract-types && npm run typegen",
     "start": "sanity start",
     "type-check": "tsc --noEmit"

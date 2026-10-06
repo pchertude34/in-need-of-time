@@ -842,13 +842,6 @@
         },
         "optional": true
       },
-      "agentRequest": {
-        "type": "objectAttribute",
-        "value": {
-          "type": "string"
-        },
-        "optional": true
-      },
       "place": {
         "type": "objectAttribute",
         "value": {

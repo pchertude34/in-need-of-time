@@ -38,14 +38,6 @@ const providerSchema = defineType({
       validation: (Rule) => Rule.required(),
     }),
     defineField({
-      name: "agentRequest",
-      title: "Agent Request",
-      description:
-        "Request to be sent to the AI Agent to generate the provider's information. Make sure to verify the information before publishing.",
-      type: "text",
-      rows: 3,
-    }),
-    defineField({
       name: "place",
       title: "Place",
       type: "object",
