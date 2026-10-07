@@ -19,7 +19,7 @@ import type { HoursOfOperation, ProviderFormValues, WithConfidence } from "../..
  */
 export type ProviderDraftFields = Pick<
   Provider,
-  "title" | "address" | "location" | "hoursOfOperation" | "serviceTypes" | "publicContact" | "url"
+  "title" | "address" | "location" | "hoursOfOperation" | "serviceTypes" | "phone" | "email" | "website" | "url"
 > & {
   description: PortableTextBlock[];
 };
@@ -236,11 +236,9 @@ export function buildProviderDocumentFields(values: ProviderFormValues): Provide
         serviceType: { _type: "reference" as const, _ref: serviceType._id },
         hoursOfOperation: toHoursOfOperationDoc(serviceType.hoursOfOperation.value),
       })),
-    publicContact: {
-      phone: toOptionalString(values.contact.phone.value),
-      email: toOptionalString(values.contact.email.value),
-      website: toOptionalString(values.contact.website.value),
-    },
+    phone: toOptionalString(values.contact.phone.value),
+    email: toOptionalString(values.contact.email.value),
+    website: toOptionalString(values.contact.website.value),
     url: toOptionalString(values.url.value),
   };
 }

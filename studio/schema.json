@@ -105,66 +105,6 @@
   },
   {
     "type": "type",
-    "name": "publicContact",
-    "value": {
-      "type": "object",
-      "attributes": {
-        "phone": {
-          "type": "objectAttribute",
-          "value": {
-            "type": "string"
-          },
-          "optional": true
-        },
-        "website": {
-          "type": "objectAttribute",
-          "value": {
-            "type": "string"
-          },
-          "optional": true
-        },
-        "email": {
-          "type": "objectAttribute",
-          "value": {
-            "type": "string"
-          },
-          "optional": true
-        }
-      }
-    }
-  },
-  {
-    "type": "type",
-    "name": "internalContact",
-    "value": {
-      "type": "object",
-      "attributes": {
-        "contactName": {
-          "type": "objectAttribute",
-          "value": {
-            "type": "string"
-          },
-          "optional": true
-        },
-        "contactEmail": {
-          "type": "objectAttribute",
-          "value": {
-            "type": "string"
-          },
-          "optional": true
-        },
-        "contactPhone": {
-          "type": "objectAttribute",
-          "value": {
-            "type": "string"
-          },
-          "optional": true
-        }
-      }
-    }
-  },
-  {
-    "type": "type",
     "name": "sanity.imageAsset.reference",
     "value": {
       "type": "object",
@@ -566,11 +506,24 @@
         },
         "optional": false
       },
-      "publicContact": {
+      "phone": {
         "type": "objectAttribute",
         "value": {
-          "type": "inline",
-          "name": "publicContact"
+          "type": "string"
+        },
+        "optional": true
+      },
+      "email": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string"
+        },
+        "optional": true
+      },
+      "website": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string"
         },
         "optional": true
       },
@@ -750,14 +703,6 @@
               }
             }
           }
-        },
-        "optional": true
-      },
-      "internalContact": {
-        "type": "objectAttribute",
-        "value": {
-          "type": "inline",
-          "name": "internalContact"
         },
         "optional": true
       }
@@ -1013,11 +958,24 @@
         },
         "optional": false
       },
-      "publicContact": {
+      "phone": {
         "type": "objectAttribute",
         "value": {
-          "type": "inline",
-          "name": "publicContact"
+          "type": "string"
+        },
+        "optional": true
+      },
+      "email": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string"
+        },
+        "optional": true
+      },
+      "website": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string"
         },
         "optional": true
       },
@@ -1197,14 +1155,6 @@
               }
             }
           }
-        },
-        "optional": true
-      },
-      "internalContact": {
-        "type": "objectAttribute",
-        "value": {
-          "type": "inline",
-          "name": "internalContact"
         },
         "optional": true
       }

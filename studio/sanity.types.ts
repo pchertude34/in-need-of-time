@@ -34,18 +34,6 @@ export type Close = {
   time?: string;
 };
 
-export type PublicContact = {
-  phone?: string;
-  website?: string;
-  email?: string;
-};
-
-export type InternalContact = {
-  contactName?: string;
-  contactEmail?: string;
-  contactPhone?: string;
-};
-
 export type SanityImageAssetReference = {
   _ref: string;
   _type: "reference";
@@ -118,7 +106,9 @@ export type RegionalProvider = {
     _type: "providerServiceType";
     _key: string;
   }>;
-  publicContact?: PublicContact;
+  phone?: string;
+  email?: string;
+  website?: string;
   description?: Array<{
     children?: Array<{
       marks?: Array<string>;
@@ -137,7 +127,6 @@ export type RegionalProvider = {
     _type: "block";
     _key: string;
   }>;
-  internalContact?: InternalContact;
 };
 
 export type Geopoint = {
@@ -178,7 +167,9 @@ export type Provider = {
     _type: "providerServiceType";
     _key: string;
   }>;
-  publicContact?: PublicContact;
+  phone?: string;
+  email?: string;
+  website?: string;
   description?: Array<{
     children?: Array<{
       marks?: Array<string>;
@@ -197,7 +188,6 @@ export type Provider = {
     _type: "block";
     _key: string;
   }>;
-  internalContact?: InternalContact;
 };
 
 export type ServiceCategoryReference = {
@@ -325,8 +315,6 @@ export type AllSanitySchemaTypes =
   | HoursOfOperation
   | Open
   | Close
-  | PublicContact
-  | InternalContact
   | SanityImageAssetReference
   | ServiceCategory
   | SanityImageCrop

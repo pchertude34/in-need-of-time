@@ -19,7 +19,9 @@ export function searchProviders(params: SearchProvidersParamsType): Promise<Prov
       title,
       place,
       description,
-      publicContact,
+      phone,
+      email,
+      website,
       serviceTypes[(serviceType->slug.current == "${serviceTypeSlug}")].serviceType->{
         name,
         description,
@@ -44,7 +46,9 @@ export function getProvider(params: GetProviderParams): Promise<Provider> {
     title,
     place,
     description,
-    publicContact,
+    phone,
+    email,
+    website,
     serviceTypes[].serviceType->{name, desctiption, 'slug': slug.current},
   }[0]`;
 

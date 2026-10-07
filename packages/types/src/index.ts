@@ -20,12 +20,6 @@ export type ServiceType = {
   description: string;
 };
 
-export type PublicContact = {
-  phone: string;
-  website: string;
-  email?: string;
-};
-
 export type Provider = {
   _id: string;
   title: string;
@@ -35,7 +29,9 @@ export type Provider = {
     location: Location;
   };
   description: PortableTextBlock[];
-  publicContact?: PublicContact;
+  phone?: string;
+  email?: string;
+  website?: string;
   serviceTypes: ServiceType[];
 };
 
