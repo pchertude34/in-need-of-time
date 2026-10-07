@@ -785,59 +785,14 @@
         "value": {
           "type": "string"
         },
-        "optional": true
-      },
-      "place": {
-        "type": "objectAttribute",
-        "value": {
-          "type": "object",
-          "attributes": {
-            "name": {
-              "type": "objectAttribute",
-              "value": {
-                "type": "string"
-              },
-              "optional": true
-            },
-            "address": {
-              "type": "objectAttribute",
-              "value": {
-                "type": "string"
-              },
-              "optional": true
-            },
-            "placeId": {
-              "type": "objectAttribute",
-              "value": {
-                "type": "string"
-              },
-              "optional": true
-            },
-            "location": {
-              "type": "objectAttribute",
-              "value": {
-                "type": "inline",
-                "name": "geopoint"
-              },
-              "optional": true
-            },
-            "type": {
-              "type": "objectAttribute",
-              "value": {
-                "type": "string"
-              },
-              "optional": true
-            }
-          }
-        },
-        "optional": true
+        "optional": false
       },
       "address": {
         "type": "objectAttribute",
         "value": {
           "type": "string"
         },
-        "optional": true
+        "optional": false
       },
       "location": {
         "type": "objectAttribute",
@@ -845,7 +800,7 @@
           "type": "inline",
           "name": "geopoint"
         },
-        "optional": true
+        "optional": false
       },
       "hoursOfOperation": {
         "type": "objectAttribute",

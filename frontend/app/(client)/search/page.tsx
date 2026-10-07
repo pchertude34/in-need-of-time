@@ -87,10 +87,9 @@ export default async function SearchPage(props: SearchPageProps) {
                         <ProviderResultCard
                           key={provider._id}
                           id={provider._id}
-                          placeId={provider.place.placeId}
                           name={provider.title}
                           description={provider.description}
-                          address={provider.place?.address || "No address available"}
+                          address={provider.address || "No address available"}
                           // serviceType={provider.serviceTypes[0].name}
                           phone={provider.phone}
                           website={provider.website}
@@ -159,10 +158,9 @@ export default async function SearchPage(props: SearchPageProps) {
                         <ProviderResultCard
                           key={`${provider._id}-mobile`}
                           id={provider._id}
-                          placeId={provider.place.placeId}
                           name={provider.title}
                           description={provider.description}
-                          address={provider.place?.address || "No address available"}
+                          address={provider.address || "No address available"}
                           // serviceType={provider.serviceTypes[0].name}
                           phone={provider.phone}
                           website={provider.website}

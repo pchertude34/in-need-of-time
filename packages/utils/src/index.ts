@@ -57,16 +57,14 @@ export function formatPhoneNumberForHref(phoneNumber: string) {
   return `tel:+1${phoneNumber.replace(/\D/g, "")}`;
 }
 
-export function generateGoogleLink(placeId: string, placeName: string) {
-  if (!placeId) {
-    return "";
-  }
-
-  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(placeName)}&query_place_id=${encodeURIComponent(placeId)}`;
+export function generateGoogleLink(placeName: string, address: string) {
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${placeName}, ${address}`)}`;
 }
 
-export function generateGoogleNavigationLink(placeId: string, placeName: string) {
-  return `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(placeName)}&destination_place_id=${encodeURIComponent(placeId)}`;
+// Directions go to the address alone — adding the name can make Google resolve
+// the destination to a different place with a similar name.
+export function generateGoogleNavigationLink(address: string) {
+  return `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(address)}`;
 }
 
 type BuildPlaceAddressOptions = {

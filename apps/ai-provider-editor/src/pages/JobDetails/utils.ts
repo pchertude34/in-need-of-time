@@ -15,12 +15,15 @@ import type { HoursOfOperation, ProviderFormValues, WithConfidence } from "../..
  * generated provider schema so this can't drift out of step with `provider.ts`
  * — except `description`: the rich text editor and the agent's output both deal
  * in the more permissive `PortableTextBlock` shape, not Sanity's exact generated
- * block type, so that one field is typed separately.
+ * block type, so that one field is typed separately — and `location`: the schema
+ * requires it, but this only saves a draft, and an address the geocoder couldn't
+ * place shouldn't block that. Studio's validation flags it before publishing.
  */
 export type ProviderDraftFields = Pick<
   Provider,
-  "title" | "address" | "location" | "hoursOfOperation" | "serviceTypes" | "phone" | "email" | "website" | "url"
+  "title" | "address" | "hoursOfOperation" | "serviceTypes" | "phone" | "email" | "website" | "url"
 > & {
+  location?: Provider["location"];
   description: PortableTextBlock[];
 };
 

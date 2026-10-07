@@ -23,11 +23,10 @@ export type ServiceType = {
 export type Provider = {
   _id: string;
   title: string;
-  place: {
-    address: string;
-    placeId: string;
-    location: Location;
-  };
+  address: string;
+  // Required in the schema, but a few agent-created providers predate that and
+  // have none — they can't match a geo search, but can still be opened by id.
+  location?: Location;
   description: PortableTextBlock[];
   phone?: string;
   email?: string;

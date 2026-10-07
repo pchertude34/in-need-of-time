@@ -142,16 +142,9 @@ export type Provider = {
   _createdAt: string;
   _updatedAt: string;
   _rev: string;
-  title?: string;
-  place?: {
-    name?: string;
-    address?: string;
-    placeId?: string;
-    location?: Geopoint;
-    type?: string;
-  };
-  address?: string;
-  location?: Geopoint;
+  title: string;
+  address: string;
+  location: Geopoint;
   hoursOfOperation?: {
     periods?: Array<{
       open?: Open;
@@ -334,16 +327,3 @@ export type AllSanitySchemaTypes =
   | SanityFileAsset
   | SanityAssetSourceData
   | SanityImageAsset;
-
-// Source: src/schemas/provider/provider.ts
-// Variable: query
-// Query: !defined(*[    _type == "provider" &&    !(_id in [$draft, $published]) &&    place.placeId == $placeId  ][0]._id)
-export type QueryResult = false | true;
-
-// Query TypeMap
-import "@sanity/client";
-declare module "@sanity/client" {
-  interface SanityQueries {
-    '!defined(*[\n    _type == "provider" &&\n    !(_id in [$draft, $published]) &&\n    place.placeId == $placeId\n  ][0]._id)': QueryResult;
-  }
-}

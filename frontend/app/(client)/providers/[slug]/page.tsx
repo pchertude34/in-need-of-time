@@ -39,13 +39,9 @@ export default async function ProviderPage(props: ProviderPageProps) {
           <div className="flex flex-col items-start">
             <h1 className="mb-2 text-2xl font-semibold">{provider.title}</h1>
             <Button variant="text-primary" size="text" asChild>
-              <a
-                target="_blank"
-                rel="noreferrer noopener"
-                href={generateGoogleLink(provider.place.placeId, provider.title)}
-              >
+              <a target="_blank" rel="noreferrer noopener" href={generateGoogleLink(provider.title, provider.address)}>
                 <MapPinIcon className="mt-1 mr-1 h-4 w-4 self-start text-slate-600" />
-                <span className="text-wrap">{provider.place.address}</span>
+                <span className="text-wrap">{provider.address}</span>
               </a>
             </Button>
           </div>
@@ -106,10 +102,12 @@ export default async function ProviderPage(props: ProviderPageProps) {
             </p>
           </div>
           <div className="flex flex-col space-y-4">
-            <ProviderDetailsMap
-              className="mx-auto h-[300px] w-full md:w-[400px]"
-              providerLocation={provider.place.location}
-            />
+            {provider.location && (
+              <ProviderDetailsMap
+                className="mx-auto h-[300px] w-full md:w-[400px]"
+                providerLocation={provider.location}
+              />
+            )}
             <div className="rounded-md bg-slate-50 p-6">
               <div className="flex">
                 <InformationCircleIcon className="mt-1 mr-2 h-5 w-5 self-start text-blue-600" />

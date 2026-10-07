@@ -1,30 +1,6 @@
 import { defineField, defineType } from "sanity";
 import baseProviderFields from "./baseProvider";
 import hoursOfOperationFields from "./hoursOfOperationFields";
-import { groq } from "next-sanity";
-import { client } from "../../lib/client";
-
-function isUniquePlace(placeId: string, context: any) {
-  const { document } = context;
-  const id = document._id.replace(/^drafts\./, "");
-
-  const params = {
-    draft: `drafts.${id}`,
-    published: id,
-    placeId,
-  };
-
-  // This will check if there is a different document with the same placeId
-  // If the document is the same, or there is no other document with the same placeId it will return false.
-  // Otherwise it will return true
-  const query = groq`!defined(*[
-    _type == "provider" &&
-    !(_id in [$draft, $published]) &&
-    place.placeId == $placeId
-  ][0]._id)`;
-
-  return client.fetch(query, params);
-}
 
 const providerSchema = defineType({
   name: "provider",
@@ -36,37 +12,6 @@ const providerSchema = defineType({
       title: "Provider Name",
       type: "string",
       validation: (Rule) => Rule.required(),
-    }),
-    defineField({
-      name: "place",
-      title: "Place",
-      type: "object",
-      description: "Legacy Google Place data, kept for existing providers. Being phased out.",
-      hidden: true,
-      fields: [
-        { name: "name", title: "Name", type: "string" },
-        { name: "address", title: "Address", type: "string" },
-        {
-          name: "placeId",
-          title: "Place ID",
-          type: "string",
-        },
-        { name: "location", title: "Location", type: "geopoint" },
-        { name: "type", title: "Type", type: "string" },
-      ],
-      validation: (Rule) =>
-        Rule.custom(async (value: any, context) => {
-          // Place is optional. Only enforce placeId uniqueness when one is present, since running
-          // this query on every change can cause a lot of API calls.
-          if (!value || !value.placeId) return true;
-
-          const isUnique = await isUniquePlace(value.placeId, context);
-
-          if (!isUnique)
-            return `A Provider with the Place ID ${value.placeId} already exists. Please choose a different Place, or edit the existing Provider.`;
-
-          return true;
-        }),
     }),
     defineField({
       name: "address",

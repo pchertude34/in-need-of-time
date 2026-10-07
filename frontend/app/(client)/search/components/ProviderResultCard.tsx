@@ -9,7 +9,6 @@ import { formatPhoneNumberForHref, generateGoogleNavigationLink } from "@in-need
 
 type ProviderResultCardProps = {
   id: string;
-  placeId: string;
   name: string;
   address: string;
   description?: PortableTextBlock[];
@@ -18,7 +17,7 @@ type ProviderResultCardProps = {
 };
 
 export function ProviderResultCard(props: ProviderResultCardProps) {
-  const { id, placeId, name, address, description, phone, website } = props;
+  const { id, name, address, description, phone, website } = props;
 
   const shouldRenderContactInfo = phone || website;
 
@@ -31,7 +30,7 @@ export function ProviderResultCard(props: ProviderResultCardProps) {
         </div>
 
         <Button variant="text-primary" size="text" asChild>
-          <Link target="_blank" rel="noreferrer noopener" href={generateGoogleNavigationLink(placeId, name)}>
+          <Link target="_blank" rel="noreferrer noopener" href={generateGoogleNavigationLink(address)}>
             <MapPinIcon className="mt-1 mr-1 h-4 w-4 self-start text-slate-600" />
             <span className="text-wrap">{address}</span>
           </Link>

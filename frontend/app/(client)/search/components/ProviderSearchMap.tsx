@@ -40,14 +40,18 @@ export function ProviderSearchMap(props: MapProps) {
         >
           {(map) => (
             <>
-              {providerList.map((provider) => (
-                <ProviderMapMarker
-                  key={provider._id}
-                  googleMapsApi={googleMapsApi}
-                  googleMap={map}
-                  provider={provider}
-                />
-              ))}
+              {providerList.map(
+                (provider) =>
+                  provider.location && (
+                    <ProviderMapMarker
+                      key={provider._id}
+                      googleMapsApi={googleMapsApi}
+                      googleMap={map}
+                      provider={provider}
+                      location={provider.location}
+                    />
+                  ),
+              )}
               {children}
             </>
           )}

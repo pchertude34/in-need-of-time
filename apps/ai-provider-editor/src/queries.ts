@@ -15,14 +15,11 @@ export const AGENT_JOBS_QUERY_KEY = ["agent-jobs"];
 export const SERVICE_TYPES_QUERY_KEY = ["service-types"];
 
 // ~150ft — close enough to be the same building, not just the same block.
-// Checks both the current location field and the legacy `place.location` one,
-// since older providers (pre-dating this app) only have the latter.
 export const DUPLICATE_ADDRESS_RADIUS_METERS = 45;
 
-export const DUPLICATE_PROVIDERS_GROQ = `*[_type == "provider" && (
-  (defined(location) && geo::distance(geo::latLng(location.lat, location.lng), geo::latLng($lat, $lng)) < $radius) ||
-  (defined(place.location) && geo::distance(geo::latLng(place.location.lat, place.location.lng), geo::latLng($lat, $lng)) < $radius)
-)] {_id, title, "address": coalesce(address, place.address)}`;
+export const DUPLICATE_PROVIDERS_GROQ = `*[_type == "provider" &&
+  geo::distance(location, geo::latLng($lat, $lng)) < $radius
+] {_id, title, address}`;
 
 // The same service types the agent chooses from — `get_service_types` reads this
 // list too, so the ids it returns line up with the ones offered in the form.

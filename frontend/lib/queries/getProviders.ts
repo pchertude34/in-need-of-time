@@ -13,11 +13,12 @@ export function searchProviders(params: SearchProvidersParamsType): Promise<Prov
   const { lat, lng, radius, serviceTypeSlug } = params;
 
   const query = groq`*[_type == "provider" &&
-    geo::distance(geo::latLng(place.location.lat, place.location.lng), geo::latLng($lat, $lng)) < $radius &&
+    geo::distance(location, geo::latLng($lat, $lng)) < $radius &&
     $serviceTypeSlug in (serviceTypes[].serviceType->slug.current)] {
       _id,
       title,
-      place,
+      address,
+      location,
       description,
       phone,
       email,
@@ -44,7 +45,8 @@ export function getProvider(params: GetProviderParams): Promise<Provider> {
   const query = groq`*[_type == "provider" && _id == $id] {
     _id,
     title,
-    place,
+    address,
+    location,
     description,
     phone,
     email,
