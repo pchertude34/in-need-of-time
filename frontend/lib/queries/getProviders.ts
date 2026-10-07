@@ -13,8 +13,8 @@ export function searchProviders(params: SearchProvidersParamsType): Promise<Prov
   const { lat, lng, radius, serviceTypeSlug } = params;
 
   const query = groq`*[_type == "provider" &&
-    geo::distance(geo::latLng(place.location.lat, place.location.lng), geo::latLng(${lat}, ${lng})) < ${radius} &&
-    "${serviceTypeSlug}" in (serviceTypes[].serviceType->slug.current)] {
+    geo::distance(geo::latLng(place.location.lat, place.location.lng), geo::latLng($lat, $lng)) < $radius &&
+    $serviceTypeSlug in (serviceTypes[].serviceType->slug.current)] {
       _id,
       title,
       place,
@@ -22,7 +22,7 @@ export function searchProviders(params: SearchProvidersParamsType): Promise<Prov
       phone,
       email,
       website,
-      serviceTypes[(serviceType->slug.current == "${serviceTypeSlug}")].serviceType->{
+      "serviceTypes": serviceTypes[(serviceType->slug.current == $serviceTypeSlug)].serviceType->{
         name,
         description,
         'slug': slug.current
@@ -31,9 +31,9 @@ export function searchProviders(params: SearchProvidersParamsType): Promise<Prov
 
   // filter out provider service types that don't match the queried service type
   // In the future when we want to support queries with multiple service types, we can use the following:
-  // serviceTypes[(serviceType->slug.current in ${serviceTypeSlugs})].serviceType->{name, desctiption, 'slug': slug.current}
+  // "serviceTypes": serviceTypes[(serviceType->slug.current in $serviceTypeSlugs)].serviceType->{name, description, 'slug': slug.current}
 
-  return client.fetch(query);
+  return client.fetch(query, { lat: Number(lat), lng: Number(lng), radius: Number(radius), serviceTypeSlug });
 }
 
 type GetProviderParams = { id: string };
@@ -41,7 +41,7 @@ type GetProviderParams = { id: string };
 export function getProvider(params: GetProviderParams): Promise<Provider> {
   const { id } = params;
 
-  const query = groq`*[_type == "provider" && _id == '${id}'] {
+  const query = groq`*[_type == "provider" && _id == $id] {
     _id,
     title,
     place,
@@ -49,8 +49,8 @@ export function getProvider(params: GetProviderParams): Promise<Provider> {
     phone,
     email,
     website,
-    serviceTypes[].serviceType->{name, desctiption, 'slug': slug.current},
+    "serviceTypes": serviceTypes[].serviceType->{name, description, 'slug': slug.current},
   }[0]`;
 
-  return client.fetch(query);
+  return client.fetch(query, { id });
 }
