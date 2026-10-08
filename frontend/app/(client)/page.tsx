@@ -38,19 +38,15 @@ export default async function Home() {
             {/* Desktop Search Bar */}
             <ServiceSearchBar serviceTypes={serviceTypes} orientation="horizontal" className="hidden md:flex" />
             {/* Mobile Search Menu */}
-            <Drawer shouldScaleBackground={false} direction="top">
+            <Drawer swipeDirection="up" showSwipeHandle>
               {/* Mobile Search Menu trigger button (replaces the search bar on sm screens) */}
-              <DrawerTrigger asChild>
-                <ServiceSearchTriggerButton className="block md:hidden" />
-              </DrawerTrigger>
-              <DrawerContent variant="top" className="focus-ring-none">
+              <DrawerTrigger render={<ServiceSearchTriggerButton className="block md:hidden" />} />
+              <DrawerContent className="focus-ring-none">
                 <div className="px-4 py-5">
                   <div className="mb-6 flex justify-between align-middle">
                     <h4 className="text-lg font-bold text-slate-900">Find a Provider</h4>
-                    <DrawerClose asChild>
-                      <Button variant="text-dark" size="text">
-                        <XMarkIcon className="h-4 w-4" />
-                      </Button>
+                    <DrawerClose render={<Button variant="text-dark" size="text" />}>
+                      <XMarkIcon className="h-4 w-4" />
                     </DrawerClose>
                   </div>
                   <ServiceSearchBar serviceTypes={serviceTypes} orientation="vertical" />

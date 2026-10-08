@@ -1,10 +1,9 @@
 "use client";
 
 import React, { useEffect, useRef } from "react";
-import { AdvancedMapMarker } from "@in-need-of-time/components";
+import { AdvancedMapMarker, createMapPopup, type MapPopup } from "@in-need-of-time/components";
 import { ProviderMapPopup } from "./ProviderMapPopup";
 import type { Location, Provider } from "@in-need-of-time/types";
-import type { MapPopup as MapPopupType } from "@in-need-of-time/components";
 
 type ProvierMapMarkerProps = {
   googleMapsApi: typeof window.google.maps;
@@ -18,32 +17,22 @@ type ProvierMapMarkerProps = {
 export function ProviderMapMarker(props: ProvierMapMarkerProps) {
   const { googleMapsApi, googleMap, provider, location } = props;
 
-  const popupRef = useRef<MapPopupType | undefined>(undefined);
+  const popupRef = useRef<MapPopup | undefined>(undefined);
 
   useEffect(() => {
-    async function loadProviderPopover() {
-      // We need to dynamically import MapPopup since the google maps is not defined
-      // on compilation. This will ensure google maps is available before trying to create
-      // a class that extends it.
-      // An unfortunate circumstance of loading google maps from a script tag.
-      const { MapPopup } = await import("@in-need-of-time/components");
-
-      if (!popupRef.current) {
-        const popup = new MapPopup(
-          new googleMapsApi.LatLng(location.lat, location.lng),
-          <ProviderMapPopup
-            id={provider._id}
-            title={provider.title}
-            description={provider.description}
-            onClose={handlePopupClose}
-          />,
-        );
-        popup.setMap(googleMap);
-        popupRef.current = popup;
-      }
+    if (!popupRef.current) {
+      const popup = createMapPopup(
+        new googleMapsApi.LatLng(location.lat, location.lng),
+        <ProviderMapPopup
+          id={provider._id}
+          title={provider.title}
+          description={provider.description}
+          onClose={handlePopupClose}
+        />,
+      );
+      popup.setMap(googleMap);
+      popupRef.current = popup;
     }
-
-    loadProviderPopover();
   }, []);
 
   function handleMarkerClick() {
