@@ -2,7 +2,10 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "lib": ["ESNext"],
-    "types": ["node"]
+    "types": ["node"],
+    // Vercel's TS 7 build compiles via a temp tsconfig in /tmp that extends this one; without explicit
+    // typeRoots, `types` resolves from /tmp and fails with TS2688. Relative paths here resolve from this file.
+    "typeRoots": ["./node_modules/@types", "../../node_modules/@types"]
   },
   "include": ["src/**/*"]
 }
