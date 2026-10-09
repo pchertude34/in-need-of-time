@@ -23,7 +23,8 @@ export default async function ProviderPage(props: ProviderPageProps) {
 
   const provider = await getProvider({ id: slug });
 
-  const shouldRenderContactInfo = provider?.publicContact?.phone || provider.publicContact?.website;
+  const shouldRenderContactLinks = provider.phone || provider.website;
+  const shouldRenderContactDetails = provider.phone || provider.email;
 
   return (
     <>
@@ -38,29 +39,25 @@ export default async function ProviderPage(props: ProviderPageProps) {
           <div className="flex flex-col items-start">
             <h1 className="mb-2 text-2xl font-semibold">{provider.title}</h1>
             <Button variant="text-primary" size="text" asChild>
-              <a
-                target="_blank"
-                rel="noreferrer noopener"
-                href={generateGoogleLink(provider.place.placeId, provider.title)}
-              >
-                <MapPinIcon className="mr-1 mt-1 h-4 w-4 self-start text-slate-600" />
-                <span className="text-wrap">{provider.place.address}</span>
+              <a target="_blank" rel="noreferrer noopener" href={generateGoogleLink(provider.title, provider.address)}>
+                <MapPinIcon className="mt-1 mr-1 h-4 w-4 self-start text-slate-600" />
+                <span className="text-wrap">{provider.address}</span>
               </a>
             </Button>
           </div>
-          {shouldRenderContactInfo && (
-            <div className="flex space-x-6 md:ml-auto ">
-              {provider.publicContact?.phone && (
+          {shouldRenderContactLinks && (
+            <div className="flex space-x-6 md:ml-auto">
+              {provider.phone && (
                 <Button variant="text-dark" size="text" asChild>
-                  <a href={formatPhoneNumberForHref(provider.publicContact.phone)}>
+                  <a href={formatPhoneNumberForHref(provider.phone)}>
                     <PhoneIcon className="mr-2 h-4 w-4" />
-                    {provider.publicContact.phone}
+                    {provider.phone}
                   </a>
                 </Button>
               )}
-              {provider.publicContact?.website && (
+              {provider.website && (
                 <Button variant="text-dark" size="text" asChild>
-                  <a href={provider.publicContact.website} target="_blank" rel="noreferrer noopener">
+                  <a href={provider.website} target="_blank" rel="noreferrer noopener">
                     <GlobeAltIcon className="mr-2 h-4 w-4" /> Website
                   </a>
                 </Button>
@@ -74,24 +71,26 @@ export default async function ProviderPage(props: ProviderPageProps) {
             <article className="prose prose-p:leading-snug text-slate-900">
               {provider.description && <PortableText value={provider.description} />}
             </article>
-            {shouldRenderContactInfo && (
+            {shouldRenderContactDetails && (
               <div className="space-y-4 rounded-md bg-slate-100 p-4">
                 <h2 className="text-xl font-bold">Contact Details</h2>
                 <div className="flex flex-wrap gap-5 md:flex-nowrap">
-                  {provider.publicContact?.phone && (
+                  {provider.phone && (
                     <div className="mr-14 flex flex-col">
                       <span className="mb-1 text-slate-600">Phone Number</span>
                       <Button variant="text-primary" size="text">
-                        {provider.publicContact?.phone}
+                        {provider.phone}
                       </Button>
                     </div>
                   )}
-                  <div className="flex flex-col ">
-                    <span className="mb-1 text-slate-600">Email Address</span>
-                    <Button variant="text-primary" size="text">
-                      info@austinsdaycare.com
-                    </Button>
-                  </div>
+                  {provider.email && (
+                    <div className="flex flex-col">
+                      <span className="mb-1 text-slate-600">Email Address</span>
+                      <Button variant="text-primary" size="text">
+                        {provider.email}
+                      </Button>
+                    </div>
+                  )}
                 </div>
               </div>
             )}
@@ -103,13 +102,15 @@ export default async function ProviderPage(props: ProviderPageProps) {
             </p>
           </div>
           <div className="flex flex-col space-y-4">
-            <ProviderDetailsMap
-              className=" mx-auto h-[300px] w-full md:w-[400px]"
-              providerLocation={provider.place.location}
-            />
+            {provider.location && (
+              <ProviderDetailsMap
+                className="mx-auto h-[300px] w-full md:w-[400px]"
+                providerLocation={provider.location}
+              />
+            )}
             <div className="rounded-md bg-slate-50 p-6">
               <div className="flex">
-                <InformationCircleIcon className=" mr-2 mt-1 h-5 w-5 self-start text-blue-600" />
+                <InformationCircleIcon className="mt-1 mr-2 h-5 w-5 self-start text-blue-600" />
                 <h3 className="mb-2 inline-block text-lg font-bold">Are you part of this agency?</h3>
               </div>
               <p className="mb-5 text-xs text-slate-600">

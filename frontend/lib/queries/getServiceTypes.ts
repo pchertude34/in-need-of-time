@@ -70,7 +70,7 @@ export function queryAndFilterServiceTypesByCategory(
   // If location is provided, only get the service types that have providers within the radius
   if (lat && lng && radius) {
     query = groq`*[_type == "serviceType" && $slug in serviceCategory[]->slug.current]{
-      "providerCount": count(*[_type == "provider" && references(^._id) && geo::distance(geo::latLng(place.location.lat, place.location.lng), geo::latLng(${lat}, ${lng})) < ${radius} ]),
+      "providerCount": count(*[_type == "provider" && references(^._id) && geo::distance(location, geo::latLng($lat, $lng)) < $radius ]),
       name, 
       description, 
       'slug': slug.current
@@ -85,5 +85,5 @@ export function queryAndFilterServiceTypesByCategory(
     }`;
   }
 
-  return client.fetch(query, { slug: categorySlug });
+  return client.fetch(query, { slug: categorySlug, lat: Number(lat), lng: Number(lng), radius: Number(radius) });
 }

@@ -1,6 +1,6 @@
 import { registerAiSdkTelemetry, Laminar, observe } from "@lmnr-ai/lmnr";
+import { generateText, stepCountIs } from "ai";
 import { EventType } from "@in-need-of-time/types/agentEvents";
-import { streamText, stepCountIs } from "ai";
 import { emit } from "../bus";
 import type { Agent } from "../types";
 import type { ModelMessage, LanguageModelUsage } from "ai";
@@ -14,38 +14,53 @@ type StepUsage = {
   usage: LanguageModelUsage;
 };
 
-export async function runAgent(jobId: string, workflowId: string, messages: ModelMessage[], agent: Agent) {
+export async function runAgent(
+  jobId: string,
+  workflowId: string,
+  messages: ModelMessage[],
+  agent: Agent,
+  task: string,
+) {
   return observe({ name: "runAgent" }, async () => {
     Laminar.setTraceSessionId(`job-${jobId}`);
 
-    const { textStream, text, output, steps } = streamText({
-      model: agent.model,
-      system: agent.systemPrompt,
-      tools: agent.tools,
-      output: agent.output,
-      messages,
-      stopWhen: [stepCountIs(MAX_STEPS)],
-      runtimeContext: {
-        jobId,
-      },
-      telemetry: {
-        functionId: "release-notes",
-        includeRuntimeContext: {
-          jobId: true,
-        },
-      },
-    });
+    await emit(jobId, { type: EventType.AgentStarted, workflowId, agent: agent.name, task });
 
-    for await (const part of textStream) {
-      await emit(jobId, { type: EventType.ModelDelta, workflowId, text: part }, false);
+    let result: Awaited<ReturnType<typeof generateText>>;
+    try {
+      result = await generateText({
+        model: agent.model,
+        system: agent.systemPrompt,
+        tools: agent.tools,
+        output: agent.output,
+        messages,
+        stopWhen: [stepCountIs(MAX_STEPS)],
+        runtimeContext: {
+          jobId,
+        },
+        telemetry: {
+          functionId: "release-notes",
+          includeRuntimeContext: {
+            jobId: true,
+          },
+        },
+      });
+    } catch (err) {
+      await emit(jobId, {
+        type: EventType.AgentFailed,
+        workflowId,
+        agent: agent.name,
+        error: err instanceof Error ? err.message : String(err),
+      });
+      throw err;
     }
 
-    logStepTokens(agent, (await steps) as StepUsage[]);
+    const { text, output, steps } = result;
+    logStepTokens(agent, steps as StepUsage[]);
 
-    return {
-      text: await text,
-      output: await output,
-    };
+    await emit(jobId, { type: EventType.AgentCompleted, workflowId, agent: agent.name });
+
+    return { text, output };
   });
 }
 

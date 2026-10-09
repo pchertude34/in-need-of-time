@@ -1,6 +1,33 @@
+# Two interchangeable local databases, selected by compose profile:
+#
+#   --profile local  plain Postgres, no Neon account needed (npm run db:start)
+#   --profile neon   proxy to a real ephemeral Neon branch (npm run db:start:neon)
+#
+# Both listen on 5432 with the same credentials, so DATABASE_URL is identical
+# either way and nothing downstream has to change. Run only one at a time.
 services:
+  postgres:
+    image: postgres:17-alpine
+    profiles: ["local"]
+    ports:
+      - "5432:5432"
+
+    # Must match the DATABASE_URL in .env.local
+    environment:
+      POSTGRES_USER: neon
+      POSTGRES_PASSWORD: npg
+      POSTGRES_DB: neondb
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U neon -d neondb"]
+      interval: 5s
+      retries: 10
+    restart: unless-stopped
+
   neon-local:
     image: neondatabase/neon_local:latest
+    profiles: ["neon"]
     ports:
       - "5432:5432"
 
@@ -21,4 +48,5 @@ services:
     restart: unless-stopped
 
 volumes:
+  pg_data:
   neon_data:

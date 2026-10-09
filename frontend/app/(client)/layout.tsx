@@ -9,7 +9,7 @@ import { TooltipProvider, Toaster } from "@in-need-of-time/ui";
 
 const fontSans = FontSans({
   subsets: ["latin"],
-  variable: "--font-sans",
+  variable: "--font-sans-app",
 });
 
 export const metadata: Metadata = {

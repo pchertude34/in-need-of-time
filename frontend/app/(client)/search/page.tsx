@@ -71,7 +71,7 @@ export default async function SearchPage(props: SearchPageProps) {
         <div className="absolute hidden h-[calc(100dvh-88px)] w-full items-start p-6 lg:flex">
           {/* If providers is truthy, we know the user made a search */}
           {providers && (
-            <ScrollArea className="z-10 flex max-h-full w-[403px] flex-shrink-0 flex-col rounded-2xl bg-white shadow-xl">
+            <ScrollArea className="z-10 flex max-h-full w-[403px] shrink-0 flex-col rounded-2xl bg-white shadow-xl">
               <div className="max-w-full space-y-4 p-6">
                 <span className="text-secondary-500 font-bold">{providers.length} results found</span>
                 {providers.length > 0 ? (
@@ -87,13 +87,12 @@ export default async function SearchPage(props: SearchPageProps) {
                         <ProviderResultCard
                           key={provider._id}
                           id={provider._id}
-                          placeId={provider.place.placeId}
                           name={provider.title}
                           description={provider.description}
-                          address={provider.place?.address || "No address available"}
+                          address={provider.address || "No address available"}
                           // serviceType={provider.serviceTypes[0].name}
-                          phone={provider.publicContact?.phone}
-                          website={provider.publicContact?.website}
+                          phone={provider.phone}
+                          website={provider.website}
                         />
                       ))}
                     </div>
@@ -119,20 +118,16 @@ export default async function SearchPage(props: SearchPageProps) {
         {/* Mobile UI */}
         <div className="absolute flex h-[calc(100dvh-5rem)] w-full justify-center p-6 lg:hidden">
           {/* Search Drawer */}
-          <Drawer shouldScaleBackground={false} direction="top">
-            <DrawerTrigger asChild>
-              <Button variant="primary" className="z-10 shadow-xl">
-                Modify your search
-              </Button>
+          <Drawer swipeDirection="up" showSwipeHandle>
+            <DrawerTrigger render={<Button variant="primary" className="z-10 shadow-xl" />}>
+              Modify your search
             </DrawerTrigger>
-            <DrawerContent variant="top" className="focus-ring-none">
+            <DrawerContent className="focus-ring-none">
               <div className="px-4 py-5">
                 <div className="mb-6 flex justify-between align-middle">
                   <h4 className="text-lg font-bold text-slate-900">Find a Provider</h4>
-                  <DrawerClose asChild>
-                    <Button variant="text-dark" size="text">
-                      <XMarkIcon className="h-4 w-4" />
-                    </Button>
+                  <DrawerClose render={<Button variant="text-dark" size="text" />}>
+                    <XMarkIcon className="h-4 w-4" />
                   </DrawerClose>
                 </div>
                 <ServiceSearchBar serviceTypes={serviceTypes} orientation="vertical" />
@@ -143,9 +138,8 @@ export default async function SearchPage(props: SearchPageProps) {
 
           {providers && (
             <MobileResultsDrawer>
-              <div className="mx-auto my-3 box-border h-4 w-[100px] rounded-full bg-slate-400 dark:bg-slate-800" />
               <span className="text-secondary-500 mb-3 ml-4 font-bold">{providers.length} results found</span>
-              <div className="mx-auto  flex w-full flex-col space-y-4 overflow-auto p-4">
+              <div className="mx-auto flex w-full flex-col space-y-4 overflow-auto p-4">
                 {providers.length > 0 ? (
                   <>
                     <Tabs defaultValue="locations">
@@ -159,13 +153,12 @@ export default async function SearchPage(props: SearchPageProps) {
                         <ProviderResultCard
                           key={`${provider._id}-mobile`}
                           id={provider._id}
-                          placeId={provider.place.placeId}
                           name={provider.title}
                           description={provider.description}
-                          address={provider.place?.address || "No address available"}
+                          address={provider.address || "No address available"}
                           // serviceType={provider.serviceTypes[0].name}
-                          phone={provider.publicContact?.phone}
-                          website={provider.publicContact?.website}
+                          phone={provider.phone}
+                          website={provider.website}
                         />
                       ))}
                     </div>

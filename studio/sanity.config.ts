@@ -16,7 +16,6 @@ import {
   SANITY_STUDIO_GOOGLE_API_KEY,
 } from "./env";
 import { schema } from "./schema";
-import { RunProviderAgentAction } from "./src/documentActions/RunProviderAgentAction";
 
 export default defineConfig({
   basePath: "/studio",
@@ -31,13 +30,4 @@ export default defineConfig({
     visionTool({ defaultApiVersion: SANITY_STUDIO_API_VERSION }),
     googleMapsInput({ apiKey: SANITY_STUDIO_GOOGLE_API_KEY }),
   ],
-  document: {
-    // For whatever reason, sanity has an issue with the return of RunProviderAgent action
-    // event thought the return schema follows the docs perfectly.
-    // https://www.sanity.io/docs/studio/document-actions-api#k037f877ad3f1
-    // @ts-ignore
-    actions: (prev, context) => {
-      return context.schemaType === "provider" ? [...prev, RunProviderAgentAction] : prev;
-    },
-  },
 });

@@ -1,7 +1,10 @@
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
+import type { Location } from "@in-need-of-time/types";
 
 export * from "./geocoder";
+export * from "./states";
+export * from "./duplicateMatching";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -19,25 +22,49 @@ export function convertMilesToMeters(miles: number | string) {
   return Number(meters.toFixed(2));
 }
 
+// Returns undefined rather than a NaN-holding coordinate, so callers can treat
+// "not parseable" and "not entered yet" the same way.
+export function parseCoordinates(latitude: string, longitude: string): Location | undefined {
+  const lat = Number.parseFloat(latitude);
+  const lng = Number.parseFloat(longitude);
+
+  return Number.isNaN(lat) || Number.isNaN(lng) ? undefined : { lat, lng };
+}
+
 export function getCurrentDay() {
   const day = new Date().getDay();
   return (day + 6) % 7;
+}
+
+// "0900" or "09:00" -> "9:00 AM". Returns the raw value unchanged if it isn't
+// 24-hour hours-and-minutes. Both spellings turn up: the provider agent's schema
+// documents "0900" while it actually emits "13:00".
+export function formatTimeAs12Hour(time: string) {
+  const match = /^(\d{2}):?(\d{2})$/.exec(time);
+
+  if (!match) {
+    return time;
+  }
+
+  const hours = Number(match[1]);
+  const suffix = hours < 12 ? "AM" : "PM";
+  const hours12 = hours % 12 === 0 ? 12 : hours % 12;
+
+  return `${hours12}:${match[2]} ${suffix}`;
 }
 
 export function formatPhoneNumberForHref(phoneNumber: string) {
   return `tel:+1${phoneNumber.replace(/\D/g, "")}`;
 }
 
-export function generateGoogleLink(placeId: string, placeName: string) {
-  if (!placeId) {
-    return "";
-  }
-
-  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(placeName)}&query_place_id=${encodeURIComponent(placeId)}`;
+export function generateGoogleLink(placeName: string, address: string) {
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${placeName}, ${address}`)}`;
 }
 
-export function generateGoogleNavigationLink(placeId: string, placeName: string) {
-  return `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(placeName)}&destination_place_id=${encodeURIComponent(placeId)}`;
+// Directions go to the address alone — adding the name can make Google resolve
+// the destination to a different place with a similar name.
+export function generateGoogleNavigationLink(address: string) {
+  return `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(address)}`;
 }
 
 type BuildPlaceAddressOptions = {

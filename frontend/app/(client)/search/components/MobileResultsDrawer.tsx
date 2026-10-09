@@ -1,38 +1,45 @@
 "use client";
 
 import React, { useState } from "react";
-// import { Drawer, DrawerContent, DrawerTrigger, DrawerClose, DrawerTitle } from "@in-need-of-time/ui";
-import { Drawer } from "vaul";
+import { Drawer, DrawerContent, DrawerTitle } from "@in-need-of-time/ui";
 
 type MobileResultsDrawerProps = {
   children?: React.ReactNode;
 };
 
-// Apparently there are issues with snap points in Shadcd's drawer component so we
-// need to create another one using the underlying vaul component.
+type SnapPoint = NonNullable<React.ComponentProps<typeof Drawer>["snapPoint"]>;
+
+// Tall enough to show the drag handle and "N results found" line rendered by the
+// search page (~77px including the drawer's top border), but none of the results.
+// Update this if that header markup changes.
+const COLLAPSED_SNAP_POINT = "3.5rem";
+
 export function MobileResultsDrawer(props: MobileResultsDrawerProps) {
   const { children } = props;
-  const [snap, setSnap] = useState<number | string | null>("152px");
+  const [snap, setSnap] = useState<SnapPoint>(COLLAPSED_SNAP_POINT);
 
   return (
-    <Drawer.Root
+    <Drawer
       // allow interacting with the content behind the drawer
       modal={false}
-      snapPoints={["152px", 1]}
-      activeSnapPoint={snap}
-      setActiveSnapPoint={setSnap}
-      dismissible={false}
+      showSwipeHandle
+      snapPoints={[COLLAPSED_SNAP_POINT, 1]}
+      snapPoint={snap}
+      // ignore the null snap point reported when swiping past the lowest point
+      onSnapPointChange={(point) => point !== null && setSnap(point)}
+      // controlled with no onOpenChange, so it can never be dismissed
       open
+      disablePointerDismissal
     >
-      <Drawer.Portal>
-        <Drawer.Content
-          aria-describedby={undefined}
-          className="focus-ring-none border-b-none fixed bottom-0 left-0 right-0 z-20 mx-[-1px] flex h-full max-h-[calc(100dvh-88px)] flex-col rounded-t-xl border border-t border-slate-300  bg-white lg:hidden"
-        >
-          <Drawer.Title className="sr-only">Provider search results</Drawer.Title>
-          {children}
-        </Drawer.Content>
-      </Drawer.Portal>
-    </Drawer.Root>
+      <DrawerContent
+        initialFocus={false}
+        className="focus-ring-none border-x border-slate-300 lg:hidden"
+        // keep the fully-open drawer below the site header
+        style={{ "--drawer-content-max-height": "calc(100dvh - 88px)" } as React.CSSProperties}
+      >
+        <DrawerTitle className="sr-only">Provider search results</DrawerTitle>
+        {children}
+      </DrawerContent>
+    </Drawer>
   );
 }

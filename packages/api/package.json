@@ -9,20 +9,21 @@
     ".": "./src/index.ts"
   },
   "scripts": {
-    "dev": "NODE_ENV=development tsx src/index.ts",
+    "dev": "NODE_ENV=development tsx watch --clear-screen=false src/index.ts",
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
     "@in-need-of-time/agent-core": "file:../agent-core",
-    "@in-need-of-time/db": "file:../db",
     "@in-need-of-time/types": "file:../types",
-    "@sanity/client": "^7.26.0",
+    "@in-need-of-time/utils": "file:../utils",
     "ai": "^7.0.37",
-    "drizzle-orm": "^0.44.5",
+    "cors": "^2.8.6",
     "express": "^5.2.1",
+    "jose": "^6.2.12",
     "ws": "^8.19.0"
   },
   "devDependencies": {
+    "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
     "@types/ws": "^8.18.1",
     "tsx": "^4.21.0",

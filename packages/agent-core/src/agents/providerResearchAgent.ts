@@ -1,7 +1,7 @@
 import { Output } from "ai";
 import { openai } from "@ai-sdk/openai";
 import { z } from "zod";
-import { GPT_LIGHTWEIGHT_MODEL } from "./utils";
+import { GPT_LIGHTWEIGHT_MODEL, createUserLocation } from "./utils";
 import type { Agent } from "../types";
 
 const providerResearchOutputSchema = z.object({
@@ -26,10 +26,14 @@ const providerResearchOutputSchema = z.object({
 
 export type ProviderResearchOutput = z.infer<typeof providerResearchOutputSchema>;
 
-export const ProviderResearchAgent: Agent = {
-  name: "provider_research",
-  model: openai(GPT_LIGHTWEIGHT_MODEL),
-  systemPrompt: `You are an AI assistant that finds websites with information about a single service provider for In Need of Time's provider directory: connecting people in crisis — single parents, people experiencing homelessness, and people recently released from prison — with support services such as health clinics, food banks, shelters, and free-clothing programs.
+// Built per run so `web_search` can be biased toward the job's state — see `createUserLocation`.
+export function createProviderResearchAgent(location?: string): Agent {
+  const userLocation = createUserLocation(location);
+
+  return {
+    name: "provider_research",
+    model: openai(GPT_LIGHTWEIGHT_MODEL),
+    systemPrompt: `You are an AI assistant that finds websites with information about a single service provider for In Need of Time's provider directory: connecting people in crisis — single parents, people experiencing homelessness, and people recently released from prison — with support services such as health clinics, food banks, shelters, and free-clothing programs.
 
 ## Task
 Given a provider's name and/or a URL associated with it, use \`web_search\` to find websites with real information about this specific provider and the services it offers — service types, hours of operation, address, eligibility/requirements, contact info, and similar details — not just pages that mention its name in passing. Your first priority is finding the provider's own website, since it's the most trustworthy source; beyond that, also try to find 5 distinct URLs total by rounding out the list with third-party directories, listings, or news mentions, which are still useful for corroborating details or filling in what the provider's own site doesn't cover. Return fewer than 5 if that's all you can find.
@@ -47,14 +51,10 @@ Given a provider's name and/or a URL associated with it, use \`web_search\` to f
 - Still include third-party results when you find them, even once you have the provider's own site — they're useful for corroborating or filling gaps, not just a fallback for when the first-party site is missing.
 - Prefer URLs with substantive service details (service types, hours, address, requirements, contact info) over pages that only mention the provider's name.
 - Don't return duplicate URLs.`,
-  tools: {
-    web_search_preview: openai.tools.webSearchPreview({}),
-    web_search: openai.tools.webSearch({
-      userLocation: {
-        type: "approximate",
-        region: "Oregon",
-      },
-    }),
-  },
-  output: Output.object({ schema: providerResearchOutputSchema }),
-};
+    tools: {
+      web_search_preview: openai.tools.webSearchPreview({ userLocation }),
+      web_search: openai.tools.webSearch({ userLocation }),
+    },
+    output: Output.object({ schema: providerResearchOutputSchema }),
+  };
+}

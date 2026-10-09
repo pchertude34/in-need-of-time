@@ -1,4 +1,5 @@
 import { randomUUID } from "node:crypto";
+import { eq } from "drizzle-orm";
 import { db, agentEventLog } from "@in-need-of-time/db";
 import type { AgentEvent, EventInput } from "@in-need-of-time/types/agentEvents";
 
@@ -24,8 +25,8 @@ export async function emit(jobId: string, input: EventInput, store: boolean = tr
   for (const listener of listeners) listener(jobId, event); // live
 }
 
-// The full timeline so far, in order — read back from Postgres on every connect.
-export async function history(): Promise<AgentEvent[]> {
-  const rows = await db.select().from(agentEventLog).orderBy(agentEventLog.seq);
+// A job's timeline so far, in order — read back from Postgres on every connect.
+export async function history(jobId: string): Promise<AgentEvent[]> {
+  const rows = await db.select().from(agentEventLog).where(eq(agentEventLog.jobId, jobId)).orderBy(agentEventLog.seq);
   return rows.map((row) => row.data);
 }

@@ -15,16 +15,23 @@
 export declare const internalGroqTypeReferenceTo: unique symbol;
 
 // Source: schema.json
-export type PublicContact = {
-  phone?: string;
-  website?: string;
-  email?: string;
+export type HoursOfOperation = {
+  periods?: Array<{
+    open?: Open;
+    close?: Close;
+    _key: string;
+  }>;
+  weekdayText?: Array<string>;
 };
 
-export type InternalContact = {
-  contactName?: string;
-  contactEmail?: string;
-  contactPhone?: string;
+export type Open = {
+  day?: number;
+  time?: string;
+};
+
+export type Close = {
+  day?: number;
+  time?: string;
 };
 
 export type SanityImageAssetReference = {
@@ -74,6 +81,108 @@ export type Slug = {
   source?: string;
 };
 
+export type ServiceTypeReference = {
+  _ref: string;
+  _type: "reference";
+  _weak?: boolean;
+  [internalGroqTypeReferenceTo]?: "serviceType";
+};
+
+export type RegionalProvider = {
+  _id: string;
+  _type: "regionalProvider";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  title?: string;
+  region?: {
+    location?: Geopoint;
+    distanceRadius?: number;
+    isNational?: boolean;
+  };
+  serviceTypes: Array<{
+    serviceType: ServiceTypeReference;
+    hoursOfOperation?: HoursOfOperation;
+    _type: "providerServiceType";
+    _key: string;
+  }>;
+  phone?: string;
+  email?: string;
+  website?: string;
+  description?: Array<{
+    children?: Array<{
+      marks?: Array<string>;
+      text?: string;
+      _type: "span";
+      _key: string;
+    }>;
+    style?: "normal" | "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "blockquote";
+    listItem?: "bullet" | "number";
+    markDefs?: Array<{
+      href?: string;
+      _type: "link";
+      _key: string;
+    }>;
+    level?: number;
+    _type: "block";
+    _key: string;
+  }>;
+};
+
+export type Geopoint = {
+  _type: "geopoint";
+  lat?: number;
+  lng?: number;
+  alt?: number;
+};
+
+export type Provider = {
+  _id: string;
+  _type: "provider";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  title: string;
+  address: string;
+  location: Geopoint;
+  hoursOfOperation?: {
+    periods?: Array<{
+      open?: Open;
+      close?: Close;
+      _key: string;
+    }>;
+    weekdayText?: Array<string>;
+  };
+  url?: string;
+  serviceTypes: Array<{
+    serviceType: ServiceTypeReference;
+    hoursOfOperation?: HoursOfOperation;
+    _type: "providerServiceType";
+    _key: string;
+  }>;
+  phone?: string;
+  email?: string;
+  website?: string;
+  description?: Array<{
+    children?: Array<{
+      marks?: Array<string>;
+      text?: string;
+      _type: "span";
+      _key: string;
+    }>;
+    style?: "normal" | "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "blockquote";
+    listItem?: "bullet" | "number";
+    markDefs?: Array<{
+      href?: string;
+      _type: "link";
+      _key: string;
+    }>;
+    level?: number;
+    _type: "block";
+    _key: string;
+  }>;
+};
+
 export type ServiceCategoryReference = {
   _ref: string;
   _type: "reference";
@@ -95,114 +204,6 @@ export type ServiceType = {
       _key: string;
     } & ServiceCategoryReference
   >;
-};
-
-export type ServiceTypeReference = {
-  _ref: string;
-  _type: "reference";
-  _weak?: boolean;
-  [internalGroqTypeReferenceTo]?: "serviceType";
-};
-
-export type RegionalProvider = {
-  _id: string;
-  _type: "regionalProvider";
-  _createdAt: string;
-  _updatedAt: string;
-  _rev: string;
-  title?: string;
-  region?: {
-    location?: Geopoint;
-    distanceRadius?: number;
-    isNational?: boolean;
-  };
-  serviceTypes: Array<
-    {
-      _key: string;
-    } & ServiceTypeReference
-  >;
-  publicContact?: PublicContact;
-  description?: Array<{
-    children?: Array<{
-      marks?: Array<string>;
-      text?: string;
-      _type: "span";
-      _key: string;
-    }>;
-    style?: "normal" | "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "blockquote";
-    listItem?: "bullet" | "number";
-    markDefs?: Array<{
-      href?: string;
-      _type: "link";
-      _key: string;
-    }>;
-    level?: number;
-    _type: "block";
-    _key: string;
-  }>;
-  internalContact?: InternalContact;
-};
-
-export type Geopoint = {
-  _type: "geopoint";
-  lat?: number;
-  lng?: number;
-  alt?: number;
-};
-
-export type Provider = {
-  _id: string;
-  _type: "provider";
-  _createdAt: string;
-  _updatedAt: string;
-  _rev: string;
-  title?: string;
-  agentRequest?: string;
-  place?: {
-    name?: string;
-    address?: string;
-    placeId?: string;
-    location?: Geopoint;
-    type?: string;
-  };
-  address?: string;
-  location?: Geopoint;
-  hoursOfOperation?: Array<{
-    open?: {
-      day?: number;
-      time?: string;
-    };
-    close?: {
-      day?: number;
-      time?: string;
-    };
-    _key: string;
-  }>;
-  serviceTypes: Array<
-    {
-      _key: string;
-    } & ServiceTypeReference
-  >;
-  publicContact?: PublicContact;
-  description?: Array<{
-    children?: Array<{
-      marks?: Array<string>;
-      text?: string;
-      _type: "span";
-      _key: string;
-    }>;
-    style?: "normal" | "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "blockquote";
-    listItem?: "bullet" | "number";
-    markDefs?: Array<{
-      href?: string;
-      _type: "link";
-      _key: string;
-    }>;
-    level?: number;
-    _type: "block";
-    _key: string;
-  }>;
-  internalContact?: InternalContact;
 };
 
 export type GeopointRadius = {
@@ -304,19 +305,20 @@ export type SanityImageAsset = {
 };
 
 export type AllSanitySchemaTypes =
-  | PublicContact
-  | InternalContact
+  | HoursOfOperation
+  | Open
+  | Close
   | SanityImageAssetReference
   | ServiceCategory
   | SanityImageCrop
   | SanityImageHotspot
   | Slug
-  | ServiceCategoryReference
-  | ServiceType
   | ServiceTypeReference
   | RegionalProvider
   | Geopoint
   | Provider
+  | ServiceCategoryReference
+  | ServiceType
   | GeopointRadius
   | SanityImagePaletteSwatch
   | SanityImagePalette

@@ -1,14 +1,13 @@
 import express from "express";
+import cors from "cors";
 import { createServer } from "node:http";
-import { WebSocketServer, type WebSocket } from "ws";
-import { eq } from "drizzle-orm";
+import type { WebSocketServer } from "ws";
 import { DBOS } from "@dbos-inc/dbos-sdk";
-import { subscribe, history, runAgentWorkflow } from "@in-need-of-time/agent-core";
-import { db, agentJobsTable } from "@in-need-of-time/db";
-import type { ModelMessage } from "ai";
-import type { ClientMessage } from "@in-need-of-time/types/agentEvents";
-
-const port = process.env.PORT ?? 4011;
+import { providerAgentRouter, attachProviderAgentWebSocket } from "./routes/providerAgent";
+import { geocodeRouter } from "./routes/geocode";
+import { authRouter } from "./routes/auth";
+import { requireSession } from "./middleware/requireSession";
+import { API_PORT, CORS_ALLOWED_ORIGINS, DATABASE_URL } from "./env";
 
 let server: ReturnType<typeof createServer> | undefined;
 let wss: WebSocketServer | undefined;
@@ -28,90 +27,36 @@ async function main() {
   // adminPort must differ from the Express `port` below — DBOS's admin
   // server also defaults to 3001, which silently wins the port and makes
   // this app's own routes unreachable.
-  DBOS.setConfig({ name: "harness", systemDatabaseUrl: process.env.DATABASE_URL, adminPort: 3011 });
+  DBOS.setConfig({ name: "harness", systemDatabaseUrl: DATABASE_URL, adminPort: 3011 });
   await DBOS.launch();
 
   const app = express();
+  app.use(cors({ origin: CORS_ALLOWED_ORIGINS }));
   app.use(express.json());
 
+  // Open: the platform's health check runs before anything has a session, and
+  // the response says nothing a caller couldn't learn by connecting at all.
   app.get("/health", (_req, res) => {
     res.json({ status: "ok" });
   });
 
+  // Open by definition — this is where a session comes from.
+  app.use("/auth", authRouter);
+
+  // Everything else is members-only. CORS is not an access control (browsers
+  // honour it, `curl` doesn't); `requireSession` is.
+  app.use("/provider-agent", requireSession, providerAgentRouter);
+  app.use("/geocode", requireSession, geocodeRouter);
+
   server = createServer(app);
-  wss = new WebSocketServer({ server, path: "/ws" });
-
-  wss.on("connection", async (socket: WebSocket, request) => {
-    const requestedJobId = new URL(request.url ?? "", "http://localhost").searchParams.get("jobId") ?? undefined;
-
-    let [agentJob] = requestedJobId
-      ? await db.select().from(agentJobsTable).where(eq(agentJobsTable.jobId, requestedJobId))
-      : [];
-
-    if (!agentJob) {
-      [agentJob] = await db
-        .insert(agentJobsTable)
-        .values({ ...(requestedJobId ? { jobId: requestedJobId } : {}), messages: [] })
-        .returning();
-    }
-
-    const jobId = agentJob.jobId;
-    const unsubscribe = subscribe((eventJobId, event) => {
-      if (eventJobId === jobId && socket.readyState === socket.OPEN) {
-        socket.send(JSON.stringify(event));
-      }
-    });
-    socket.on("close", unsubscribe);
-
-    socket.send(JSON.stringify({ type: "connected", jobId: agentJob.jobId }));
-
-    socket.on("message", async (raw) => {
-      let message: ClientMessage;
-      try {
-        message = JSON.parse(raw.toString());
-        console.log("message received :>> ", message);
-      } catch (err) {
-        console.error("Failed to parse message:", err);
-        return;
-      }
-
-      const messages: ModelMessage[] = [
-        ...((agentJob.messages as any[]) || []),
-        { role: "user", content: message.input },
-      ];
-
-      // Start the durable workflow in the background. It reports progress via
-      // the event stream; we don't wait for the result here — but we do
-      // attach to it so the conversation's history gets persisted once done.
-      const agentResult = await DBOS.startWorkflow(runAgentWorkflow)(agentJob.jobId, messages);
-
-      let result: any;
-      try {
-        result = await agentResult.getResult();
-        await db
-          .update(agentJobsTable)
-          .set({ output: result.text, messages: result.messages, status: "COMPLETED" })
-          .where(eq(agentJobsTable.jobId, agentJob.jobId));
-        // Keep the connection-scoped job in sync so the next message on this
-        // socket builds on this turn's history without re-fetching it.
-        agentJob = { ...agentJob, messages: result.messages, output: result.text, status: "COMPLETED" };
-      } catch (err) {
-        await db
-          .update(agentJobsTable)
-          .set({ status: "FAILED", error: err instanceof Error ? err.message : String(err) })
-          .where(eq(agentJobsTable.jobId, agentJob.jobId));
-      }
-
-      socket.send(JSON.stringify({ jobId: agentJob.jobId, result: result.text }));
-    });
-  });
+  wss = attachProviderAgentWebSocket(server);
 
   // listen() doesn't reject on bind failure (e.g. EADDRINUSE) — it emits an
   // async 'error' event instead — so wrap it in a promise the caller can await/catch.
   await new Promise<void>((resolve, reject) => {
     server!.once("error", reject);
-    server!.listen(port, () => {
-      console.log(`API listening on port ${port}`);
+    server!.listen(API_PORT, () => {
+      console.log(`API listening on port ${API_PORT}`);
       resolve();
     });
   });

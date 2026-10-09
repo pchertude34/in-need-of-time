@@ -1,5 +1,6 @@
 import { openai } from "@ai-sdk/openai";
 import type { Agent } from "../types";
+import { createUserLocation } from "./utils";
 
 // Deliberately has no `output` schema, for the same reason as
 // ProviderExtractAgent: this agent's own multi-step web_search loop would
@@ -10,10 +11,13 @@ import type { Agent } from "../types";
 // rather than a single URL's own content (see ProviderExtractAgent). Each
 // website that mentions the provider gets its own entry so a later step can
 // weigh the provider's own site more heavily than a third-party listing.
-export const ProviderSearchAgent: Agent = {
-  name: "provider searcher",
-  model: openai("gpt-5.6-luna"),
-  systemPrompt: `You are an AI assistant that researches a single service provider for In Need of Time's provider directory: connecting people in crisis — single parents, people experiencing homelessness, and people recently released from prison — with support services such as health clinics, food banks, shelters, and free-clothing programs.
+
+// Built per run so `web_search` can be biased toward the job's state — see `createUserLocation`.
+export function createProviderSearchAgent(location?: string): Agent {
+  return {
+    name: "provider searcher",
+    model: openai("gpt-5.6-luna"),
+    systemPrompt: `You are an AI assistant that researches a single service provider for In Need of Time's provider directory: connecting people in crisis — single parents, people experiencing homelessness, and people recently released from prison — with support services such as health clinics, food banks, shelters, and free-clothing programs.
 
 ## Task
 Given a provider's name and/or a URL associated with it, use \`web_search\` to find websites that have information about this specific provider — its own website (if it has one) and any third-party directories, listings, or news mentions. Narrow those down to the 5 most reliable, most recently updated sites, and write up what you learned on each one as its own entry in plain text or markdown, so a later step can weigh the provider's own site more heavily than a third-party listing.
@@ -32,7 +36,8 @@ Given a provider's name and/or a URL associated with it, use \`web_search\` to f
 - Judge "own website" vs. "third-party" from the domain and page content (e.g. an official-looking domain matching the organization's name, vs. a directory/aggregator or unrelated news site) — don't assume based only on whether the URL matches what you were given.
 - Keep each entry's findings scoped to that specific page — don't merge in details you only saw on a different site.
 - Never write up more than 5 entries, even if more than 5 sites mention the provider.`,
-  tools: {
-    web_search: openai.tools.webSearch(),
-  },
-};
+    tools: {
+      web_search: openai.tools.webSearch({ userLocation: createUserLocation(location) }),
+    },
+  };
+}

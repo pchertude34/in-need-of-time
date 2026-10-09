@@ -4,7 +4,10 @@ import { cn } from "@in-need-of-time/utils";
 import { cva, VariantProps } from "class-variance-authority";
 
 const inputVariants = cva(
-  "flex w-full rounded-xl border border-transparent transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-100 placeholder-slate-500 data-[placeholder]:text-slate-500 text-slate-900 disabled:cursor-not-allowed disabled:opacity-50 dark:border-slate-800 dark:bg-slate-950 dark:ring-offset-slate-950 bg-white",
+  // The aria-invalid rules sit in the base rather than a variant so any input can
+  // be marked invalid without also changing which variant it uses. They outrank
+  // the variants' own border/ring classes on specificity ([aria-invalid] + class).
+  "flex w-full rounded-xl border border-transparent transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-100 placeholder-slate-500 data-[placeholder]:text-slate-500 text-slate-900 disabled:cursor-not-allowed disabled:opacity-50 dark:border-slate-800 dark:bg-slate-950 dark:ring-offset-slate-950 bg-white aria-invalid:border-error-500 aria-invalid:focus:border-error-500 aria-invalid:focus:ring-error-200",
   {
     variants: {
       variant: {

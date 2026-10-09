@@ -121,7 +121,9 @@ export default function CustomStringInput(props: ObjectInputProps) {
               checked={searchType === ESTABLISHMENT}
             />
 
-            <Label htmlFor="establishment-radio">Search by Establishment</Label>
+            <Label as="label" htmlFor="establishment-radio">
+              Search by Establishment
+            </Label>
           </Flex>
           <Flex align="center">
             <Radio
@@ -132,7 +134,9 @@ export default function CustomStringInput(props: ObjectInputProps) {
               checked={searchType === ADDRESS}
             />
 
-            <Label htmlFor="address-radio">Search by Address</Label>
+            <Label as="label" htmlFor="address-radio">
+              Search by Address
+            </Label>
           </Flex>
         </Inline>
       </Stack>

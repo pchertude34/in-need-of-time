@@ -1,22 +1,43 @@
 import "./index.css";
 import React from "react";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { Navbar } from "./components/Navbar";
+import { AddProviderPage } from "./pages/AddProvider/page";
+import { AgentRunsPage } from "./pages/AgentRuns/page";
+import { JobDetailsPage } from "./pages/JobDetails/page";
 import { SanityApp } from "@sanity/sdk-react";
-import { type SanityConfig } from "@sanity/sdk";
-// import { SANITY_APP_DATASET, SANITY_APP_PROJECT_ID } from '../env';
-// console.log('process.env :>> ', process.env);
+import { type SanityConfig } from "@sanity/sdk-react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { Toaster } from "@in-need-of-time/ui";
+import { SessionProvider } from "./hooks/useSession";
+
+import { SANITY_APP_DATASET, SANITY_APP_PROJECT_ID } from "../env";
+
+// Created once, outside the component, so a re-render never throws away the cache.
+const queryClient = new QueryClient();
+
 export default function App() {
   const config: SanityConfig[] = [
     {
-      projectId: process.env.SANITY_APP_PROJECT_ID,
-      dataset: process.env.SANITY_APP_DATASET,
+      projectId: SANITY_APP_PROJECT_ID,
+      dataset: SANITY_APP_DATASET,
     },
   ];
   return (
-    <div>
-      <SanityApp config={config} fallback={<p>Loading...</p>}>
-        <h1>AI Provider Editor</h1>
-        <p>This is where you can edit your AI providers.</p>
-      </SanityApp>
-    </div>
+    <SanityApp config={config} fallback={<p>Loading...</p>}>
+      <QueryClientProvider client={queryClient}>
+        <BrowserRouter>
+          <SessionProvider>
+            <Navbar />
+            <Routes>
+              <Route path="/" element={<AddProviderPage />} />
+              <Route path="/runs" element={<AgentRunsPage />} />
+              <Route path="/job/:jobId" element={<JobDetailsPage />} />
+            </Routes>
+            <Toaster />
+          </SessionProvider>
+        </BrowserRouter>
+      </QueryClientProvider>
+    </SanityApp>
   );
 }

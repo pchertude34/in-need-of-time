@@ -2,6 +2,7 @@ import { Output } from "ai";
 import { openai } from "@ai-sdk/openai";
 import { z } from "zod";
 import { tools } from "../tools";
+import { createUserLocation } from "./utils";
 import type { Agent } from "../types";
 
 const directoryScrapeOutputSchema = z.object({
@@ -12,10 +13,12 @@ const directoryScrapeOutputSchema = z.object({
     ),
 });
 
-export const DirectoryScrapeAgent: Agent = {
-  name: "directory scraper",
-  model: openai("gpt-5.6-luna"),
-  systemPrompt: `You are an AI assistant that finds every provider listed in an online directory of service providers, so each one can be individually reviewed later.
+// Built per run so `web_search` can be biased toward the job's state — see `createUserLocation`.
+export function createDirectoryScrapeAgent(location?: string): Agent {
+  return {
+    name: "directory scraper",
+    model: openai("gpt-5.6-luna"),
+    systemPrompt: `You are an AI assistant that finds every provider listed in an online directory of service providers, so each one can be individually reviewed later.
 
 ## Task
 Given a URL, first determine whether it's a directory-style page (one that lists many organizations, e.g. a community resource directory or membership listing) or a single provider's own website. If it's a directory, enumerate every provider it lists — including across pagination — and produce a list of URLs for a separate agent to visit and extract full details from. You are not responsible for judging whether each provider ultimately fits In Need of Time's criteria or for extracting its full details — that happens in a later step.
@@ -36,9 +39,10 @@ Given a URL, first determine whether it's a directory-style page (one that lists
 - Do not fabricate providers or URLs that aren't actually present in the retrieved content.
 - If a provider's own page or profile URL isn't linked from the directory, omit it rather than guessing one.
 - If the page has no clear pagination, treat it as a single page and return everything found on it.`,
-  tools: {
-    web_search: openai.tools.webSearch(),
-    web_fetch: tools.fetchUrlContent,
-  },
-  output: Output.object({ schema: directoryScrapeOutputSchema }),
-};
+    tools: {
+      web_search: openai.tools.webSearch({ userLocation: createUserLocation(location) }),
+      web_fetch: tools.fetchUrlContent,
+    },
+    output: Output.object({ schema: directoryScrapeOutputSchema }),
+  };
+}

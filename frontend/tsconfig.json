@@ -1,9 +1,8 @@
 {
   "extends": "../tsconfig.json",
   "compilerOptions": {
-    "lib": ["dom", "dom.iterable", "esnext"],
     "incremental": true,
-    "jsx": "react-jsx",
+    "types": ["node", "google.maps"],
     "plugins": [
       {
         "name": "next"

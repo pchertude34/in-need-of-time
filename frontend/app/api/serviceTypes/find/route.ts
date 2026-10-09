@@ -20,11 +20,15 @@ export async function GET(request: Request) {
   const distance = searchParams.get("distance");
 
   const query = groq`*[ _type == "provider" && defined(serviceTypes) &&
-    geo::distance(geo::latLng(place.location.lat, place.location.lng), geo::latLng(${lat}, ${lng})) < ${distance}]{
-    'services': serviceTypes[]->{name, description, slug}  
+    geo::distance(location, geo::latLng($lat, $lng)) < $distance]{
+    'services': serviceTypes[].serviceType->{name, description, slug}
 }`;
 
-  const providerServiceTypes: GROQResponse[] = await client.fetch(query);
+  const providerServiceTypes: GROQResponse[] = await client.fetch(query, {
+    lat: Number(lat),
+    lng: Number(lng),
+    distance: Number(distance),
+  });
 
   const serviceTypes = providerServiceTypes.reduce((acc: any, curr: any) => {
     curr.services.forEach((service: any) => {
