@@ -10,7 +10,8 @@
   },
   "scripts": {
     "dev": "NODE_ENV=development tsx watch --clear-screen=false src/index.ts",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "start": "NODE_ENV=production tsx src/index.ts"
   },
   "dependencies": {
     "@in-need-of-time/agent-core": "file:../agent-core",
@@ -20,6 +21,7 @@
     "cors": "^2.8.6",
     "express": "^5.2.1",
     "jose": "^6.2.12",
+    "tsx": "^4.23.15",
     "ws": "^8.19.0"
   },
   "devDependencies": {
@@ -27,7 +29,6 @@
     "@types/express": "^5.0.6",
     "@types/node": "^24.19.1",
     "@types/ws": "^8.18.1",
-    "tsx": "^4.21.0",
     "typescript": "^7.0.2"
   }
 }

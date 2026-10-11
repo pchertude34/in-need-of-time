@@ -31,7 +31,8 @@
     "db:push": "dotenv -e ./.env.local -- npm run -w @in-need-of-time/db db:push",
     "db:studio": "dotenv -e ./.env.local -- npm run -w @in-need-of-time/db db:studio",
     "db:migrate": "dotenv -e ./.env.local -- npm run -w @in-need-of-time/db db:migrate",
-    "agent:dev": "dotenv -e ./.env.local -- npm run -w @in-need-of-time/agent-core dev"
+    "agent:dev": "dotenv -e ./.env.local -- npm run -w @in-need-of-time/agent-core dev",
+    "api:start": "dotenv -e ./.env.local -- npm run -w @in-need-of-time/api start"
   },
   "simple-git-hooks": {
     "pre-commit": "npx pretty-quick --staged"
