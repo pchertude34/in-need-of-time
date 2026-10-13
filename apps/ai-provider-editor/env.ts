@@ -1,7 +1,10 @@
 export const SANITY_APP_API_VERSION = process.env.SANITY_APP_API_VERSION || "2024-03-09";
 
-export const SANITY_APP_PROVIDER_AGENT_API_URL =
-  process.env.SANITY_APP_PROVIDER_AGENT_API_URL || "http://localhost:4011";
+// Trailing slashes stripped: callers append paths like `/auth/session`, and a
+// `//auth/session` doesn't match any Express route.
+export const SANITY_APP_PROVIDER_AGENT_API_URL = (
+  process.env.SANITY_APP_PROVIDER_AGENT_API_URL || "http://localhost:4011"
+).replace(/\/+$/, "");
 
 // Where Sanity Studio is served, so the app can link into documents it finds.
 

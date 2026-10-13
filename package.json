@@ -32,7 +32,9 @@
     "db:studio": "dotenv -e ./.env.local -- npm run -w @in-need-of-time/db db:studio",
     "db:migrate": "dotenv -e ./.env.local -- npm run -w @in-need-of-time/db db:migrate",
     "agent:dev": "dotenv -e ./.env.local -- npm run -w @in-need-of-time/agent-core dev",
-    "api:start": "dotenv -e ./.env.local -- npm run -w @in-need-of-time/api start"
+    "api:start": "dotenv -e ./.env.local -- npm run -w @in-need-of-time/api start",
+    "app:ai-provider-editor:build": "dotenv -e ./.env.production -- npm run -w @in-need-of-time/ai-provider-editor build",
+    "app:ai-provider-editor:deploy": "dotenv -e ./.env.production -- npm run -w @in-need-of-time/ai-provider-editor deploy"
   },
   "simple-git-hooks": {
     "pre-commit": "npx pretty-quick --staged"

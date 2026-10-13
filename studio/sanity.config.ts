@@ -14,8 +14,10 @@ import {
   SANITY_STUDIO_DATASET,
   SANITY_STUDIO_PROJECT_ID,
   SANITY_STUDIO_GOOGLE_API_KEY,
+  SANITY_STUDIO_AI_PROVIDER_EDITOR_URL,
 } from "./env";
 import { schema } from "./schema";
+import { aiProviderEditorTool } from "./src/tools/aiProviderEditorTool";
 
 export default defineConfig({
   basePath: "/studio",
@@ -30,4 +32,6 @@ export default defineConfig({
     visionTool({ defaultApiVersion: SANITY_STUDIO_API_VERSION }),
     googleMapsInput({ apiKey: SANITY_STUDIO_GOOGLE_API_KEY }),
   ],
+  tools: (prev) =>
+    SANITY_STUDIO_AI_PROVIDER_EDITOR_URL ? [...prev, aiProviderEditorTool(SANITY_STUDIO_AI_PROVIDER_EDITOR_URL)] : prev,
 });

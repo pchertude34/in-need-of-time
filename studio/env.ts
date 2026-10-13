@@ -20,6 +20,10 @@ export const SANITY_STUDIO_GOOGLE_MAPS_ID = assertValue(
   "Missing environment variable: SANITY_STUDIO_GOOGLE_MAPS_ID",
 );
 
+// Where the AI Provider Editor app is served. Optional — the Studio leaves out its
+// navbar link when unset. Copy the deployed app's URL from the Sanity Dashboard.
+export const SANITY_STUDIO_AI_PROVIDER_EDITOR_URL = process.env.SANITY_STUDIO_AI_PROVIDER_EDITOR_URL || undefined;
+
 export const useCdn = false;
 
 function assertValue<T>(v: T | undefined, errorMessage: string): T {

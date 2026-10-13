@@ -7,6 +7,9 @@ export default defineCliConfig({
     organizationId: "ogs95D1E1",
     entry: "./src/App.tsx",
   },
+  deployment: {
+    appId: "cpriw6850fviaescuez2y09z",
+  },
   // Off `sanity dev`'s default 3333, which the Studio keeps: the two dev servers
   // have to run side by side, since this app links into the Studio by URL.
   // Dev only — `sanity build` and `sanity deploy` don't read it.
