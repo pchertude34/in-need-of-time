@@ -17,7 +17,7 @@ import {
 } from "@in-need-of-time/ui";
 
 export const navigation = [
-  { name: "Add Provider", href: "/", icon: UserPlusIcon },
+  { name: "Add Providers", href: "/", icon: UserPlusIcon },
   { name: "Agent Runs", href: "/runs", icon: ClockIcon },
 ];
 
