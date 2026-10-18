@@ -25,7 +25,7 @@ export function Navbar() {
   const { pathname } = useLocation();
 
   return (
-    <Drawer shouldScaleBackground={false} direction="top">
+    <Drawer swipeDirection="up">
       <>
         <div className="border-b border-slate-200">
           <div className="relative z-20 mx-auto max-w-7xl bg-white px-4 py-5 sm:px-6 lg:p-5">
@@ -65,18 +65,16 @@ export function Navbar() {
               </div>
               <div className="-mr-2 flex items-center lg:hidden">
                 {/* Mobile menu button */}
-                <DrawerTrigger asChild>
-                  <Button variant="text-dark" size="text">
-                    <span className="sr-only">Open main menu</span>
-                    <Bars3Icon className="block h-6 w-6" aria-hidden="true" />
-                  </Button>
+                <DrawerTrigger render={<Button variant="text-dark" size="text" />}>
+                  <span className="sr-only">Open main menu</span>
+                  <Bars3Icon className="block h-6 w-6" aria-hidden="true" />
                 </DrawerTrigger>
               </div>
             </div>
           </div>
         </div>
         {/* Mobile Menu */}
-        <DrawerContent variant="top" className="focus-ring-none" aria-describedby={undefined}>
+        <DrawerContent className="focus-ring-none">
           <DrawerTitle className="sr-only">Main Menu</DrawerTitle>
           <div className="px-4 pb-5">
             <div className="flex items-center justify-between py-5">
@@ -86,27 +84,28 @@ export function Navbar() {
                 </Link>
                 <Badge variant="primary">CMS</Badge>
               </div>
-              <DrawerClose asChild>
-                <Button variant="text-dark" size="text">
-                  <XMarkIcon className="h-6 w-6" />
-                </Button>
+              <DrawerClose render={<Button variant="text-dark" size="text" />}>
+                <XMarkIcon className="h-6 w-6" />
               </DrawerClose>
             </div>
             <NavigationMenu orientation="vertical" className="max-w-full flex-col items-stretch">
               <NavigationMenuList className="flex-col items-stretch">
                 {navigation.map((item) => (
                   <NavigationMenuItem key={item.href}>
-                    <DrawerClose asChild>
-                      <NavigationMenuLink
-                        asChild
-                        data-active={pathname === item.href ? true : null}
-                        className={`${navigationMenuTriggerStyle()} w-max-w w-full`}
-                      >
-                        <Link to={item.href}>
-                          <item.icon className="mr-2 h-4 w-4" />
-                          {item.name}
-                        </Link>
-                      </NavigationMenuLink>
+                    <DrawerClose
+                      nativeButton={false}
+                      render={
+                        <NavigationMenuLink
+                          asChild
+                          data-active={pathname === item.href ? true : null}
+                          className={`${navigationMenuTriggerStyle()} w-max-w w-full`}
+                        />
+                      }
+                    >
+                      <Link to={item.href}>
+                        <item.icon className="mr-2 h-4 w-4" />
+                        {item.name}
+                      </Link>
                     </DrawerClose>
                   </NavigationMenuItem>
                 ))}
