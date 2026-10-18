@@ -1,0 +1,43 @@
+name: Deploy AI Provider Editor
+
+# Replaces running `npm run app:ai-provider-editor:deploy` locally. The values that
+# used to come from `.env.production` come from the `production` environment's
+# variables and secrets instead.
+on:
+  push:
+    branches: [main]
+    paths:
+      - apps/ai-provider-editor/**
+      # Shared libraries are bundled into the app, so changes to them redeploy it too.
+      - packages/**
+      - package-lock.json
+      - .github/workflows/deploy-ai-provider-editor.yml
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-ai-provider-editor
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Deploy to Sanity
+    runs-on: ubuntu-latest
+    environment: production
+    env:
+      SANITY_AUTH_TOKEN: ${{ secrets.SANITY_AUTH_TOKEN }}
+      SANITY_APP_API_VERSION: ${{ vars.SANITY_APP_API_VERSION }}
+      SANITY_APP_PROJECT_ID: ${{ vars.SANITY_APP_PROJECT_ID }}
+      SANITY_APP_DATASET: ${{ vars.SANITY_APP_DATASET }}
+      SANITY_APP_ORGANIZATION_ID: ${{ vars.SANITY_APP_ORGANIZATION_ID }}
+      SANITY_APP_PROVIDER_AGENT_API_URL: ${{ vars.SANITY_APP_PROVIDER_AGENT_API_URL }}
+      SANITY_APP_STUDIO_URL: ${{ vars.SANITY_APP_STUDIO_URL }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      # Checked here as well as in CI, since this workflow doesn't wait for CI to finish.
+      - run: npm run type-check -w @in-need-of-time/ai-provider-editor
+      - run: npm run deploy -w @in-need-of-time/ai-provider-editor -- --yes

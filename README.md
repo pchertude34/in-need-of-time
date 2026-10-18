@@ -119,6 +119,10 @@ We use [sanity.io](https://www.sanity.io/) for a content management system. This
 | Frontend           | [Vercel](https://vercel.com/)   | [in-need-of-time-frontend](https://vercel.com/paytonchertudeguidedprojecs-projects/in-need-of-time-frontend) |
 | Studio             | [Vercel](https://vercel.com/)   | [in-need-of-time-studio](https://vercel.com/paytonchertudeguidedprojecs-projects/in-need-of-time-studio)     |
 | API                | [Railway](https://railway.com/) | [Railway project](https://railway.com/project/939e98c5-9eb4-4109-a370-4e16860a015e)                          |
-| AI Provider Editor | Sanity                          | Deployed with `npm run app:ai-provider-editor:deploy`, which reads `.env.production`                         |
+| AI Provider Editor | Sanity                          | Deployed by GitHub Actions on push to `main` (`.github/workflows/deploy-ai-provider-editor.yml`)             |
 
-Each host has its own copy of the environment variables that part needs, so when you add a variable to `.env.example`, also add it to the matching project's settings.
+Each host has its own copy of the environment variables that part needs, so when you add a variable to `.env.example`, also add it to the matching project's settings. For the AI Provider Editor, that's the `production` environment's variables and secrets in the GitHub repo settings.
+
+### CI
+
+`.github/workflows/ci.yml` runs `format:check` and every workspace's `type-check` on each pull request and each push to `main`.
