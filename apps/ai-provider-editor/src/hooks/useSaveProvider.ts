@@ -1,10 +1,18 @@
 import { useCallback } from "react";
-import { createDocument, createDocumentHandle, editDocument } from "@sanity/sdk-react";
+import { createDocument, createDocumentHandle, editDocument, publishDocument } from "@sanity/sdk-react";
 import { useApplyDocumentActions } from "@sanity/sdk-react";
 import { buildProviderDocumentFields, type ProviderDraftFields } from "../pages/JobDetails/utils";
 import type { ProviderFormValues } from "../types";
 
 export type SaveProviderDraftResult = { success: true; documentId: string } | { success: false; message: string };
+
+export type ProviderSaveTypes = "draft" | "published";
+
+type SaveProviderParams = {
+  values: ProviderFormValues;
+  overrideDocumentId?: string;
+  saveAs?: ProviderSaveTypes;
+};
 
 /**
  * Splits the form's fields into what to write and what to clear. A new document
@@ -21,14 +29,16 @@ function toPatch(fields: ProviderDraftFields) {
 }
 
 /**
- * Saves the form's values as an unpublished provider draft — a brand new
- * document, or, given `overrideDocumentId`, the draft of an existing one.
+ * Saves the form's values as a provider — a brand new document, or, given
+ * `overrideDocumentId`, an existing one. By default only the draft is written;
+ * with `saveAs: "published"` the draft is published in the same transaction.
  */
-export function useSaveProviderDraft() {
+export function useSaveProvider() {
   const apply = useApplyDocumentActions();
 
-  const saveDraft = useCallback(
-    async (values: ProviderFormValues, overrideDocumentId?: string): Promise<SaveProviderDraftResult> => {
+  const saveProvider = useCallback(
+    async (params: SaveProviderParams): Promise<SaveProviderDraftResult> => {
+      const { values, overrideDocumentId, saveAs = "draft" } = params;
       const fields = buildProviderDocumentFields(values);
 
       try {
@@ -40,19 +50,27 @@ export function useSaveProviderDraft() {
             documentType: "provider",
           });
 
-          // Editing a published document creates its draft, so the live listing
-          // stays as it is until the override is reviewed and published in Studio.
-          await apply(editDocument(providerHandle, toPatch(fields)));
+          // Editing a published document creates its draft, so unless publishing
+          // is asked for, the live listing stays as it is until the override is
+          // reviewed and published in Studio.
+          await apply([
+            editDocument(providerHandle, toPatch(fields)),
+            ...(saveAs === "published" ? [publishDocument(providerHandle)] : []),
+          ]);
           return { success: true, documentId: providerHandle.documentId };
         }
 
         const providerHandle = createDocumentHandle({ documentId: crypto.randomUUID(), documentType: "provider" });
 
-        // Two actions, one transaction: `createDocument` alone would create an
-        // empty draft, so the field values ride along as a patch applied in the
-        // same call. Neither action publishes it — that stays a manual step in
-        // Studio once the draft has been reviewed.
-        await apply([createDocument(providerHandle), editDocument(providerHandle, { set: fields })]);
+        // One transaction: `createDocument` alone would create an empty draft, so
+        // the field values ride along as a patch applied in the same call, followed
+        // by the publish when asked for. Otherwise publishing stays a manual step
+        // in Studio once the draft has been reviewed.
+        await apply([
+          createDocument(providerHandle),
+          editDocument(providerHandle, { set: toPatch(fields).set }),
+          ...(saveAs === "published" ? [publishDocument(providerHandle)] : []),
+        ]);
         return { success: true, documentId: providerHandle.documentId };
       } catch (error) {
         const message = error instanceof Error ? error.message : "Failed to save the provider.";
@@ -62,5 +80,5 @@ export function useSaveProviderDraft() {
     [apply],
   );
 
-  return { saveDraft };
+  return { saveProvider };
 }

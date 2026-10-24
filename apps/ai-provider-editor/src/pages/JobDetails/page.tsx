@@ -10,7 +10,7 @@ import { EventType, type AgentEvent } from "@in-need-of-time/types/agentEvents";
 import { ActivityStepper } from "../../components/ActivityStepper/ActivityStepper";
 import { ProviderForm } from "../../components/ProviderForm/ProviderForm";
 import { buildActivitySteps, buildProviderFormValues, findWorkflowOutput, isAgentRunning } from "./utils";
-import { useSaveProviderDraft } from "../../hooks/useSaveProviderDraft";
+import { useSaveProvider } from "../../hooks/useSaveProvider";
 import { AGENT_JOBS_QUERY_KEY, deleteAgentJob } from "../../queries";
 import type { ProviderFormValues } from "../../types";
 import type { DuplicateProviderMatch } from "@in-need-of-time/utils";
@@ -45,7 +45,7 @@ export function JobDetailsPage() {
   const workflowOutput = findWorkflowOutput(events);
   const provider = useMemo(() => buildProviderFormValues(workflowOutput), [workflowOutput]);
 
-  const { saveDraft } = useSaveProviderDraft();
+  const { saveProvider } = useSaveProvider();
   const [isSaving, setIsSaving] = useState(false);
 
   const submitForm = useCallback(
@@ -55,7 +55,7 @@ export function JobDetailsPage() {
       }
 
       setIsSaving(true);
-      const result = await saveDraft(values, overrideMatch?._id);
+      const result = await saveProvider({ values, overrideDocumentId: overrideMatch?._id, saveAs: "published" });
       setIsSaving(false);
 
       if (!result.success) {
@@ -65,12 +65,10 @@ export function JobDetailsPage() {
 
       toast.success(
         overrideMatch
-          ? `Overrode "${overrideMatch.title}" in a draft. Review it in Sanity Studio, then publish it from there.`
-          : "Saved as a draft. Review it in Sanity Studio, then publish it from there.",
+          ? `Overrode and published "${overrideMatch.title}". The updated listing is now live.`
+          : "Published the provider. The new listing is now live.",
       );
 
-      // Once the provider is saved as a draft, this job has done its job —
-      // remove it so it doesn't linger in the runs list.
       try {
         await deleteAgentJob(sessionToken, jobId);
       } catch {
@@ -80,7 +78,7 @@ export function JobDetailsPage() {
       queryClient.invalidateQueries({ queryKey: AGENT_JOBS_QUERY_KEY });
       navigate("/runs");
     },
-    [saveDraft, jobId, queryClient, navigate, sessionToken],
+    [saveProvider, jobId, queryClient, navigate, sessionToken],
   );
 
   return (
@@ -104,15 +102,9 @@ export function JobDetailsPage() {
         </div>
       </div>
       <div className="mx-auto flex w-full flex-col xl:flex-row">
-        {/* Two thirds / one third from xl up, so the sidebar keeps roughly the
-            proportion it had at the xl breakpoint and then grows with the
-            viewport instead of staying pinned to a fixed width. `min-w-0` so a
-            wide field can't expand this column past its share of the row. */}
         <div className="px-2 py-6 sm:px-6 lg:pl-8 xl:min-w-0 xl:basis-2/3 xl:pl-6">
           <ProviderForm provider={provider} disabled={agentRunning} isSaving={isSaving} onSubmit={submitForm} />
         </div>
-        {/* Above the form on small screens, beside it from xl up — the form is the
-            primary content, so it stays first in the DOM either way. */}
         <div className="order-first shrink-0 border-b border-slate-200 bg-slate-50 px-4 py-6 sm:px-6 lg:pl-8 xl:order-none xl:basis-1/3 xl:border-b-0 xl:border-l xl:pl-6 dark:border-white/10">
           <ActivityStepper steps={activitySteps} />
         </div>

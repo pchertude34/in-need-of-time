@@ -27,11 +27,6 @@ import { getStudioProviderUrl } from "../../utils";
 
 type SaveMode = "new" | "override";
 
-// Each option is a whole card that selects its radio. The radio is a button, not
-// an input, so the checked style keys off Radix's `data-state` instead of `:checked`.
-const OPTION_CLASS_NAME =
-  "flex cursor-pointer items-start gap-3 rounded-xl border border-slate-200 p-3 has-data-[state=checked]:border-primary-500 has-data-[state=checked]:bg-primary-50";
-
 const OVERRIDE_SELECT_ID = "duplicate-override-target";
 
 type DuplicateSaveConfirmDialogProps = {
