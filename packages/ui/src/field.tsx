@@ -89,13 +89,19 @@ function FieldContent({ className, ...props }: React.ComponentProps<"div">) {
   );
 }
 
+// The card variant (a label wrapping a Field) keys its checked style off Radix's
+// `data-state="checked"` rather than shadcn's `data-checked`, and uses the
+// palette colors since this theme has no `primary`/`muted`/`ring` tokens.
 function FieldLabel({ className, ...props }: React.ComponentProps<typeof Label>) {
   return (
     <Label
       data-slot="field-label"
       className={cn(
-        "group/field-label peer/field-label has-data-checked:border-primary/30 has-data-checked:bg-primary/5 has-[>[data-slot=field]]:not-has-[:disabled,[data-disabled]]:hover:bg-muted/50 has-[>[data-slot=field]]:has-[:focus-visible]:border-ring has-[>[data-slot=field]]:has-[:focus-visible]:ring-ring/50 dark:has-data-checked:border-primary/20 dark:has-data-checked:bg-primary/10 flex w-fit gap-2 leading-snug group-data-[disabled=true]/field:opacity-50 has-[>[data-slot=field]]:rounded-lg has-[>[data-slot=field]]:border has-[>[data-slot=field]]:has-[:focus-visible]:ring-3 *:data-[slot=field]:p-2.5",
-        "has-[>[data-slot=field]]:w-full has-[>[data-slot=field]]:flex-col",
+        "group/field-label peer/field-label flex w-fit gap-2 leading-snug group-data-[disabled=true]/field:opacity-50 *:data-[slot=field]:p-3",
+        "has-[>[data-slot=field]]:w-full has-[>[data-slot=field]]:cursor-pointer has-[>[data-slot=field]]:flex-col has-[>[data-slot=field]]:rounded-xl has-[>[data-slot=field]]:border has-[>[data-slot=field]]:border-slate-200 dark:has-[>[data-slot=field]]:border-slate-700",
+        "has-[>[data-slot=field]]:not-has-[:disabled,[data-disabled]]:hover:bg-slate-50 dark:has-[>[data-slot=field]]:not-has-[:disabled,[data-disabled]]:hover:bg-slate-900",
+        "has-data-[state=checked]:border-primary-500 has-data-[state=checked]:bg-primary-50 has-data-[state=checked]:hover:bg-primary-50 dark:has-data-[state=checked]:bg-primary-900/40",
+        "has-[>[data-slot=field]]:has-[:focus-visible]:border-primary-500 has-[>[data-slot=field]]:has-[:focus-visible]:ring-primary-200 has-[>[data-slot=field]]:has-[:focus-visible]:ring-2",
         className,
       )}
       {...props}

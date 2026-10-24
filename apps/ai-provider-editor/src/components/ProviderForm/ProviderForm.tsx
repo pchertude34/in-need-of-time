@@ -26,7 +26,7 @@ import { EMPTY_PROVIDER_FORM_VALUES, EMPTY_SERVICE_TYPE } from "./constants";
 import { geocodeAddress, serviceTypesQuery } from "../../queries";
 import { useDebouncedValue } from "../../hooks/useDebouncedValue";
 import type { ProviderFormValues, ServiceType } from "../../types";
-import type { DuplicateCheckResult } from "@in-need-of-time/utils";
+import type { DuplicateCheckResult, DuplicateProviderMatch } from "@in-need-of-time/utils";
 
 // A stable fallback, so the options list isn't a new array on every render
 // before the query resolves.
@@ -57,7 +57,8 @@ type ProviderFormProps = {
   disabled?: boolean;
   /** Locks every field and swaps the submit button's label — used while the save itself is in flight. */
   isSaving?: boolean;
-  onSubmit?: (values: ProviderFormValues) => void;
+  /** `overrideMatch` is the existing provider the user chose to overwrite, if they hit a duplicate and picked one. */
+  onSubmit?: (values: ProviderFormValues, overrideMatch?: DuplicateProviderMatch) => void;
 };
 
 export function ProviderForm(props: ProviderFormProps) {
@@ -565,7 +566,7 @@ export function ProviderForm(props: ProviderFormProps) {
           onOpenChange={(open) => {
             if (!open) setPendingSave(null);
           }}
-          onConfirm={() => onSubmit?.(pendingSave.values)}
+          onConfirm={(overrideMatch) => onSubmit?.(pendingSave.values, overrideMatch)}
         />
       )}
     </>

@@ -13,6 +13,7 @@ import { buildActivitySteps, buildProviderFormValues, findWorkflowOutput, isAgen
 import { useSaveProviderDraft } from "../../hooks/useSaveProviderDraft";
 import { AGENT_JOBS_QUERY_KEY, deleteAgentJob } from "../../queries";
 import type { ProviderFormValues } from "../../types";
+import type { DuplicateProviderMatch } from "@in-need-of-time/utils";
 
 // What the provider agent is submitted with — the payload `workflow.started`
 // carries on its (deliberately untyped) `input`.
@@ -48,13 +49,13 @@ export function JobDetailsPage() {
   const [isSaving, setIsSaving] = useState(false);
 
   const submitForm = useCallback(
-    async (values: ProviderFormValues) => {
+    async (values: ProviderFormValues, overrideMatch?: DuplicateProviderMatch) => {
       if (!jobId) {
         return;
       }
 
       setIsSaving(true);
-      const result = await saveDraft(values);
+      const result = await saveDraft(values, overrideMatch?._id);
       setIsSaving(false);
 
       if (!result.success) {
@@ -62,7 +63,11 @@ export function JobDetailsPage() {
         return;
       }
 
-      toast.success("Saved as a draft. Review it in Sanity Studio, then publish it from there.");
+      toast.success(
+        overrideMatch
+          ? `Overrode "${overrideMatch.title}" in a draft. Review it in Sanity Studio, then publish it from there.`
+          : "Saved as a draft. Review it in Sanity Studio, then publish it from there.",
+      );
 
       // Once the provider is saved as a draft, this job has done its job —
       // remove it so it doesn't linger in the runs list.
