@@ -92,7 +92,14 @@ const providerSchema = z.object({
       ),
   ),
   contact: z.object({
-    phone: withConfidence(z.string().nullable().describe("Phone number, if found.")),
+    phone: withConfidence(
+      z
+        .string()
+        .nullable()
+        .describe(
+          "Exactly one phone number — never a list or multiple numbers joined together. If the notes give several, pick the provider's main/general line (see the system prompt). Null if not found.",
+        ),
+    ),
     email: withConfidence(z.string().nullable().describe("Email address, if found.")),
     website: withConfidence(z.string().nullable().describe("Website URL, if found.")),
   }),
@@ -132,7 +139,7 @@ You will be given prose findings about one provider that another agent already v
    - Address, if stated
    - Location: if you found an address, call \`geocode_address\` with it to get its coordinates. Leave location null if there's no address, or if \`geocode_address\` couldn't match it.
    - Hours of operation: if the notes give one schedule for the whole provider, put it in the top-level \`hoursOfOperation\` field. If the notes give different hours per service, leave the top-level field null and put each service's hours on its own entry in \`serviceTypes\` instead.
-   - Contact info (phone, email, website)
+   - Contact info (phone, email, website). Phone holds exactly one number. If the notes list several, choose one in this order: the provider's main/general line, then one from the provider's own website over a third-party listing, then the first one listed. Never pick a fax number, and never join multiple numbers into one value.
    - A direct URL to its own page, if mentioned
    - The reason it fits In Need of Time's criteria, as given in the notes
    Leave any field the notes don't cover unset rather than guessing.

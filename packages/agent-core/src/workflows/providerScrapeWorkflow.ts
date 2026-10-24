@@ -26,10 +26,7 @@ export async function runProviderScrape(
   );
 
   const { urls } = research.output as ProviderResearchOutput;
-  console.log(
-    "Provider research found URLs:",
-    urls.map((u) => u.url),
-  );
+
   const extractionContext = buildContext(
     messages,
     `Websites found by an earlier research step — investigate these along with anything else you find:\n${urls
