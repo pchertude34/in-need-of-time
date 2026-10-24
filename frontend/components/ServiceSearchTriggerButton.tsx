@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import { ArrowRightIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import { InputGroup, InputRightElement, InputLeftElement } from "@in-need-of-time/ui";
