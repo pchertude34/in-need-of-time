@@ -1,5 +1,5 @@
 import { DBOS } from "@dbos-inc/dbos-sdk";
-import { eq, desc } from "drizzle-orm";
+import { eq, desc, inArray } from "drizzle-orm";
 import { db, agentJobsTable } from "@in-need-of-time/db";
 import { runAgentWorkflow } from "./workflows/agentWorkflow";
 import type { ModelMessage } from "ai";
@@ -17,6 +17,10 @@ const JOB_STATUS_BY_WORKFLOW_STATUS: Record<string, AgentJobStatus> = {
   CANCELLED: "FAILED",
   MAX_RECOVERY_ATTEMPTS_EXCEEDED: "FAILED",
 };
+
+// How many workflows a bulk delete cancels at once — enough to keep a large
+// batch quick without flooding the DBOS system database with calls.
+const WORKFLOW_REMOVAL_CONCURRENCY = 5;
 
 export type AgentJobStatus = "PENDING" | "COMPLETED" | "FAILED";
 
@@ -147,12 +151,33 @@ async function removeWorkflow(jobId: string) {
 
 /** Deletes a job, its DBOS run, and its event log. Returns false if there was no such job. */
 export async function deleteJob(jobId: string): Promise<boolean> {
-  await removeWorkflow(jobId);
-
-  // The event log cascades from this row's foreign key.
-  const deleted = await db.delete(agentJobsTable).where(eq(agentJobsTable.jobId, jobId)).returning();
+  const { deleted } = await deleteJobs([jobId]);
 
   return deleted.length > 0;
+}
+
+/**
+ * Deletes several jobs, their DBOS runs, and their event logs. An id with no
+ * job behind it isn't an error — it's reported in `notFound`.
+ *
+ * Workflows go first so no agent is left running on a deleted job. If the row
+ * delete then fails, the jobs are left cancelled but listed, and a retry
+ * finishes the job: removing an already-removed workflow is a no-op.
+ */
+export async function deleteJobs(jobIds: string[]): Promise<{ deleted: string[]; notFound: string[] }> {
+  const uniqueJobIds = [...new Set(jobIds)];
+
+  for (let i = 0; i < uniqueJobIds.length; i += WORKFLOW_REMOVAL_CONCURRENCY) {
+    await Promise.all(uniqueJobIds.slice(i, i + WORKFLOW_REMOVAL_CONCURRENCY).map((jobId) => removeWorkflow(jobId)));
+  }
+
+  // One statement, so the rows go all together or not at all. The event log
+  // cascades from each row's foreign key.
+  const deletedRows = await db.delete(agentJobsTable).where(inArray(agentJobsTable.jobId, uniqueJobIds)).returning();
+  const deleted = deletedRows.map((row) => row.jobId);
+  const deletedSet = new Set(deleted);
+
+  return { deleted, notFound: uniqueJobIds.filter((jobId) => !deletedSet.has(jobId)) };
 }
 
 export async function getJob(jobId: string): Promise<AgentJob | undefined> {

@@ -1,7 +1,7 @@
 import { Router } from "express";
 import type { IncomingMessage, Server } from "node:http";
 import { WebSocketServer, type WebSocket } from "ws";
-import { subscribe, history, createJob, getJob, listJobs, deleteJob } from "@in-need-of-time/agent-core";
+import { subscribe, history, createJob, getJob, listJobs, deleteJob, deleteJobs } from "@in-need-of-time/agent-core";
 import { readSession } from "../auth/session";
 
 const WS_PATH = "/provider-agent/ws";
@@ -71,28 +71,32 @@ providerAgentRouter.delete("/jobs/:jobId", async (req, res) => {
   res.status(204).end();
 });
 
+// POST /provider-agent/jobs/bulk-delete — permanently remove several jobs, as
+// DELETE /jobs/:jobId does for one.
+//
+// Body: `{ jobIds }` — up to MAX_DELETES job ids.
+//
+// Responds 200 with `{ deleted, notFound }`. An id that's already gone isn't an
+// error: the caller wanted it gone, and it is. The request is safe to retry.
 providerAgentRouter.post("/jobs/bulk-delete", async (req, res) => {
-  const { jobIds } = req.body as { jobIds: string[] };
+  const { jobIds } = (req.body ?? {}) as { jobIds?: unknown };
 
-  if (!jobIds || !Array.isArray(jobIds)) {
-    res.status(400).send("jobIds must be a present array in the body");
+  if (!Array.isArray(jobIds) || jobIds.length === 0) {
+    res.status(400).json({ error: "jobIds must be a non-empty array" });
     return;
   }
 
-  if (jobIds.length > MAX_DELETES) {
-    res.status(400).send(`Exceeded the maximum number of delete requests: ${MAX_DELETES}`);
+  // Checked after deduplication, so repeated ids don't count against the limit.
+  const uniqueJobIds = [...new Set<string>(jobIds)];
+
+  if (uniqueJobIds.length > MAX_DELETES) {
+    res.status(400).json({ error: `At most ${MAX_DELETES} jobs can be deleted at once` });
     return;
   }
 
-  const deleteOperations: Promise<boolean>[] = [];
+  const { deleted, notFound } = await deleteJobs(uniqueJobIds);
 
-  for (let jobId of jobIds) {
-    deleteOperations.push(deleteJob(jobId));
-  }
-
-  const results = await Promise.all(deleteOperations);
-
-  res.status(204).end();
+  res.json({ deleted, notFound });
 });
 
 // Attaches the /provider-agent/ws websocket endpoint to the given HTTP
