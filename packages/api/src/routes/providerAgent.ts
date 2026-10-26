@@ -15,6 +15,7 @@ const WS_PATH = "/provider-agent/ws";
  * The client offers `["bearer", "<token>"]`; the server echoes back "bearer".
  */
 const WS_AUTH_PROTOCOL = "bearer";
+const MAX_DELETES = 25;
 
 export const providerAgentRouter = Router();
 
@@ -66,6 +67,30 @@ providerAgentRouter.delete("/jobs/:jobId", async (req, res) => {
     res.status(404).json({ error: `Job ${jobId} not found` });
     return;
   }
+
+  res.status(204).end();
+});
+
+providerAgentRouter.post("/jobs/bulk-delete", async (req, res) => {
+  const { jobIds } = req.body as { jobIds: string[] };
+
+  if (!jobIds || !Array.isArray(jobIds)) {
+    res.status(400).send("jobIds must be a present array in the body");
+    return;
+  }
+
+  if (jobIds.length > MAX_DELETES) {
+    res.status(400).send(`Exceeded the maximum number of delete requests: ${MAX_DELETES}`);
+    return;
+  }
+
+  const deleteOperations: Promise<boolean>[] = [];
+
+  for (let jobId of jobIds) {
+    deleteOperations.push(deleteJob(jobId));
+  }
+
+  const results = await Promise.all(deleteOperations);
 
   res.status(204).end();
 });

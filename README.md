@@ -6,15 +6,15 @@ In Need of Time helps people in crisis — single moms, people experiencing home
 
 This repo is an npm workspaces monorepo. Provider content lives in [Sanity](https://www.sanity.io/) and is edited in the Studio; the public site reads it from there. An AI agent, run by the API, helps content editors research and fill in provider details.
 
-| Part               | Folder                                                                                          | What it is                                                                                     | Deployed to                                                                    |
-| ------------------ | ----------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
-| Frontend           | `frontend/`                                                                                     | Next.js public site where people search for providers                                          | [Vercel](https://vercel.com/pchertude34-7217s-projects/in-time-of-need)        |
-| Studio             | `studio/`                                                                                       | Sanity Studio, the CMS content administrators use to add and update providers                  | [Vercel](https://vercel.com/pchertude34-7217s-projects/in-time-of-need-studio) |
-| API                | `packages/api/`                                                                                 | Express server: Sanity-based sign-in, the provider agent, and geocoding                        | [Railway](https://railway.com/project/939e98c5-9eb4-4109-a370-4e16860a015e)    |
-| AI Provider Editor | `apps/ai-provider-editor/`                                                                      | Sanity App SDK app where editors work with the provider agent; linked from the Studio's navbar | Sanity, via `npm run app:ai-provider-editor:deploy`                            |
-| Agent core         | `packages/agent-core/`                                                                          | The AI agent runtime (Vercel AI SDK + DBOS durable workflows), run inside the API              | Ships with the API                                                             |
-| Database           | `packages/db/`                                                                                  | Drizzle ORM schema and client for Postgres (Neon), used for agent jobs and audit logs          | [Neon](https://console.neon.tech/app/projects/lucky-dew-02477744/settings)     |
-| Shared libraries   | `packages/components/`, `packages/hooks/`, `packages/types/`, `packages/ui/`, `packages/utils/` | Code shared by the apps above                                                                  | Bundled into the apps that use them                                            |
+| Part               | Folder                                                                                          | What it is                                                                                     | Deployed to                                                                                |
+| ------------------ | ----------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
+| Frontend           | `frontend/`                                                                                     | Next.js public site where people search for providers                                          | [Vercel](https://vercel.com/paytonchertudeguidedprojecs-projects/in-need-of-time-frontend) |
+| Studio             | `studio/`                                                                                       | Sanity Studio, the CMS content administrators use to add and update providers                  | [Vercel](https://vercel.com/paytonchertudeguidedprojecs-projects/in-need-of-time-studio)   |
+| API                | `packages/api/`                                                                                 | Express server: Sanity-based sign-in, the provider agent, and geocoding                        | [Railway](https://railway.com/project/939e98c5-9eb4-4109-a370-4e16860a015e)                |
+| AI Provider Editor | `apps/ai-provider-editor/`                                                                      | Sanity App SDK app where editors work with the provider agent; linked from the Studio's navbar | Sanity, via `npm run app:ai-provider-editor:deploy`                                        |
+| Agent core         | `packages/agent-core/`                                                                          | The AI agent runtime (Vercel AI SDK + DBOS durable workflows), run inside the API              | Ships with the API                                                                         |
+| Database           | `packages/db/`                                                                                  | Drizzle ORM schema and client for Postgres (Neon), used for agent jobs and audit logs          | [Neon](https://neon.tech/)                                                                 |
+| Shared libraries   | `packages/components/`, `packages/hooks/`, `packages/types/`, `packages/ui/`, `packages/utils/` | Code shared by the apps above                                                                  | Bundled into the apps that use them                                                        |
 
 Content flows like this: editors update providers in the **Studio** (or with help from the agent in the **AI Provider Editor**, which calls the **API**), the content is stored in Sanity, and the **Frontend** queries Sanity to show it to the public.
 
@@ -114,13 +114,12 @@ We use [sanity.io](https://www.sanity.io/) for a content management system. This
 
 ## Deployments
 
-| Part               | Host                            | Project                                                                                          |
-| ------------------ | ------------------------------- | ------------------------------------------------------------------------------------------------ |
-| Frontend           | [Vercel](https://vercel.com/)   | [in-time-of-need](https://vercel.com/pchertude34-7217s-projects/in-time-of-need)                 |
-| Studio             | [Vercel](https://vercel.com/)   | [in-time-of-need-studio](https://vercel.com/pchertude34-7217s-projects/in-time-of-need-studio)   |
-| API                | [Railway](https://railway.com/) | [Railway project](https://railway.com/project/939e98c5-9eb4-4109-a370-4e16860a015e)              |
-| Database           | [Neon](https://neon.tech/)      | [Neon project](https://console.neon.tech/app/projects/lucky-dew-02477744/settings)               |
-| AI Provider Editor | Sanity                          | Deployed by GitHub Actions on push to `main` (`.github/workflows/deploy-ai-provider-editor.yml`) |
+| Part               | Host                            | Project                                                                                                      |
+| ------------------ | ------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| Frontend           | [Vercel](https://vercel.com/)   | [in-need-of-time-frontend](https://vercel.com/paytonchertudeguidedprojecs-projects/in-need-of-time-frontend) |
+| Studio             | [Vercel](https://vercel.com/)   | [in-need-of-time-studio](https://vercel.com/paytonchertudeguidedprojecs-projects/in-need-of-time-studio)     |
+| API                | [Railway](https://railway.com/) | [Railway project](https://railway.com/project/939e98c5-9eb4-4109-a370-4e16860a015e)                          |
+| AI Provider Editor | Sanity                          | Deployed by GitHub Actions on push to `main` (`.github/workflows/deploy-ai-provider-editor.yml`)             |
 
 Each host has its own copy of the environment variables that part needs, so when you add a variable to `.env.example`, also add it to the matching project's settings. For the AI Provider Editor, that's the `production` environment's variables and secrets in the GitHub repo settings.
 

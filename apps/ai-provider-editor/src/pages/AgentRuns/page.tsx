@@ -31,12 +31,12 @@ export function AgentRunsPage() {
   // `mutateAsync` is stable across renders; wrapping it keeps the table's
   // columns from being rebuilt every time this page re-renders.
   const { mutateAsync: deleteJobById } = deleteJob;
-  const onDelete = useCallback((job: AgentJob) => deleteJobById(job.jobId), [deleteJobById]);
+  const onDelete = useCallback((jobId: string) => deleteJobById(jobId), [deleteJobById]);
   const onSelect = useCallback((job: AgentJob) => navigate(`/job/${job.jobId}`), [navigate]);
 
   return (
     <main className="mx-auto flex max-w-7xl justify-center px-4 sm:px-6 lg:px-8">
-      <div className="flex w-full max-w-5xl flex-col space-y-6">
+      <div className="flex w-full flex-col space-y-6">
         <div className="text-center">
           <h1 className="text-2xl font-bold text-slate-900">Agent Runs</h1>
           <p className="text-slate-600">Every job the provider agent has run.</p>

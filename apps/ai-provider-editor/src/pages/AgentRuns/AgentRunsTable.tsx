@@ -90,7 +90,7 @@ type AgentRunsTableProps = {
   /** Shown in place of the rows when the runs couldn't be loaded. */
   error?: string | null;
   onSelect: (job: AgentJob) => void;
-  onDelete: (job: AgentJob) => Promise<void>;
+  onDelete: (jobId: string) => Promise<void>;
 };
 
 export function AgentRunsTable(props: AgentRunsTableProps) {
@@ -107,7 +107,7 @@ export function AgentRunsTable(props: AgentRunsTableProps) {
         columnHelper.display({
           id: "actions",
           header: "",
-          cell: (info) => <RunActionsMenu onDelete={() => onDelete(info.row.original)} />,
+          cell: (info) => <RunActionsMenu onDelete={() => onDelete(info.row.original.jobId)} />,
         }),
       ]),
     [onDelete],
