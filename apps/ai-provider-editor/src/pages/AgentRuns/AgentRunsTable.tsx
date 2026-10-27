@@ -7,15 +7,18 @@ import {
   filterFn_includesString,
   flexRender,
   globalFilteringFeature,
+  rowSelectionFeature,
   rowSortingFeature,
   sortFn_alphanumeric,
   sortFn_text,
   tableFeatures,
   useTable,
+  type RowSelectionState,
   type SortingState,
 } from "@tanstack/react-table";
 import { ArrowDownIcon, ArrowUpIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import { Badge, Card, Input, InputGroup, InputLeftElement, Skeleton } from "@in-need-of-time/ui";
+import { BulkActionsMenu } from "./BulkActionsMenu";
 import { RunActionsMenu } from "./RunActionsMenu";
 import { formatTimestamp, getStatusVariant } from "./utils";
 import type { AgentJob } from "./types";
@@ -25,11 +28,12 @@ const DEFAULT_SORTING: SortingState = [{ id: "timestamp", desc: true }];
 const SKELETON_ROWS = [0, 1, 2];
 
 // v9 stitches features in statically rather than exposing every row model on
-// every table — only sorting and filtering are needed here.
+// every table — only sorting, filtering, and selection are needed here.
 const features = tableFeatures({
   rowSortingFeature,
   columnFilteringFeature,
   globalFilteringFeature,
+  rowSelectionFeature,
   sortedRowModel: createSortedRowModel(),
   filteredRowModel: createFilteredRowModel(),
   // Timestamps are ISO strings, so lexicographic order is chronological order.
@@ -44,6 +48,26 @@ const columnHelper = createColumnHelper<typeof features, AgentJob>();
 // The actions column is added in the component, where it can reach `onDelete`;
 // everything before it only needs the row.
 const DATA_COLUMNS = columnHelper.columns([
+  // "Select all" covers the rows on screen — the ones left after filtering —
+  // so it never picks up runs the user can't see.
+  columnHelper.display({
+    id: "select",
+    header: ({ table }) => (
+      <SelectCheckbox
+        aria-label="Select all runs"
+        checked={table.getIsAllPageRowsSelected()}
+        indeterminate={table.getIsSomePageRowsSelected()}
+        onChange={table.getToggleAllPageRowsSelectedHandler()}
+      />
+    ),
+    cell: ({ row }) => (
+      <SelectCheckbox
+        aria-label={`Select run "${row.original.input?.message ?? row.original.jobId}"`}
+        checked={row.getIsSelected()}
+        onChange={row.getToggleSelectedHandler()}
+      />
+    ),
+  }),
   // Accessor functions rather than "input.message" paths: `input` is null on
   // runs created before the column existed.
   columnHelper.accessor((row) => row.input?.message ?? "", {
@@ -91,13 +115,15 @@ type AgentRunsTableProps = {
   error?: string | null;
   onSelect: (job: AgentJob) => void;
   onDelete: (jobId: string) => Promise<void>;
-  onDeleteBulk: (jobIds: string[]) => Promise<any>;
+  /** Rejects when the delete fails, so the selection is kept for a retry. */
+  onDeleteBulk: (jobIds: string[]) => Promise<unknown>;
 };
 
 export function AgentRunsTable(props: AgentRunsTableProps) {
-  const { data, isLoading = false, error = null, onSelect, onDelete } = props;
+  const { data, isLoading = false, error = null, onSelect, onDelete, onDeleteBulk } = props;
   const [sorting, setSorting] = useState<SortingState>(DEFAULT_SORTING);
   const [globalFilter, setGlobalFilter] = useState("");
+  const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
 
   const columns = useMemo(
     () =>
@@ -116,13 +142,25 @@ export function AgentRunsTable(props: AgentRunsTableProps) {
     features,
     data,
     columns,
-    state: { sorting, globalFilter },
+    // Keyed by job id rather than row index, so a selection still points at
+    // the same runs after a refetch adds, removes, or reorders rows.
+    getRowId: (job) => job.jobId,
+    state: { sorting, globalFilter, rowSelection },
     globalFilterFn: "includesString",
     onSortingChange: setSorting,
     onGlobalFilterChange: setGlobalFilter,
+    onRowSelectionChange: setRowSelection,
   });
 
   const rows = table.getRowModel().rows;
+  // Only selected runs that pass the filter — a run selected and then
+  // filtered out of view isn't deleted without the user seeing it.
+  const selectedJobIds = table.getFilteredSelectedRowModel().rows.map((row) => row.original.jobId);
+
+  async function onDeleteSelected() {
+    await onDeleteBulk(selectedJobIds);
+    table.resetRowSelection();
+  }
 
   return (
     <div className="space-y-6">
@@ -140,9 +178,13 @@ export function AgentRunsTable(props: AgentRunsTableProps) {
             onChange={(event) => setGlobalFilter(event.target.value)}
           />
         </InputGroup>
-        <p className="text-sm text-slate-500">
-          {rows.length} of {data.length} runs
-        </p>
+        <div className="flex items-center gap-3">
+          <p className="text-sm text-slate-500">
+            {rows.length} of {data.length} runs
+            {selectedJobIds.length > 0 && ` · ${selectedJobIds.length} selected`}
+          </p>
+          <BulkActionsMenu selectedCount={selectedJobIds.length} onDelete={onDeleteSelected} />
+        </div>
       </div>
 
       <Card className="overflow-hidden p-0">
@@ -220,5 +262,35 @@ export function AgentRunsTable(props: AgentRunsTableProps) {
         )}
       </Card>
     </div>
+  );
+}
+
+type SelectCheckboxProps = {
+  "aria-label": string;
+  checked: boolean;
+  /** Some but not all of what this box stands for is selected. */
+  indeterminate?: boolean;
+  onChange: (event: unknown) => void;
+};
+
+function SelectCheckbox(props: SelectCheckboxProps) {
+  const { indeterminate = false, ...inputProps } = props;
+
+  return (
+    <input
+      {...inputProps}
+      type="checkbox"
+      // `indeterminate` has no HTML attribute — it can only be set on the element.
+      ref={(input) => {
+        if (input) {
+          input.indeterminate = indeterminate && !props.checked;
+        }
+      }}
+      className="accent-primary-500 h-4 w-4 cursor-pointer align-middle"
+      // The row is a link target, so keep the box's clicks and keystrokes from
+      // bubbling up and navigating away.
+      onClick={(event) => event.stopPropagation()}
+      onKeyDown={(event) => event.stopPropagation()}
+    />
   );
 }

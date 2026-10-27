@@ -1,6 +1,7 @@
 import React, { useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 import { useSession } from "../../hooks/useSession";
 import { AgentRunsTable } from "./AgentRunsTable";
 import { AGENT_JOBS_QUERY_KEY, fetchAgentJobs, deleteAgentJob, bulkDeleteAgentJobs } from "../../queries";
@@ -28,7 +29,16 @@ export function AgentRunsPage() {
 
   const bulkDeleteJobs = useMutation({
     mutationFn: (jobIds: string[]) => bulkDeleteAgentJobs(sessionToken, jobIds),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: AGENT_JOBS_QUERY_KEY }),
+    onSuccess: ({ deleted, notFound }) => {
+      // Runs already gone were removed elsewhere — worth a mention, not an error.
+      const alreadyRemoved = notFound.length > 0 ? ` ${notFound.length} had already been removed.` : "";
+
+      toast.success(`Deleted ${deleted.length} ${deleted.length === 1 ? "run" : "runs"}.${alreadyRemoved}`);
+
+      return queryClient.invalidateQueries({ queryKey: AGENT_JOBS_QUERY_KEY });
+    },
+    // Partway through a multi-batch delete, earlier batches are already gone.
+    onError: () => queryClient.invalidateQueries({ queryKey: AGENT_JOBS_QUERY_KEY }),
   });
 
   const onDelete = useCallback((jobId: string) => deleteJob.mutateAsync(jobId), [deleteJob.mutateAsync]);
@@ -47,6 +57,7 @@ export function AgentRunsPage() {
         </div>
 
         {deleteJob.isError && <p className="text-error-600 text-sm">{(deleteJob.error as Error).message}</p>}
+        {bulkDeleteJobs.isError && <p className="text-error-600 text-sm">{bulkDeleteJobs.error.message}</p>}
 
         <AgentRunsTable
           data={data ?? NO_JOBS}

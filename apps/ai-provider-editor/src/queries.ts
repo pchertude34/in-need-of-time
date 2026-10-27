@@ -1,6 +1,7 @@
 import { queryOptions } from "@tanstack/react-query";
 import { resolveQuery, type SanityInstance } from "@sanity/sdk-react";
 import { SANITY_APP_PROVIDER_AGENT_API_URL } from "../env";
+import { BULK_DELETE_MAX_JOBS, type BulkDeleteJobsResult } from "@in-need-of-time/types";
 import type { GeocodeResult } from "@in-need-of-time/utils";
 import type { AgentJob } from "./pages/AgentRuns/types";
 import type { ServiceType } from "./types";
@@ -47,16 +48,7 @@ export function serviceTypesQuery(instance: SanityInstance) {
 }
 
 /**
- * `fetch` against the provider-agent API, carrying the session.
- *
- * The token is a parameter rather than something this module reaches for: it
- * lives in React state, owned by `useSession()`. Callers pass it in and gate
- * their query on `enabled: !!sessionToken`, so a request never fires before
- * there's a session to make it with.
- *
- * Throwing on a missing token is deliberate — a mis-gated caller should fail
- * loudly here rather than send an unauthenticated request and get a 401 that
- * looks like an expired session.
+ * Helper function for fetch calls. Adds the user's sanity token to the headers
  */
 async function apiFetch(token: string | undefined, path: string, init: RequestInit = {}): Promise<Response> {
   if (!token) {
@@ -127,17 +119,31 @@ export async function deleteAgentJob(token: string | undefined, jobId: string) {
   }
 }
 
-export async function bulkDeleteAgentJobs(token: string | undefined, jobIds: string[]) {
-  const response = await apiFetch(token, `/provider-agent/jobs/bulk-delete`, {
-    method: "POST",
-    body: JSON.stringify({ jobIds }),
-  });
+/**
+ * Deletes jobs in batches the API accepts, one batch at a time. A failed batch
+ * stops the rest; the batches before it stay deleted, and retrying is safe —
+ * an id that's already gone comes back in `notFound`, not as an error.
+ */
+export async function bulkDeleteAgentJobs(token: string | undefined, jobIds: string[]): Promise<BulkDeleteJobsResult> {
+  const result: BulkDeleteJobsResult = { deleted: [], notFound: [] };
 
-  if (!response.ok) {
-    throw new Error(`Could not delete jobs: request failed with ${response.status}`);
+  for (let i = 0; i < jobIds.length; i += BULK_DELETE_MAX_JOBS) {
+    const response = await apiFetch(token, `/provider-agent/jobs/bulk-delete`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ jobIds: jobIds.slice(i, i + BULK_DELETE_MAX_JOBS) }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Could not delete runs: request failed with ${response.status}`);
+    }
+
+    const batch: BulkDeleteJobsResult = await response.json();
+    result.deleted.push(...batch.deleted);
+    result.notFound.push(...batch.notFound);
   }
 
-  return response.json();
+  return result;
 }
 
 /**

@@ -1,8 +1,20 @@
 import type { PortableTextBlock } from "@portabletext/types";
 
+// The most job ids `POST /provider-agent/jobs/bulk-delete` takes in one request.
+export const BULK_DELETE_MAX_JOBS = 25;
+
 export type Location = {
   lat: number;
   lng: number;
+};
+
+////////////////////////////////////////
+// Provider agent API responses
+////////////////////////////////////////
+/** `POST /provider-agent/jobs/bulk-delete` — what was removed, and which ids had no job behind them. */
+export type BulkDeleteJobsResult = {
+  deleted: string[];
+  notFound: string[];
 };
 
 ////////////////////////////////////////

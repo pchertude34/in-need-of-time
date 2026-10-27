@@ -4,6 +4,7 @@ import { db, agentJobsTable } from "@in-need-of-time/db";
 import { runAgentWorkflow } from "./workflows/agentWorkflow";
 import type { ModelMessage } from "ai";
 import type { WorkflowStatus } from "@dbos-inc/dbos-sdk";
+import type { BulkDeleteJobsResult } from "@in-need-of-time/types";
 
 // DBOS has more run states than a reader of the job list cares about. Anything
 // still on its way through the system reads as PENDING; anything that stopped
@@ -164,7 +165,7 @@ export async function deleteJob(jobId: string): Promise<boolean> {
  * delete then fails, the jobs are left cancelled but listed, and a retry
  * finishes the job: removing an already-removed workflow is a no-op.
  */
-export async function deleteJobs(jobIds: string[]): Promise<{ deleted: string[]; notFound: string[] }> {
+export async function deleteJobs(jobIds: string[]): Promise<BulkDeleteJobsResult> {
   const uniqueJobIds = [...new Set(jobIds)];
 
   for (let i = 0; i < uniqueJobIds.length; i += WORKFLOW_REMOVAL_CONCURRENCY) {

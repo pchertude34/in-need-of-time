@@ -2,6 +2,7 @@ import { Router } from "express";
 import type { IncomingMessage, Server } from "node:http";
 import { WebSocketServer, type WebSocket } from "ws";
 import { subscribe, history, createJob, getJob, listJobs, deleteJob, deleteJobs } from "@in-need-of-time/agent-core";
+import { BULK_DELETE_MAX_JOBS } from "@in-need-of-time/types";
 import { readSession } from "../auth/session";
 
 const WS_PATH = "/provider-agent/ws";
@@ -15,7 +16,6 @@ const WS_PATH = "/provider-agent/ws";
  * The client offers `["bearer", "<token>"]`; the server echoes back "bearer".
  */
 const WS_AUTH_PROTOCOL = "bearer";
-const MAX_DELETES = 25;
 
 export const providerAgentRouter = Router();
 
@@ -73,11 +73,6 @@ providerAgentRouter.delete("/jobs/:jobId", async (req, res) => {
 
 // POST /provider-agent/jobs/bulk-delete — permanently remove several jobs, as
 // DELETE /jobs/:jobId does for one.
-//
-// Body: `{ jobIds }` — up to MAX_DELETES job ids.
-//
-// Responds 200 with `{ deleted, notFound }`. An id that's already gone isn't an
-// error: the caller wanted it gone, and it is. The request is safe to retry.
 providerAgentRouter.post("/jobs/bulk-delete", async (req, res) => {
   const { jobIds } = (req.body ?? {}) as { jobIds?: unknown };
 
@@ -89,8 +84,8 @@ providerAgentRouter.post("/jobs/bulk-delete", async (req, res) => {
   // Checked after deduplication, so repeated ids don't count against the limit.
   const uniqueJobIds = [...new Set<string>(jobIds)];
 
-  if (uniqueJobIds.length > MAX_DELETES) {
-    res.status(400).json({ error: `At most ${MAX_DELETES} jobs can be deleted at once` });
+  if (uniqueJobIds.length > BULK_DELETE_MAX_JOBS) {
+    res.status(400).json({ error: `At most ${BULK_DELETE_MAX_JOBS} jobs can be deleted at once` });
     return;
   }
 
