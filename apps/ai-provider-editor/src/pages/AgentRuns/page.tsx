@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useSession } from "../../hooks/useSession";
 import { AgentRunsTable } from "./AgentRunsTable";
-import { AGENT_JOBS_QUERY_KEY, fetchAgentJobs, deleteAgentJob } from "../../queries";
+import { AGENT_JOBS_QUERY_KEY, fetchAgentJobs, deleteAgentJob, bulkDeleteAgentJobs } from "../../queries";
 import type { AgentJob } from "./types";
 
 // A stable empty array, so the table isn't handed a new `data` reference on
@@ -23,15 +23,19 @@ export function AgentRunsPage() {
 
   const deleteJob = useMutation({
     mutationFn: (jobId: string) => deleteAgentJob(sessionToken, jobId),
-    // Refetch rather than splicing the row out locally: a delete can also cancel
-    // a run in flight, so the rest of the list may have moved on too.
     onSuccess: () => queryClient.invalidateQueries({ queryKey: AGENT_JOBS_QUERY_KEY }),
   });
 
-  // `mutateAsync` is stable across renders; wrapping it keeps the table's
-  // columns from being rebuilt every time this page re-renders.
-  const { mutateAsync: deleteJobById } = deleteJob;
-  const onDelete = useCallback((jobId: string) => deleteJobById(jobId), [deleteJobById]);
+  const bulkDeleteJobs = useMutation({
+    mutationFn: (jobIds: string[]) => bulkDeleteAgentJobs(sessionToken, jobIds),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: AGENT_JOBS_QUERY_KEY }),
+  });
+
+  const onDelete = useCallback((jobId: string) => deleteJob.mutateAsync(jobId), [deleteJob.mutateAsync]);
+  const onDeleteBulk = useCallback(
+    (jobIds: string[]) => bulkDeleteJobs.mutateAsync(jobIds),
+    [bulkDeleteJobs.mutateAsync],
+  );
   const onSelect = useCallback((job: AgentJob) => navigate(`/job/${job.jobId}`), [navigate]);
 
   return (
@@ -50,6 +54,7 @@ export function AgentRunsPage() {
           error={error?.message}
           onSelect={onSelect}
           onDelete={onDelete}
+          onDeleteBulk={onDeleteBulk}
         />
       </div>
     </main>

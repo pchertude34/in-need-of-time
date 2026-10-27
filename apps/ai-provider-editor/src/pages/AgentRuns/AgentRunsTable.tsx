@@ -91,12 +91,11 @@ type AgentRunsTableProps = {
   error?: string | null;
   onSelect: (job: AgentJob) => void;
   onDelete: (jobId: string) => Promise<void>;
+  onDeleteBulk: (jobIds: string[]) => Promise<any>;
 };
 
 export function AgentRunsTable(props: AgentRunsTableProps) {
   const { data, isLoading = false, error = null, onSelect, onDelete } = props;
-  // Sorting and filtering are how this table is being looked at, not something
-  // the page needs to know about, so they stay here.
   const [sorting, setSorting] = useState<SortingState>(DEFAULT_SORTING);
   const [globalFilter, setGlobalFilter] = useState("");
 

@@ -127,6 +127,19 @@ export async function deleteAgentJob(token: string | undefined, jobId: string) {
   }
 }
 
+export async function bulkDeleteAgentJobs(token: string | undefined, jobIds: string[]) {
+  const response = await apiFetch(token, `/provider-agent/jobs/bulk-delete`, {
+    method: "POST",
+    body: JSON.stringify({ jobIds }),
+  });
+
+  if (!response.ok) {
+    throw new Error(`Could not delete jobs: request failed with ${response.status}`);
+  }
+
+  return response.json();
+}
+
 /**
  * The websocket URL for a job's event stream, and the subprotocols that
  * authenticate it.
