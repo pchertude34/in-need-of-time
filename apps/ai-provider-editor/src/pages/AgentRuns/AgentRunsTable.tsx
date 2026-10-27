@@ -17,7 +17,7 @@ import {
   type SortingState,
 } from "@tanstack/react-table";
 import { ArrowDownIcon, ArrowUpIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outline";
-import { Badge, Card, Input, InputGroup, InputLeftElement, Skeleton } from "@in-need-of-time/ui";
+import { Badge, Card, Checkbox, Input, InputGroup, InputLeftElement, Skeleton } from "@in-need-of-time/ui";
 import { BulkActionsMenu } from "./BulkActionsMenu";
 import { RunActionsMenu } from "./RunActionsMenu";
 import { formatTimestamp, getStatusVariant } from "./utils";
@@ -53,18 +53,23 @@ const DATA_COLUMNS = columnHelper.columns([
   columnHelper.display({
     id: "select",
     header: ({ table }) => (
-      <SelectCheckbox
+      <Checkbox
         aria-label="Select all runs"
-        checked={table.getIsAllPageRowsSelected()}
-        indeterminate={table.getIsSomePageRowsSelected()}
-        onChange={table.getToggleAllPageRowsSelectedHandler()}
+        checked={table.getIsAllPageRowsSelected() ? true : table.getIsSomePageRowsSelected() ? "indeterminate" : false}
+        // Radix resolves a click on an indeterminate box to `true`, so a
+        // partial selection is completed rather than cleared.
+        onCheckedChange={(checked) => table.toggleAllPageRowsSelected(checked === true)}
       />
     ),
     cell: ({ row }) => (
-      <SelectCheckbox
+      <Checkbox
         aria-label={`Select run "${row.original.input?.message ?? row.original.jobId}"`}
         checked={row.getIsSelected()}
-        onChange={row.getToggleSelectedHandler()}
+        onCheckedChange={(checked) => row.toggleSelected(checked === true)}
+        // The row is a link target, so keep the box's clicks and keystrokes
+        // from bubbling up and navigating away.
+        onClick={(event) => event.stopPropagation()}
+        onKeyDown={(event) => event.stopPropagation()}
       />
     ),
   }),
@@ -262,35 +267,5 @@ export function AgentRunsTable(props: AgentRunsTableProps) {
         )}
       </Card>
     </div>
-  );
-}
-
-type SelectCheckboxProps = {
-  "aria-label": string;
-  checked: boolean;
-  /** Some but not all of what this box stands for is selected. */
-  indeterminate?: boolean;
-  onChange: (event: unknown) => void;
-};
-
-function SelectCheckbox(props: SelectCheckboxProps) {
-  const { indeterminate = false, ...inputProps } = props;
-
-  return (
-    <input
-      {...inputProps}
-      type="checkbox"
-      // `indeterminate` has no HTML attribute — it can only be set on the element.
-      ref={(input) => {
-        if (input) {
-          input.indeterminate = indeterminate && !props.checked;
-        }
-      }}
-      className="accent-primary-500 h-4 w-4 cursor-pointer align-middle"
-      // The row is a link target, so keep the box's clicks and keystrokes from
-      // bubbling up and navigating away.
-      onClick={(event) => event.stopPropagation()}
-      onKeyDown={(event) => event.stopPropagation()}
-    />
   );
 }
